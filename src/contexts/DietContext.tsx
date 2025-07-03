@@ -1,0 +1,210 @@
+import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
+import { DailyPlan, Meal, MealFood, Food } from '@/types/diet';
+import { initialFoods, defaultMealPlan } from '@/data/foods';
+
+interface DietState {
+  currentDayPlan: DailyPlan | null;
+  foods: Food[];
+  isLoading: boolean;
+}
+
+interface DietContextType extends DietState {
+  markMealAsCompleted: (mealId: string) => void;
+  markMealFoodAsCompleted: (mealId: string, foodId: string) => void;
+  substituteFoodInMeal: (mealId: string, originalFoodId: string, newFood: Food, quantity: number) => void;
+  loadDayPlan: (date: string) => void;
+  getMealProgress: (mealId: string) => number;
+  getDailyProgress: () => number;
+  getCurrentDayCalories: () => number;
+}
+
+type DietAction = 
+  | { type: 'SET_LOADING'; payload: boolean }
+  | { type: 'SET_DAILY_PLAN'; payload: DailyPlan }
+  | { type: 'MARK_MEAL_COMPLETED'; payload: string }
+  | { type: 'MARK_MEAL_FOOD_COMPLETED'; payload: { mealId: string; foodId: string } }
+  | { type: 'SUBSTITUTE_FOOD'; payload: { mealId: string; originalFoodId: string; newFood: Food; quantity: number } };
+
+const initialState: DietState = {
+  currentDayPlan: null,
+  foods: initialFoods,
+  isLoading: false
+};
+
+const DietContext = createContext<DietContextType | undefined>(undefined);
+
+function dietReducer(state: DietState, action: DietAction): DietState {
+  switch (action.type) {
+    case 'SET_LOADING':
+      return { ...state, isLoading: action.payload };
+    
+    case 'SET_DAILY_PLAN':
+      return { ...state, currentDayPlan: action.payload, isLoading: false };
+    
+    case 'MARK_MEAL_COMPLETED':
+      if (!state.currentDayPlan) return state;
+      return {
+        ...state,
+        currentDayPlan: {
+          ...state.currentDayPlan,
+          meals: state.currentDayPlan.meals.map(meal =>
+            meal.id === action.payload
+              ? { ...meal, isCompleted: true, completedAt: new Date() }
+              : meal
+          )
+        }
+      };
+    
+    case 'MARK_MEAL_FOOD_COMPLETED':
+      if (!state.currentDayPlan) return state;
+      return {
+        ...state,
+        currentDayPlan: {
+          ...state.currentDayPlan,
+          meals: state.currentDayPlan.meals.map(meal =>
+            meal.id === action.payload.mealId
+              ? {
+                  ...meal,
+                  foods: meal.foods.map(food =>
+                    food.id === action.payload.foodId
+                      ? { ...food, isCompleted: !food.isCompleted }
+                      : food
+                  )
+                }
+              : meal
+          )
+        }
+      };
+    
+    case 'SUBSTITUTE_FOOD':
+      if (!state.currentDayPlan) return state;
+      return {
+        ...state,
+        currentDayPlan: {
+          ...state.currentDayPlan,
+          meals: state.currentDayPlan.meals.map(meal =>
+            meal.id === action.payload.mealId
+              ? {
+                  ...meal,
+                  foods: meal.foods.map(food =>
+                    food.id === action.payload.originalFoodId
+                      ? {
+                          ...food,
+                          substitutedFood: action.payload.newFood,
+                          quantity: action.payload.quantity
+                        }
+                      : food
+                  )
+                }
+              : meal
+          )
+        }
+      };
+    
+    default:
+      return state;
+  }
+}
+
+export function DietProvider({ children }: { children: ReactNode }) {
+  const [state, dispatch] = useReducer(dietReducer, initialState);
+
+  const markMealAsCompleted = (mealId: string) => {
+    dispatch({ type: 'MARK_MEAL_COMPLETED', payload: mealId });
+  };
+
+  const markMealFoodAsCompleted = (mealId: string, foodId: string) => {
+    dispatch({ type: 'MARK_MEAL_FOOD_COMPLETED', payload: { mealId, foodId } });
+  };
+
+  const substituteFoodInMeal = (mealId: string, originalFoodId: string, newFood: Food, quantity: number) => {
+    dispatch({ type: 'SUBSTITUTE_FOOD', payload: { mealId, originalFoodId, newFood, quantity } });
+  };
+
+  const loadDayPlan = (date: string) => {
+    dispatch({ type: 'SET_LOADING', payload: true });
+    
+    // Simular carregamento e criar plano do dia
+    setTimeout(() => {
+      const dayPlan: DailyPlan = {
+        id: `plan-${date}`,
+        date,
+        targetCalories: defaultMealPlan.targetCalories,
+        meals: defaultMealPlan.meals.map(mealTemplate => ({
+          ...mealTemplate,
+          foods: mealTemplate.foods.map(foodTemplate => ({
+            id: `${mealTemplate.id}-${foodTemplate.foodId}`,
+            foodId: foodTemplate.foodId,
+            quantity: foodTemplate.quantity,
+            unit: foodTemplate.unit,
+            isCompleted: false
+          })),
+          isCompleted: false
+        }))
+      };
+      
+      dispatch({ type: 'SET_DAILY_PLAN', payload: dayPlan });
+    }, 500);
+  };
+
+  const getMealProgress = (mealId: string): number => {
+    if (!state.currentDayPlan) return 0;
+    const meal = state.currentDayPlan.meals.find(m => m.id === mealId);
+    if (!meal || meal.foods.length === 0) return 0;
+    
+    const completedFoods = meal.foods.filter(f => f.isCompleted).length;
+    return (completedFoods / meal.foods.length) * 100;
+  };
+
+  const getDailyProgress = (): number => {
+    if (!state.currentDayPlan) return 0;
+    const completedMeals = state.currentDayPlan.meals.filter(m => m.isCompleted).length;
+    return (completedMeals / state.currentDayPlan.meals.length) * 100;
+  };
+
+  const getCurrentDayCalories = (): number => {
+    if (!state.currentDayPlan) return 0;
+    return state.currentDayPlan.meals
+      .filter(meal => meal.isCompleted)
+      .reduce((total, meal) => {
+        return total + meal.foods.reduce((mealTotal, mealFood) => {
+          const food = state.foods.find(f => f.id === mealFood.foodId);
+          if (!food) return mealTotal;
+          
+          const multiplier = mealFood.quantity / food.defaultQuantity;
+          return mealTotal + (food.nutritionalInfo.calories * multiplier);
+        }, 0);
+      }, 0);
+  };
+
+  useEffect(() => {
+    // Carregar plano do dia atual
+    const today = new Date().toISOString().split('T')[0];
+    loadDayPlan(today);
+  }, []);
+
+  const contextValue: DietContextType = {
+    ...state,
+    markMealAsCompleted,
+    markMealFoodAsCompleted,
+    substituteFoodInMeal,
+    loadDayPlan,
+    getMealProgress,
+    getDailyProgress,
+    getCurrentDayCalories
+  };
+
+  return (
+    <DietContext.Provider value={contextValue}>
+      {children}
+    </DietContext.Provider>
+  );
+}
+
+export function useDiet(): DietContextType {
+  const context = useContext(DietContext);
+  if (context === undefined) {
+    throw new Error('useDiet must be used within a DietProvider');
+  }
+  return context;
+}
