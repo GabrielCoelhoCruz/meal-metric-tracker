@@ -2,69 +2,88 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Design system para app de controle de dieta - inspirado em apps iOS modernos */
+/* Design system moderno para app de controle de dieta */
 
 @layer base {
   :root {
-    /* Base colors - tons neutros e clean */
-    --background: 0 0% 98%;
-    --foreground: 210 11% 15%;
+    /* Base colors - gradiente sutil de fundo */
+    --background: 210 20% 98%;
+    --background-secondary: 210 25% 96%;
+    --foreground: 210 12% 12%;
 
-    /* Card system - clean e moderno */
+    /* Card system - elevação e depth */
     --card: 0 0% 100%;
-    --card-foreground: 210 11% 15%;
+    --card-secondary: 210 15% 99%;
+    --card-foreground: 210 12% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 210 11% 15%;
+    --popover-foreground: 210 12% 12%;
 
-    /* Primary - verde saúde vibrante */
-    --primary: 142 71% 45%;
-    --primary-foreground: 0 0% 98%;
-    --primary-hover: 142 71% 40%;
+    /* Primary - verde saúde vibrante com variações */
+    --primary: 142 75% 46%;
+    --primary-light: 142 75% 60%;
+    --primary-dark: 142 75% 32%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 142 75% 42%;
 
-    /* Secondary - azul suave */
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 210 11% 15%;
+    /* Secondary - azul suave modernizado */
+    --secondary: 215 25% 95%;
+    --secondary-hover: 215 25% 92%;
+    --secondary-foreground: 210 12% 12%;
 
-    /* Muted - cinzas sutis */
-    --muted: 210 40% 96%;
-    --muted-foreground: 210 11% 71%;
+    /* Muted - cinzas modernos */
+    --muted: 215 20% 94%;
+    --muted-hover: 215 20% 91%;
+    --muted-foreground: 210 8% 54%;
 
-    /* Accent - laranja energético para CTAs */
-    --accent: 25 95% 53%;
-    --accent-foreground: 0 0% 98%;
+    /* Accent - laranja energético suavizado */
+    --accent: 25 85% 55%;
+    --accent-light: 25 85% 65%;
+    --accent-foreground: 0 0% 100%;
 
-    /* Success - verde confirmação */
-    --success: 142 71% 45%;
-    --success-foreground: 0 0% 98%;
+    /* Success - verde confirmação aprimorado */
+    --success: 142 75% 46%;
+    --success-light: 142 75% 88%;
+    --success-foreground: 0 0% 100%;
 
-    /* Warning - amarelo atenção */
-    --warning: 45 93% 58%;
-    --warning-foreground: 210 11% 15%;
+    /* Warning - amarelo mais elegante */
+    --warning: 38 95% 56%;
+    --warning-light: 38 95% 90%;
+    --warning-foreground: 210 12% 12%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
+    /* Error - vermelho suavizado */
+    --destructive: 0 72% 58%;
+    --destructive-light: 0 72% 92%;
+    --destructive-foreground: 0 0% 100%;
 
-    /* Borders e inputs - tons neutros */
-    --border: 210 40% 90%;
-    --input: 210 40% 94%;
-    --ring: 142 71% 45%;
+    /* Borders e inputs - mais sutis */
+    --border: 215 15% 88%;
+    --border-hover: 215 15% 84%;
+    --input: 215 15% 96%;
+    --input-focus: 215 20% 94%;
+    --ring: 142 75% 46%;
 
-    /* Gradients para elementos especiais */
-    --gradient-primary: linear-gradient(135deg, hsl(142 71% 45%), hsl(142 71% 55%));
-    --gradient-accent: linear-gradient(135deg, hsl(25 95% 53%), hsl(25 95% 63%));
-    --gradient-success: linear-gradient(135deg, hsl(142 71% 45%), hsl(142 71% 35%));
+    /* Gradients modernos */
+    --gradient-primary: linear-gradient(135deg, hsl(142 75% 46%) 0%, hsl(142 75% 60%) 100%);
+    --gradient-secondary: linear-gradient(135deg, hsl(215 25% 95%) 0%, hsl(215 25% 99%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(25 85% 55%) 0%, hsl(25 85% 65%) 100%);
+    --gradient-success: linear-gradient(135deg, hsl(142 75% 46%) 0%, hsl(142 75% 32%) 100%);
+    --gradient-app-bg: linear-gradient(180deg, hsl(210 20% 98%) 0%, hsl(210 25% 96%) 100%);
+    
+    /* Shadows elegantes */
+    --shadow-sm: 0 1px 2px 0 hsl(210 12% 12% / 0.05);
+    --shadow-md: 0 4px 6px -1px hsl(210 12% 12% / 0.08), 0 2px 4px -1px hsl(210 12% 12% / 0.06);
+    --shadow-lg: 0 10px 15px -3px hsl(210 12% 12% / 0.08), 0 4px 6px -2px hsl(210 12% 12% / 0.05);
+    --shadow-primary: 0 4px 20px -4px hsl(142 75% 46% / 0.25);
+    --shadow-accent: 0 4px 20px -4px hsl(25 85% 55% / 0.25);
+    --shadow-card: 0 1px 3px 0 hsl(210 12% 12% / 0.06), 0 1px 2px 0 hsl(210 12% 12% / 0.04);
 
-    /* Shadows com primary color */
-    --shadow-primary: 0 4px 20px -2px hsl(142 71% 45% / 0.2);
-    --shadow-accent: 0 4px 20px -2px hsl(25 95% 53% / 0.2);
-    --shadow-soft: 0 2px 10px -1px hsl(210 11% 15% / 0.1);
+    /* Animations suaves */
+    --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-spring: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.075);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
-    /* Animations */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-spring: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-
-    --radius: 0.75rem;
+    --radius: 0.875rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -128,6 +147,56 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-gradient-to-b from-background to-background-secondary text-foreground antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  /* Card variants modernos */
+  .card-elevated {
+    @apply bg-card border border-border/50 shadow-card backdrop-blur-sm;
+  }
+  
+  .card-glass {
+    @apply bg-card/80 backdrop-blur-md border border-border/30 shadow-lg;
+  }
+  
+  /* Button variants aprimorados */
+  .btn-primary {
+    @apply bg-gradient-to-r from-primary to-primary-light text-primary-foreground shadow-primary hover:shadow-lg transition-all duration-200 hover:scale-[1.02];
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary hover:bg-secondary-hover text-secondary-foreground shadow-sm hover:shadow-md transition-all duration-200;
+  }
+  
+  .btn-ghost {
+    @apply bg-transparent hover:bg-muted text-foreground/80 hover:text-foreground transition-all duration-200;
+  }
+  
+  /* Status indicators */
+  .status-success {
+    @apply bg-success-light text-success border border-success/20 rounded-full px-3 py-1 text-sm font-medium;
+  }
+  
+  .status-warning {
+    @apply bg-warning-light text-warning-foreground border border-warning/20 rounded-full px-3 py-1 text-sm font-medium;
+  }
+  
+  /* Interactive elements */
+  .interactive {
+    @apply transition-all duration-200 hover:scale-[1.02] active:scale-[0.98];
+  }
+  
+  /* Progress indicators */
+  .progress-ring {
+    @apply drop-shadow-sm;
+  }
+  
+  /* Mobile-first spacing */
+  .container-mobile {
+    @apply max-w-md mx-auto px-4 sm:max-w-2xl sm:px-6 lg:max-w-4xl lg:px-8;
   }
 }

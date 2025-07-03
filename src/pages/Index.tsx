@@ -32,29 +32,43 @@ const Index = () => {
   const completedMeals = currentDayPlan.meals.filter(m => m.isCompleted).length;
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-4xl mx-auto p-4 space-y-6">
-        <DailyHeader
-          date={currentDayPlan.date}
-          progress={progress}
-          consumedCalories={consumedCalories}
-          targetCalories={currentDayPlan.targetCalories}
-          completedMeals={completedMeals}
-          totalMeals={currentDayPlan.meals.length}
-        />
+    <div className="min-h-screen bg-gradient-to-b from-background to-background-secondary">
+      <div className="container-mobile py-6 space-y-6">
+        <div className="animate-fade-in">
+          <DailyHeader
+            date={currentDayPlan.date}
+            progress={progress}
+            consumedCalories={consumedCalories}
+            targetCalories={currentDayPlan.targetCalories}
+            completedMeals={completedMeals}
+            totalMeals={currentDayPlan.meals.length}
+          />
+        </div>
 
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Suas Refeições</h2>
-          {currentDayPlan.meals.map(meal => (
-            <MealCard
-              key={meal.id}
-              meal={meal}
-              foods={foods}
-              progress={getMealProgress(meal.id)}
-              onMarkCompleted={() => markMealAsCompleted(meal.id)}
-              onViewDetails={() => navigate(`/meal/${meal.id}`)}
-            />
-          ))}
+        <div className="space-y-4 animate-slide-up">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold text-foreground">Suas Refeições</h2>
+            <div className="text-sm text-muted-foreground">
+              {completedMeals}/{currentDayPlan.meals.length} concluídas
+            </div>
+          </div>
+          <div className="space-y-3">
+            {currentDayPlan.meals.map((meal, index) => (
+              <div 
+                key={meal.id} 
+                className="animate-fade-in" 
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                <MealCard
+                  meal={meal}
+                  foods={foods}
+                  progress={getMealProgress(meal.id)}
+                  onMarkCompleted={() => markMealAsCompleted(meal.id)}
+                  onViewDetails={() => navigate(`/meal/${meal.id}`)}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
