@@ -40,88 +40,76 @@ export function FoodItem({
 
   return (
     <div className={cn(
-      "card-elevated rounded-xl p-4 transition-all duration-300 hover:shadow-md interactive",
+      "bg-card rounded-3xl p-4 border border-border/30 transition-all duration-200 active:scale-[0.98]",
       mealFood.isCompleted && "bg-gradient-to-r from-success-light/20 to-success-light/10 border-success/30",
       isSubstituted && "border-warning/40 bg-gradient-to-r from-warning-light/15 to-warning-light/5",
       className
     )}>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onToggleCompleted}
-            className={cn(
-              "w-10 h-10 p-0 rounded-full transition-all duration-200 border-2",
-              mealFood.isCompleted 
-                ? "bg-gradient-to-r from-success to-success-light text-success-foreground border-success shadow-sm" 
-                : "border-border hover:border-primary/50 hover:bg-primary/5"
-            )}
-          >
-            {mealFood.isCompleted && <Check className="w-5 h-5" />}
-          </Button>
-          
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              <h4 className={cn(
-                "font-semibold text-base",
-                mealFood.isCompleted ? "text-success line-through" : "text-foreground"
-              )}>
-                {displayFood.name}
-              </h4>
+      <div className="flex items-center gap-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onToggleCompleted}
+          className={cn(
+            "w-12 h-12 p-0 rounded-2xl transition-all duration-200 border-2 flex-shrink-0",
+            mealFood.isCompleted 
+              ? "bg-gradient-to-r from-success to-success-light text-success-foreground border-success" 
+              : "border-border hover:border-primary/50 hover:bg-primary/5"
+          )}
+        >
+          {mealFood.isCompleted && <Check className="w-5 h-5" />}
+        </Button>
+        
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-2">
+            <h4 className={cn(
+              "font-semibold text-base truncate",
+              mealFood.isCompleted ? "text-success line-through" : "text-foreground"
+            )}>
+              {displayFood.name}
+            </h4>
+            {isSubstituted && (
               <Badge 
                 variant="outline" 
-                className={cn(
-                  "text-xs font-medium rounded-full",
-                  getCategoryColor(displayFood.category)
-                )}
+                className="bg-warning-light text-warning-foreground border-warning/40 text-xs rounded-full flex-shrink-0"
               >
-                {displayFood.category}
+                Substituído
               </Badge>
-              {isSubstituted && (
-                <Badge 
-                  variant="outline" 
-                  className="bg-warning-light text-warning-foreground border-warning/40 text-xs rounded-full"
-                >
-                  Substituído
-                </Badge>
-              )}
+            )}
+          </div>
+          
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-sm text-muted-foreground font-medium">
+              {mealFood.quantity} {mealFood.unit}
             </div>
-            
-            <div className="flex items-center justify-between mb-2">
-              <div className="text-sm text-muted-foreground font-medium">
-                {mealFood.quantity} {mealFood.unit}
-              </div>
-              <div className="text-lg font-bold text-foreground">
-                {Math.round(nutrition.calories)} <span className="text-sm font-normal text-muted-foreground">kcal</span>
-              </div>
+            <div className="text-base font-bold text-foreground">
+              {Math.round(nutrition.calories)} <span className="text-sm font-normal text-muted-foreground">kcal</span>
             </div>
-            
-            <div className="flex gap-4 text-sm">
-              <div className="text-center">
-                <div className="font-semibold text-blue-600">{Math.round(nutrition.carbohydrates)}g</div>
-                <div className="text-xs text-muted-foreground">Carb</div>
-              </div>
-              <div className="text-center">
-                <div className="font-semibold text-red-600">{Math.round(nutrition.protein)}g</div>
-                <div className="text-xs text-muted-foreground">Prot</div>
-              </div>
-              <div className="text-center">
-                <div className="font-semibold text-yellow-600">{Math.round(nutrition.fat)}g</div>
-                <div className="text-xs text-muted-foreground">Gord</div>
-              </div>
+          </div>
+          
+          <div className="flex gap-3 text-sm">
+            <div className="text-center">
+              <div className="font-semibold text-primary">{Math.round(nutrition.carbohydrates)}g</div>
+              <div className="text-xs text-muted-foreground">C</div>
+            </div>
+            <div className="text-center">
+              <div className="font-semibold text-accent">{Math.round(nutrition.protein)}g</div>
+              <div className="text-xs text-muted-foreground">P</div>
+            </div>
+            <div className="text-center">
+              <div className="font-semibold text-warning">{Math.round(nutrition.fat)}g</div>
+              <div className="text-xs text-muted-foreground">G</div>
             </div>
           </div>
         </div>
         
         <Button
-          variant="outline"
+          variant="ghost"
           size="sm"
           onClick={onSubstitute}
-          className="btn-ghost hover:bg-accent/10 hover:text-accent hover:border-accent/30 flex items-center gap-2"
+          className="h-10 w-10 p-0 rounded-2xl hover:bg-accent/10 hover:text-accent flex-shrink-0"
         >
-          <ArrowRightLeft className="w-4 h-4" />
-          <span className="hidden sm:inline">Trocar</span>
+          <ArrowRightLeft className="w-5 h-5" />
         </Button>
       </div>
     </div>

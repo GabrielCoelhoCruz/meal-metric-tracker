@@ -50,97 +50,88 @@ export function MealCard({
 
   return (
     <div className={cn(
-      "card-elevated rounded-xl p-5 transition-all duration-300 hover:shadow-lg interactive group",
+      "bg-card rounded-3xl p-4 border border-border/30 transition-all duration-200 active:scale-[0.98]",
       isCompleted && "bg-gradient-to-r from-success-light/20 to-success-light/10 border-success/30",
       className
     )}>
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-4">
-          <ProgressCircle progress={progress} size="md" className="flex-shrink-0">
-            {isCompleted ? (
-              <Check className="w-5 h-5 text-success" />
-            ) : (
-              <span className="text-sm font-bold text-primary">{progressPercentage}%</span>
-            )}
-          </ProgressCircle>
-          
-          <div>
-            <h3 className={cn(
-              "font-semibold text-lg mb-1",
-              isCompleted ? "text-success" : "text-foreground group-hover:text-primary transition-colors"
-            )}>
-              {meal.name}
-            </h3>
-            <div className="flex items-center gap-3 text-sm text-muted-foreground">
-              <div className="flex items-center gap-1">
-                <Clock className="w-4 h-4" />
-                <span className="font-medium">{meal.scheduledTime}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <ChefHat className="w-4 h-4" />
-                <span>{meal.foods.length} item{meal.foods.length !== 1 ? 's' : ''}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div className="flex items-center gap-3">
-          {!isCompleted && progress === 100 && (
-            <Button
-              onClick={onMarkCompleted}
-              size="sm"
-              className="btn-primary"
-            >
-              <Check className="w-4 h-4 mr-2" />
-              Concluir
-            </Button>
+      <div className="flex items-center gap-4 mb-4">
+        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center flex-shrink-0">
+          {isCompleted ? (
+            <Check className="w-6 h-6 text-success" />
+          ) : (
+            <span className="text-sm font-bold text-primary">{progressPercentage}%</span>
           )}
         </div>
-      </div>
-
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <div className="text-center">
-            <div className="text-xl font-bold text-foreground">{Math.round(totalNutrition.calories)}</div>
-            <div className="text-xs text-muted-foreground font-medium">kcal</div>
-          </div>
-          
-          <div className="flex gap-4 text-sm">
-            <div className="text-center">
-              <div className="font-semibold text-blue-600">{Math.round(totalNutrition.carbohydrates)}g</div>
-              <div className="text-xs text-muted-foreground">Carb</div>
-            </div>
-            <div className="text-center">
-              <div className="font-semibold text-red-600">{Math.round(totalNutrition.protein)}g</div>
-              <div className="text-xs text-muted-foreground">Prot</div>
-            </div>
-            <div className="text-center">
-              <div className="font-semibold text-yellow-600">{Math.round(totalNutrition.fat)}g</div>
-              <div className="text-xs text-muted-foreground">Gord</div>
-            </div>
+        
+        <div className="flex-1 min-w-0">
+          <h3 className={cn(
+            "font-semibold text-base mb-1 truncate",
+            isCompleted ? "text-success" : "text-foreground"
+          )}>
+            {meal.name}
+          </h3>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Clock className="w-4 h-4" />
+            <span>{meal.scheduledTime}</span>
+            <span>•</span>
+            <span>{meal.foods.length} itens</span>
           </div>
         </div>
         
         <Button
-          variant="outline"
+          variant="ghost"
           size="sm"
           onClick={onViewDetails}
-          className="btn-ghost hover:bg-primary/10 hover:text-primary hover:border-primary/30"
+          className="h-10 w-10 p-0 rounded-2xl hover:bg-primary/10"
         >
-          <ArrowRight className="w-4 h-4 mr-2" />
-          <span>Detalhes</span>
+          <ArrowRight className="w-5 h-5 text-muted-foreground" />
         </Button>
+      </div>
+
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="text-center">
+            <div className="text-lg font-bold text-foreground">{Math.round(totalNutrition.calories)}</div>
+            <div className="text-xs text-muted-foreground">kcal</div>
+          </div>
+          
+          <div className="flex gap-3 text-sm">
+            <div className="text-center">
+              <div className="font-semibold text-primary">{Math.round(totalNutrition.carbohydrates)}g</div>
+              <div className="text-xs text-muted-foreground">C</div>
+            </div>
+            <div className="text-center">
+              <div className="font-semibold text-accent">{Math.round(totalNutrition.protein)}g</div>
+              <div className="text-xs text-muted-foreground">P</div>
+            </div>
+            <div className="text-center">
+              <div className="font-semibold text-warning">{Math.round(totalNutrition.fat)}g</div>
+              <div className="text-xs text-muted-foreground">G</div>
+            </div>
+          </div>
+        </div>
+        
+        {!isCompleted && progress === 100 && (
+          <Button
+            onClick={onMarkCompleted}
+            size="sm"
+            className="bg-success hover:bg-success/90 text-success-foreground rounded-xl h-9 px-4"
+          >
+            <Check className="w-4 h-4 mr-2" />
+            Concluir
+          </Button>
+        )}
       </div>
       
       {progress > 0 && progress < 100 && (
-        <div className="mt-4 pt-3 border-t border-border/50">
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>{meal.foods.filter(f => f.isCompleted).length} de {meal.foods.length} concluídos</span>
-            <span>{Math.round(progress)}% completo</span>
+        <div className="mt-4 pt-3 border-t border-border/30">
+          <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+            <span>{meal.foods.filter(f => f.isCompleted).length}/{meal.foods.length} concluídos</span>
+            <span>{Math.round(progress)}%</span>
           </div>
-          <div className="w-full bg-muted rounded-full h-1.5 mt-2">
+          <div className="w-full bg-muted rounded-full h-2">
             <div 
-              className="h-1.5 bg-gradient-to-r from-primary to-primary-light rounded-full transition-all duration-500"
+              className="h-2 bg-gradient-to-r from-primary to-primary-light rounded-full transition-all duration-500"
               style={{ width: `${progress}%` }}
             />
           </div>

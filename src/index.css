@@ -199,4 +199,18 @@
   .container-mobile {
     @apply max-w-md mx-auto px-4 sm:max-w-2xl sm:px-6 lg:max-w-4xl lg:px-8;
   }
+
+  /* Mobile touch targets */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  /* Safe area adjustments */
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
 }
