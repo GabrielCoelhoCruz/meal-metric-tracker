@@ -6,9 +6,11 @@ import { Switch } from '@/components/ui/switch';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { useNotifications } from '@/hooks/useNotifications';
 
 export default function Settings() {
   const navigate = useNavigate();
+  const { requestPermissions, scheduleMealReminders } = useNotifications();
 
   const settingsGroups = [
     {
@@ -30,7 +32,17 @@ export default function Settings() {
           icon: Bell,
           label: 'Lembrete de Refeições',
           description: 'Receber notificações',
-          component: <Switch defaultChecked />,
+          component: <Switch 
+            defaultChecked 
+            onCheckedChange={async (checked) => {
+              if (checked) {
+                const hasPermission = await requestPermissions();
+                if (hasPermission) {
+                  await scheduleMealReminders();
+                }
+              }
+            }}
+          />,
           onClick: null
         }
       ]

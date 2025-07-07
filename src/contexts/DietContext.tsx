@@ -2,6 +2,7 @@ import React, { createContext, useContext, useReducer, useEffect, ReactNode } fr
 import { DailyPlan, Meal, MealFood, Food } from '@/types/diet';
 import { initialFoods, defaultMealPlan } from '@/data/foods';
 import { useMotivationalToast } from '@/hooks/useMotivationalToast';
+import { useNotifications } from '@/hooks/useNotifications';
 
 interface DietState {
   currentDayPlan: DailyPlan | null;
@@ -208,6 +209,7 @@ function dietReducer(state: DietState, action: DietAction): DietState {
 export function DietProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(dietReducer, initialState);
   const { showFoodCompletionToast, showMealCompletionToast, showDailyGoalToast } = useMotivationalToast();
+  const { sendGoalNotification, sendAchievementNotification, checkProgressAndNotify } = useNotifications();
 
   const markMealAsCompleted = (mealId: string) => {
     dispatch({ type: 'MARK_MEAL_COMPLETED', payload: mealId });
@@ -218,6 +220,7 @@ export function DietProvider({ children }: { children: ReactNode }) {
       const progress = getDailyProgress();
       if (progress === 100) {
         showDailyGoalToast();
+        sendGoalNotification();
       }
     }, 100);
   };
@@ -235,6 +238,7 @@ export function DietProvider({ children }: { children: ReactNode }) {
       const progress = getDailyProgress();
       if (progress === 100) {
         showDailyGoalToast();
+        sendGoalNotification();
       }
     }, 100);
   };
