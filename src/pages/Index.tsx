@@ -1,5 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Settings } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { DailyHeader } from '@/components/DailyHeader';
 import { MealCard } from '@/components/MealCard';
 import { useDiet } from '@/contexts/DietContext';
@@ -48,6 +50,14 @@ const Index = () => {
                 <div className="text-lg font-bold text-primary">{Math.round(consumedCalories)}</div>
                 <div className="text-xs text-muted-foreground">de {currentDayPlan.targetCalories} kcal</div>
               </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate('/meal-management')}
+                className="h-10 w-10 p-0 rounded-full"
+              >
+                <Settings className="w-5 h-5" />
+              </Button>
             </div>
           </div>
         </div>

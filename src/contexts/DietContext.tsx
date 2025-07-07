@@ -19,6 +19,9 @@ interface DietContextType extends DietState {
   getMealProgress: (mealId: string) => number;
   getDailyProgress: () => number;
   getCurrentDayCalories: () => number;
+  addMeal: (meal: Meal) => void;
+  updateMeal: (meal: Meal) => void;
+  deleteMeal: (mealId: string) => void;
 }
 
 type DietAction = 
@@ -29,7 +32,10 @@ type DietAction =
   | { type: 'MARK_ENTIRE_MEAL_COMPLETED'; payload: string }
   | { type: 'MARK_MEAL_FOOD_COMPLETED'; payload: { mealId: string; foodId: string } }
   | { type: 'UPDATE_MEAL_FOOD_QUANTITY'; payload: { mealId: string; foodId: string; newQuantity: number } }
-  | { type: 'SUBSTITUTE_FOOD'; payload: { mealId: string; originalFoodId: string; newFood: Food; quantity: number } };
+  | { type: 'SUBSTITUTE_FOOD'; payload: { mealId: string; originalFoodId: string; newFood: Food; quantity: number } }
+  | { type: 'ADD_MEAL'; payload: Meal }
+  | { type: 'UPDATE_MEAL'; payload: Meal }
+  | { type: 'DELETE_MEAL'; payload: string };
 
 const initialState: DietState = {
   currentDayPlan: null,
@@ -161,6 +167,38 @@ function dietReducer(state: DietState, action: DietAction): DietState {
         }
       };
     
+    case 'ADD_MEAL':
+      if (!state.currentDayPlan) return state;
+      return {
+        ...state,
+        currentDayPlan: {
+          ...state.currentDayPlan,
+          meals: [...state.currentDayPlan.meals, action.payload]
+        }
+      };
+    
+    case 'UPDATE_MEAL':
+      if (!state.currentDayPlan) return state;
+      return {
+        ...state,
+        currentDayPlan: {
+          ...state.currentDayPlan,
+          meals: state.currentDayPlan.meals.map(meal =>
+            meal.id === action.payload.id ? action.payload : meal
+          )
+        }
+      };
+    
+    case 'DELETE_MEAL':
+      if (!state.currentDayPlan) return state;
+      return {
+        ...state,
+        currentDayPlan: {
+          ...state.currentDayPlan,
+          meals: state.currentDayPlan.meals.filter(meal => meal.id !== action.payload)
+        }
+      };
+    
     default:
       return state;
   }
@@ -249,6 +287,18 @@ export function DietProvider({ children }: { children: ReactNode }) {
       }, 0);
   };
 
+  const addMeal = (meal: Meal) => {
+    dispatch({ type: 'ADD_MEAL', payload: meal });
+  };
+
+  const updateMeal = (meal: Meal) => {
+    dispatch({ type: 'UPDATE_MEAL', payload: meal });
+  };
+
+  const deleteMeal = (mealId: string) => {
+    dispatch({ type: 'DELETE_MEAL', payload: mealId });
+  };
+
   useEffect(() => {
     // Carregar plano do dia atual
     const today = new Date().toISOString().split('T')[0];
@@ -266,7 +316,10 @@ export function DietProvider({ children }: { children: ReactNode }) {
     loadDayPlan,
     getMealProgress,
     getDailyProgress,
-    getCurrentDayCalories
+    getCurrentDayCalories,
+    addMeal,
+    updateMeal,
+    deleteMeal
   };
 
   return (
