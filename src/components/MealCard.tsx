@@ -4,6 +4,8 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ProgressCircle } from '@/components/ui/progress-circle';
 import { SwipeableCard } from '@/components/SwipeableCard';
+import { AnimatedCheckmark } from '@/components/AnimatedCheckmark';
+import { Confetti } from '@/components/Confetti';
 import { cn } from '@/lib/utils';
 import { Meal, Food } from '@/types/diet';
 import { calculateTotalNutrition } from '@/types/diet';
@@ -29,6 +31,16 @@ export function MealCard({
   onViewDetails,
   className 
 }: MealCardProps) {
+  const [showConfetti, setShowConfetti] = React.useState(false);
+  const [prevProgress, setPrevProgress] = React.useState(progress);
+  
+  // Trigger confetti when meal reaches 100%
+  React.useEffect(() => {
+    if (progress === 100 && prevProgress < 100 && !meal.isCompleted) {
+      setShowConfetti(true);
+    }
+    setPrevProgress(progress);
+  }, [progress, prevProgress, meal.isCompleted]);
   const totalCalories = meal.foods.reduce((total, mealFood) => {
     const food = foods.find(f => f.id === mealFood.foodId);
     if (!food) return total;
@@ -74,36 +86,44 @@ export function MealCard({
   };
 
   return (
-    <SwipeableCard
-      onSwipeRight={handleSwipeRight}
-      onSwipeLeft={handleSwipeLeft}
-      onDoubleTab={handleDoubleTab}
-      rightAction={{
-        icon: <Check className="w-4 h-4" />,
-        label: isCompleted ? "Desfazer" : progress === 100 ? "Concluir" : "Concluir Tudo",
-        color: "hsl(var(--success-foreground))",
-        bgColor: "hsl(var(--success))"
-      }}
-      leftAction={{
-        icon: <Edit className="w-4 h-4" />,
-        label: "Editar",
-        color: "hsl(var(--primary-foreground))",
-        bgColor: "hsl(var(--primary))"
-      }}
-      className={className}
-    >
-      <div className={cn(
-        isCompleted ? "card-meal-completed" : "card-meal",
-        "interactive"
-      )}>
-        <div className="flex items-center gap-4 mb-4">
-          <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-            {isCompleted ? (
-              <Check className="w-6 h-6 text-success" />
-            ) : (
-              <span className="text-data-small text-primary">{progressPercentage}%</span>
-            )}
-          </div>
+    <>
+      <Confetti 
+        trigger={showConfetti} 
+        onComplete={() => setShowConfetti(false)} 
+      />
+      <SwipeableCard
+        onSwipeRight={handleSwipeRight}
+        onSwipeLeft={handleSwipeLeft}
+        onDoubleTab={handleDoubleTab}
+        rightAction={{
+          icon: <Check className="w-4 h-4" />,
+          label: isCompleted ? "Desfazer" : progress === 100 ? "Concluir" : "Concluir Tudo",
+          color: "hsl(var(--success-foreground))",
+          bgColor: "hsl(var(--success))"
+        }}
+        leftAction={{
+          icon: <Edit className="w-4 h-4" />,
+          label: "Editar",
+          color: "hsl(var(--primary-foreground))",
+          bgColor: "hsl(var(--primary))"
+        }}
+        className={className}
+      >
+        <div className={cn(
+          isCompleted ? "card-meal-completed" : "card-meal",
+          "interactive"
+        )}>
+          <div className="flex items-center gap-4 mb-4">
+            <div className={cn(
+              "w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 transition-all duration-300",
+              progress === 100 && !isCompleted && "animate-pulse-success"
+            )}>
+              {isCompleted ? (
+                <AnimatedCheckmark isCompleted={true} size={24} />
+              ) : (
+                <span className="text-data-small text-primary">{progressPercentage}%</span>
+              )}
+            </div>
           
           <div className="flex-1 min-w-0">
             <h3 className={cn(
@@ -124,7 +144,7 @@ export function MealCard({
             variant="ghost"
             size="sm"
             onClick={onViewDetails}
-            className="touch-target rounded-lg"
+            className="touch-target rounded-lg active:animate-bounce-in"
           >
             <ArrowRight className="w-5 h-5" />
           </Button>
@@ -159,7 +179,7 @@ export function MealCard({
                 onClick={onUnmarkCompleted}
                 size="sm"
                 variant="outline"
-                className="status-completed"
+                className="status-completed active:animate-bounce-in"
               >
                 Desfazer
               </Button>
@@ -169,7 +189,7 @@ export function MealCard({
                   <Button
                     onClick={onMarkCompleted}
                     size="sm"
-                    className="bg-success text-success-foreground"
+                    className="bg-success text-success-foreground active:animate-bounce-in animate-float"
                   >
                     <Check className="w-4 h-4 mr-2" />
                     Concluir
@@ -180,6 +200,7 @@ export function MealCard({
                     onClick={onMarkEntireCompleted}
                     size="sm"
                     variant="outline"
+                    className="active:animate-bounce-in"
                   >
                     Concluir Tudo
                   </Button>
@@ -197,7 +218,10 @@ export function MealCard({
             </div>
             <div className="progress-container">
               <div 
-                className="progress-fill"
+                className={cn(
+                  "progress-fill transition-all duration-500",
+                  progress === 100 && "animate-pulse-success"
+                )}
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -205,5 +229,6 @@ export function MealCard({
         )}
       </div>
     </SwipeableCard>
+    </>
   );
 }

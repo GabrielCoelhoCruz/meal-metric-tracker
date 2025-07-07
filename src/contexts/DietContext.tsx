@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { DailyPlan, Meal, MealFood, Food } from '@/types/diet';
 import { initialFoods, defaultMealPlan } from '@/data/foods';
+import { useMotivationalToast } from '@/hooks/useMotivationalToast';
 
 interface DietState {
   currentDayPlan: DailyPlan | null;
@@ -206,9 +207,19 @@ function dietReducer(state: DietState, action: DietAction): DietState {
 
 export function DietProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(dietReducer, initialState);
+  const { showFoodCompletionToast, showMealCompletionToast, showDailyGoalToast } = useMotivationalToast();
 
   const markMealAsCompleted = (mealId: string) => {
     dispatch({ type: 'MARK_MEAL_COMPLETED', payload: mealId });
+    showMealCompletionToast();
+    
+    // Check if all meals are completed for daily goal
+    setTimeout(() => {
+      const progress = getDailyProgress();
+      if (progress === 100) {
+        showDailyGoalToast();
+      }
+    }, 100);
   };
 
   const unmarkMealAsCompleted = (mealId: string) => {
@@ -217,10 +228,28 @@ export function DietProvider({ children }: { children: ReactNode }) {
 
   const markEntireMealAsCompleted = (mealId: string) => {
     dispatch({ type: 'MARK_ENTIRE_MEAL_COMPLETED', payload: mealId });
+    showMealCompletionToast();
+    
+    // Check if all meals are completed for daily goal
+    setTimeout(() => {
+      const progress = getDailyProgress();
+      if (progress === 100) {
+        showDailyGoalToast();
+      }
+    }, 100);
   };
 
   const markMealFoodAsCompleted = (mealId: string, foodId: string) => {
+    const wasCompleted = state.currentDayPlan?.meals
+      .find(m => m.id === mealId)?.foods
+      .find(f => f.id === foodId)?.isCompleted;
+    
     dispatch({ type: 'MARK_MEAL_FOOD_COMPLETED', payload: { mealId, foodId } });
+    
+    // Show motivational toast when completing food
+    if (!wasCompleted) {
+      showFoodCompletionToast();
+    }
   };
 
   const updateMealFoodQuantity = (mealId: string, foodId: string, newQuantity: number) => {

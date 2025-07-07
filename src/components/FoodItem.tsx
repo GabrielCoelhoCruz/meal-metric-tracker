@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SwipeableCard } from '@/components/SwipeableCard';
+import { AnimatedCheckmark } from '@/components/AnimatedCheckmark';
 import { cn } from '@/lib/utils';
 import { Food, MealFood, calculateTotalNutrition } from '@/types/diet';
 import { EditQuantityDialog } from '@/components/EditQuantityDialog';
@@ -81,13 +82,13 @@ export function FoodItem({
             size="sm"
             onClick={onToggleCompleted}
             className={cn(
-              "w-12 h-12 p-0 rounded-2xl transition-all duration-200 border-2 flex-shrink-0",
+              "w-12 h-12 p-0 rounded-2xl transition-all duration-200 border-2 flex-shrink-0 active:animate-bounce-in",
               mealFood.isCompleted 
                 ? "bg-gradient-to-r from-success to-success-light text-success-foreground border-success" 
                 : "border-border hover:border-primary/50 hover:bg-primary/5"
             )}
           >
-            {mealFood.isCompleted && <Check className="w-5 h-5" />}
+            <AnimatedCheckmark isCompleted={mealFood.isCompleted} size={20} />
           </Button>
           
           <div className="flex-1 min-w-0">
@@ -139,7 +140,7 @@ export function FoodItem({
                     key={multiplier}
                     onClick={() => onUpdateQuantity(newQuantity)}
                     className={cn(
-                      "flex-1 h-8 text-xs font-medium rounded-lg transition-all duration-200",
+                      "flex-1 h-8 text-xs font-medium rounded-lg transition-all duration-200 active:animate-bounce-in",
                       isActive 
                         ? "bg-primary text-primary-foreground shadow-sm" 
                         : "bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary"
@@ -176,7 +177,7 @@ export function FoodItem({
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-10 w-10 p-0 rounded-2xl hover:bg-primary/10 hover:text-primary flex-shrink-0"
+                className="h-10 w-10 p-0 rounded-2xl hover:bg-primary/10 hover:text-primary flex-shrink-0 active:animate-bounce-in"
                 data-quantity-trigger
               >
                 <Scale className="w-4 h-4" />
@@ -187,7 +188,7 @@ export function FoodItem({
               variant="ghost"
               size="sm"
               onClick={onSubstitute}
-              className="h-10 w-10 p-0 rounded-2xl hover:bg-accent/10 hover:text-accent flex-shrink-0"
+              className="h-10 w-10 p-0 rounded-2xl hover:bg-accent/10 hover:text-accent flex-shrink-0 active:animate-bounce-in"
             >
               <ArrowRightLeft className="w-5 h-5" />
             </Button>
