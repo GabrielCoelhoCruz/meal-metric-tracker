@@ -37,7 +37,7 @@ const Index = () => {
   const completedMeals = currentDayPlan.meals.filter(m => m.isCompleted).length;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-20">
       {/* Header Clean */}
       <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border">
         <div className="px-4 py-4">
