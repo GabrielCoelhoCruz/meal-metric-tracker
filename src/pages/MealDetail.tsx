@@ -16,6 +16,7 @@ export default function MealDetail() {
     unmarkMealAsCompleted,
     markEntireMealAsCompleted,
     markMealFoodAsCompleted,
+    updateMealFoodQuantity,
     getMealProgress 
   } = useDiet();
 
@@ -141,6 +142,7 @@ export default function MealDetail() {
                 food={food}
                 onToggleCompleted={() => markMealFoodAsCompleted(mealId, mealFood.id)}
                 onSubstitute={() => handleSubstitute(mealFood.id)}
+                onUpdateQuantity={(newQuantity) => updateMealFoodQuantity(mealId, mealFood.id, newQuantity)}
               />
             );
           })}

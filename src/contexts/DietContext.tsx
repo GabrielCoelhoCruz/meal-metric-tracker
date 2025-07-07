@@ -13,6 +13,7 @@ interface DietContextType extends DietState {
   unmarkMealAsCompleted: (mealId: string) => void;
   markEntireMealAsCompleted: (mealId: string) => void;
   markMealFoodAsCompleted: (mealId: string, foodId: string) => void;
+  updateMealFoodQuantity: (mealId: string, foodId: string, newQuantity: number) => void;
   substituteFoodInMeal: (mealId: string, originalFoodId: string, newFood: Food, quantity: number) => void;
   loadDayPlan: (date: string) => void;
   getMealProgress: (mealId: string) => number;
@@ -27,6 +28,7 @@ type DietAction =
   | { type: 'UNMARK_MEAL_COMPLETED'; payload: string }
   | { type: 'MARK_ENTIRE_MEAL_COMPLETED'; payload: string }
   | { type: 'MARK_MEAL_FOOD_COMPLETED'; payload: { mealId: string; foodId: string } }
+  | { type: 'UPDATE_MEAL_FOOD_QUANTITY'; payload: { mealId: string; foodId: string; newQuantity: number } }
   | { type: 'SUBSTITUTE_FOOD'; payload: { mealId: string; originalFoodId: string; newFood: Food; quantity: number } };
 
 const initialState: DietState = {
@@ -68,6 +70,27 @@ function dietReducer(state: DietState, action: DietAction): DietState {
           meals: state.currentDayPlan.meals.map(meal =>
             meal.id === action.payload
               ? { ...meal, isCompleted: false, completedAt: undefined }
+              : meal
+          )
+        }
+      };
+    
+    case 'UPDATE_MEAL_FOOD_QUANTITY':
+      if (!state.currentDayPlan) return state;
+      return {
+        ...state,
+        currentDayPlan: {
+          ...state.currentDayPlan,
+          meals: state.currentDayPlan.meals.map(meal =>
+            meal.id === action.payload.mealId
+              ? {
+                  ...meal,
+                  foods: meal.foods.map(food =>
+                    food.id === action.payload.foodId
+                      ? { ...food, quantity: action.payload.newQuantity }
+                      : food
+                  )
+                }
               : meal
           )
         }
@@ -162,6 +185,10 @@ export function DietProvider({ children }: { children: ReactNode }) {
     dispatch({ type: 'MARK_MEAL_FOOD_COMPLETED', payload: { mealId, foodId } });
   };
 
+  const updateMealFoodQuantity = (mealId: string, foodId: string, newQuantity: number) => {
+    dispatch({ type: 'UPDATE_MEAL_FOOD_QUANTITY', payload: { mealId, foodId, newQuantity } });
+  };
+
   const substituteFoodInMeal = (mealId: string, originalFoodId: string, newFood: Food, quantity: number) => {
     dispatch({ type: 'SUBSTITUTE_FOOD', payload: { mealId, originalFoodId, newFood, quantity } });
   };
@@ -234,6 +261,7 @@ export function DietProvider({ children }: { children: ReactNode }) {
     unmarkMealAsCompleted,
     markEntireMealAsCompleted,
     markMealFoodAsCompleted,
+    updateMealFoodQuantity,
     substituteFoodInMeal,
     loadDayPlan,
     getMealProgress,
