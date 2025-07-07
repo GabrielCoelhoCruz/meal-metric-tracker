@@ -110,6 +110,59 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
+  /* Theme variants - Blue */
+  .theme-blue {
+    --primary: 221 83% 53%;
+    --primary-hover: 221 83% 43%;
+    --primary-light: 221 83% 63%;
+    --primary-dark: 221 83% 33%;
+    --accent: 214 76% 86%;
+    --accent-foreground: 221 83% 23%;
+    --ring: 221 83% 53%;
+    --gradient-primary: linear-gradient(135deg, hsl(221 83% 53%) 0%, hsl(221 83% 63%) 100%);
+  }
+
+  /* Theme variants - Green */
+  .theme-green {
+    --primary: 142 76% 36%;
+    --primary-hover: 142 76% 26%;
+    --primary-light: 142 76% 46%;
+    --primary-dark: 142 76% 16%;
+    --accent: 142 76% 86%;
+    --accent-foreground: 142 76% 16%;
+    --ring: 142 76% 36%;
+    --gradient-primary: linear-gradient(135deg, hsl(142 76% 36%) 0%, hsl(142 76% 46%) 100%);
+  }
+
+  /* Theme variants - Mono */
+  .theme-mono {
+    --primary: 0 0% 20%;
+    --primary-hover: 0 0% 10%;
+    --primary-light: 0 0% 30%;
+    --primary-dark: 0 0% 5%;
+    --accent: 0 0% 90%;
+    --accent-foreground: 0 0% 10%;
+    --ring: 0 0% 20%;
+    --gradient-primary: linear-gradient(135deg, hsl(0 0% 20%) 0%, hsl(0 0% 30%) 100%);
+  }
+
+  .dark.theme-blue {
+    --primary: 221 83% 63%;
+    --primary-hover: 221 83% 73%;
+  }
+
+  .dark.theme-green {
+    --primary: 142 76% 46%;
+    --primary-hover: 142 76% 56%;
+  }
+
+  .dark.theme-mono {
+    --primary: 0 0% 80%;
+    --primary-hover: 0 0% 90%;
+    --accent: 0 0% 20%;
+    --accent-foreground: 0 0% 90%;
+  }
+
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;

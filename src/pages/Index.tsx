@@ -4,6 +4,7 @@ import { Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DailyHeader } from '@/components/DailyHeader';
 import { MealCard } from '@/components/MealCard';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { useDiet } from '@/contexts/DietContext';
 
 const Index = () => {
@@ -50,14 +51,17 @@ const Index = () => {
                 <div className="text-data-medium text-primary">{Math.round(consumedCalories)}</div>
                 <div className="text-body-small">de {currentDayPlan.targetCalories} kcal</div>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => navigate('/meal-management')}
-                className="touch-target rounded-lg"
-              >
-                <Settings className="w-5 h-5" />
-              </Button>
+              <div className="flex items-center gap-1">
+                <ThemeToggle />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate('/meal-management')}
+                  className="touch-target rounded-lg"
+                >
+                  <Settings className="w-5 h-5" />
+                </Button>
+              </div>
             </div>
           </div>
         </div>
