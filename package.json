@@ -45,7 +45,6 @@
     "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.3.0",
-    "expo": "^53.0.18",
     "expo-constants": "^17.1.7",
     "expo-device": "^7.1.4",
     "expo-notifications": "^0.31.4",
