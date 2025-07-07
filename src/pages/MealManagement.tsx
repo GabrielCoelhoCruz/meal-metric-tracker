@@ -114,13 +114,23 @@ export default function MealManagement() {
               </div>
             </div>
             
-            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-              <DialogTrigger asChild>
-                <Button size="sm" className="rounded-full h-10 w-10 p-0">
-                  <Plus className="w-5 h-5" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="w-[95vw] max-w-md mx-auto">
+            <div className="flex gap-2">
+              <Button 
+                size="sm" 
+                onClick={() => navigate('/meal-editor/new')}
+                className="rounded-full h-10 px-4"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Nova
+              </Button>
+              
+              <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button size="sm" variant="outline" className="rounded-full h-10 w-10 p-0">
+                    <Plus className="w-5 h-5" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="w-[95vw] max-w-md mx-auto">
                 <DialogHeader>
                   <DialogTitle>Nova Refeição</DialogTitle>
                 </DialogHeader>
@@ -167,7 +177,8 @@ export default function MealManagement() {
                   </div>
                 </div>
               </DialogContent>
-            </Dialog>
+              </Dialog>
+            </div>
           </div>
         </div>
       </div>
@@ -250,7 +261,7 @@ export default function MealManagement() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => navigate(`/meal/${meal.id}`)}
+                  onClick={() => navigate(`/meal-editor/${meal.id}`)}
                   className="mt-2"
                 >
                   Adicionar alimentos

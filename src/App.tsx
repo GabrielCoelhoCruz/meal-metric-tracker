@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import MealDetail from "./pages/MealDetail";
 import FoodExchange from "./pages/FoodExchange";
 import MealManagement from "./pages/MealManagement";
+import MealEditor from "./pages/MealEditor";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
             <Route path="/meal/:mealId" element={<MealDetail />} />
             <Route path="/food-exchange/:mealId/:foodId" element={<FoodExchange />} />
             <Route path="/meal-management" element={<MealManagement />} />
+            <Route path="/meal-editor/:mealId" element={<MealEditor />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
