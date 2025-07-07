@@ -54,27 +54,27 @@ export function MealCard({
 
   return (
     <div className={cn(
-      "bg-card rounded-3xl p-4 border border-border/30 transition-all duration-200 active:scale-[0.98]",
-      isCompleted && "bg-gradient-to-r from-success-light/20 to-success-light/10 border-success/30",
+      isCompleted ? "card-meal-completed" : "card-meal",
+      "interactive",
       className
     )}>
       <div className="flex items-center gap-4 mb-4">
-        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center flex-shrink-0">
+        <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
           {isCompleted ? (
             <Check className="w-6 h-6 text-success" />
           ) : (
-            <span className="text-sm font-bold text-primary">{progressPercentage}%</span>
+            <span className="text-data-small text-primary">{progressPercentage}%</span>
           )}
         </div>
         
         <div className="flex-1 min-w-0">
           <h3 className={cn(
-            "font-semibold text-base mb-1 truncate",
+            "text-h4 mb-1 truncate",
             isCompleted ? "text-success" : "text-foreground"
           )}>
             {meal.name}
           </h3>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="flex items-center space-sm text-body-small">
             <Clock className="w-4 h-4" />
             <span>{meal.scheduledTime}</span>
             <span>•</span>
@@ -86,42 +86,42 @@ export function MealCard({
           variant="ghost"
           size="sm"
           onClick={onViewDetails}
-          className="h-10 w-10 p-0 rounded-2xl hover:bg-primary/10"
+          className="touch-target rounded-lg"
         >
-          <ArrowRight className="w-5 h-5 text-muted-foreground" />
+          <ArrowRight className="w-5 h-5" />
         </Button>
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center space-lg">
           <div className="text-center">
-            <div className="text-lg font-bold text-foreground">{Math.round(totalNutrition.calories)}</div>
-            <div className="text-xs text-muted-foreground">kcal</div>
+            <div className="text-data-medium">{Math.round(totalNutrition.calories)}</div>
+            <div className="text-label">kcal</div>
           </div>
           
-          <div className="flex gap-3 text-sm">
+          <div className="flex space-sm">
             <div className="text-center">
-              <div className="font-semibold text-primary">{Math.round(totalNutrition.carbohydrates)}g</div>
-              <div className="text-xs text-muted-foreground">C</div>
+              <div className="text-data-small text-primary">{Math.round(totalNutrition.carbohydrates)}g</div>
+              <div className="text-label">C</div>
             </div>
             <div className="text-center">
-              <div className="font-semibold text-accent">{Math.round(totalNutrition.protein)}g</div>
-              <div className="text-xs text-muted-foreground">P</div>
+              <div className="text-data-small text-accent">{Math.round(totalNutrition.protein)}g</div>
+              <div className="text-label">P</div>
             </div>
             <div className="text-center">
-              <div className="font-semibold text-warning">{Math.round(totalNutrition.fat)}g</div>
-              <div className="text-xs text-muted-foreground">G</div>
+              <div className="text-data-small text-warning">{Math.round(totalNutrition.fat)}g</div>
+              <div className="text-label">G</div>
             </div>
           </div>
         </div>
         
-        <div className="flex gap-2">
+        <div className="flex space-sm">
           {isCompleted ? (
             <Button
               onClick={onUnmarkCompleted}
               size="sm"
               variant="outline"
-              className="border-success/30 text-success hover:bg-success/10 rounded-xl h-9 px-4"
+              className="status-completed"
             >
               Desfazer
             </Button>
@@ -131,7 +131,7 @@ export function MealCard({
                 <Button
                   onClick={onMarkCompleted}
                   size="sm"
-                  className="bg-success hover:bg-success/90 text-success-foreground rounded-xl h-9 px-4"
+                  className="bg-success text-success-foreground"
                 >
                   <Check className="w-4 h-4 mr-2" />
                   Concluir
@@ -142,7 +142,6 @@ export function MealCard({
                   onClick={onMarkEntireCompleted}
                   size="sm"
                   variant="outline"
-                  className="border-primary/30 text-primary hover:bg-primary/10 rounded-xl h-9 px-4"
                 >
                   Concluir Tudo
                 </Button>
@@ -153,14 +152,14 @@ export function MealCard({
       </div>
       
       {progress > 0 && progress < 100 && (
-        <div className="mt-4 pt-3 border-t border-border/30">
-          <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+        <div className="mt-4 pt-4 border-t border-border">
+          <div className="flex items-center justify-between text-body-small mb-2">
             <span>{meal.foods.filter(f => f.isCompleted).length}/{meal.foods.length} concluídos</span>
             <span>{Math.round(progress)}%</span>
           </div>
-          <div className="w-full bg-muted rounded-full h-2">
+          <div className="progress-container">
             <div 
-              className="h-2 bg-gradient-to-r from-primary to-primary-light rounded-full transition-all duration-500"
+              className="progress-fill"
               style={{ width: `${progress}%` }}
             />
           </div>

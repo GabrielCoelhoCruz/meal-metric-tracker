@@ -37,24 +37,24 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header Fixo Mobile */}
-      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border/50">
-        <div className="px-4 py-3">
+      {/* Header Clean */}
+      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border">
+        <div className="px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-lg font-bold text-foreground">Meal Tracker</h1>
-              <p className="text-xs text-muted-foreground">Hoje • {new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' })}</p>
+              <h1 className="text-h3">Meal Tracker</h1>
+              <p className="text-body-small">Hoje • {new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' })}</p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-4">
               <div className="text-right">
-                <div className="text-lg font-bold text-primary">{Math.round(consumedCalories)}</div>
-                <div className="text-xs text-muted-foreground">de {currentDayPlan.targetCalories} kcal</div>
+                <div className="text-data-medium text-primary">{Math.round(consumedCalories)}</div>
+                <div className="text-body-small">de {currentDayPlan.targetCalories} kcal</div>
               </div>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => navigate('/meal-management')}
-                className="h-10 w-10 p-0 rounded-full"
+                className="touch-target rounded-lg"
               >
                 <Settings className="w-5 h-5" />
               </Button>
@@ -63,37 +63,37 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Status Cards Horizontal */}
-      <div className="px-4 py-4 bg-muted/20">
-        <div className="grid grid-cols-3 gap-3">
-          <div className="bg-card rounded-2xl p-3 text-center border border-border/30">
-            <div className="text-2xl font-bold text-primary">{Math.round(progress)}%</div>
-            <div className="text-xs text-muted-foreground">Progresso</div>
+      {/* Clean Status Cards */}
+      <div className="px-4 py-6 bg-background-secondary">
+        <div className="grid grid-cols-3 gap-4">
+          <div className="card-elevated p-4 text-center">
+            <div className="text-data-large text-primary">{Math.round(progress)}%</div>
+            <div className="text-label">Progresso</div>
           </div>
-          <div className="bg-card rounded-2xl p-3 text-center border border-border/30">
-            <div className="text-2xl font-bold text-accent">{completedMeals}</div>
-            <div className="text-xs text-muted-foreground">Concluídas</div>
+          <div className="card-elevated p-4 text-center">
+            <div className="text-data-large text-accent">{completedMeals}</div>
+            <div className="text-label">Concluídas</div>
           </div>
-          <div className="bg-card rounded-2xl p-3 text-center border border-border/30">
-            <div className="text-2xl font-bold text-success">{Math.max(0, currentDayPlan.targetCalories - consumedCalories)}</div>
-            <div className="text-xs text-muted-foreground">Restante</div>
+          <div className="card-elevated p-4 text-center">
+            <div className="text-data-large text-success">{Math.max(0, currentDayPlan.targetCalories - consumedCalories)}</div>
+            <div className="text-label">Restante</div>
           </div>
         </div>
         
-        {/* Barra de Progresso */}
-        <div className="mt-4 bg-muted rounded-full h-2 overflow-hidden">
+        {/* Clean Progress Bar */}
+        <div className="mt-6 progress-container">
           <div 
-            className="h-2 bg-gradient-to-r from-primary to-primary-light rounded-full transition-all duration-500"
+            className="progress-fill"
             style={{ width: `${Math.min(100, (consumedCalories / currentDayPlan.targetCalories) * 100)}%` }}
           />
         </div>
       </div>
 
-      {/* Lista de Refeições */}
-      <div className="px-4 py-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-foreground">Refeições de Hoje</h2>
-          <div className="text-sm text-muted-foreground">
+      {/* Clean Meals List */}
+      <div className="px-4 py-6 space-md">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-h4">Refeições de Hoje</h2>
+          <div className="text-body-small">
             {completedMeals}/{currentDayPlan.meals.length}
           </div>
         </div>
