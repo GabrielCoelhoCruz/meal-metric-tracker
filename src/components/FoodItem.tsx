@@ -127,6 +127,30 @@ export function FoodItem({
               </div>
             </div>
             
+            {/* Botões de Quantidade Rápida */}
+            <div className="flex gap-1 mb-3">
+              {[0.5, 1, 1.5, 2].map((multiplier) => {
+                const baseQuantity = food.defaultQuantity;
+                const newQuantity = baseQuantity * multiplier;
+                const isActive = Math.abs(mealFood.quantity - newQuantity) < 0.1;
+                
+                return (
+                  <button
+                    key={multiplier}
+                    onClick={() => onUpdateQuantity(newQuantity)}
+                    className={cn(
+                      "flex-1 h-8 text-xs font-medium rounded-lg transition-all duration-200",
+                      isActive 
+                        ? "bg-primary text-primary-foreground shadow-sm" 
+                        : "bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary"
+                    )}
+                  >
+                    {multiplier}x
+                  </button>
+                );
+              })}
+            </div>
+            
             <div className="flex gap-3 text-sm">
               <div className="text-center">
                 <div className="font-semibold text-primary">{Math.round(nutrition.carbohydrates)}g</div>
