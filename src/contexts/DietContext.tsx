@@ -10,6 +10,8 @@ interface DietState {
 
 interface DietContextType extends DietState {
   markMealAsCompleted: (mealId: string) => void;
+  unmarkMealAsCompleted: (mealId: string) => void;
+  markEntireMealAsCompleted: (mealId: string) => void;
   markMealFoodAsCompleted: (mealId: string, foodId: string) => void;
   substituteFoodInMeal: (mealId: string, originalFoodId: string, newFood: Food, quantity: number) => void;
   loadDayPlan: (date: string) => void;
@@ -22,6 +24,8 @@ type DietAction =
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_DAILY_PLAN'; payload: DailyPlan }
   | { type: 'MARK_MEAL_COMPLETED'; payload: string }
+  | { type: 'UNMARK_MEAL_COMPLETED'; payload: string }
+  | { type: 'MARK_ENTIRE_MEAL_COMPLETED'; payload: string }
   | { type: 'MARK_MEAL_FOOD_COMPLETED'; payload: { mealId: string; foodId: string } }
   | { type: 'SUBSTITUTE_FOOD'; payload: { mealId: string; originalFoodId: string; newFood: Food; quantity: number } };
 
@@ -50,6 +54,39 @@ function dietReducer(state: DietState, action: DietAction): DietState {
           meals: state.currentDayPlan.meals.map(meal =>
             meal.id === action.payload
               ? { ...meal, isCompleted: true, completedAt: new Date() }
+              : meal
+          )
+        }
+      };
+    
+    case 'UNMARK_MEAL_COMPLETED':
+      if (!state.currentDayPlan) return state;
+      return {
+        ...state,
+        currentDayPlan: {
+          ...state.currentDayPlan,
+          meals: state.currentDayPlan.meals.map(meal =>
+            meal.id === action.payload
+              ? { ...meal, isCompleted: false, completedAt: undefined }
+              : meal
+          )
+        }
+      };
+    
+    case 'MARK_ENTIRE_MEAL_COMPLETED':
+      if (!state.currentDayPlan) return state;
+      return {
+        ...state,
+        currentDayPlan: {
+          ...state.currentDayPlan,
+          meals: state.currentDayPlan.meals.map(meal =>
+            meal.id === action.payload
+              ? { 
+                  ...meal, 
+                  isCompleted: true, 
+                  completedAt: new Date(),
+                  foods: meal.foods.map(food => ({ ...food, isCompleted: true }))
+                }
               : meal
           )
         }
@@ -111,6 +148,14 @@ export function DietProvider({ children }: { children: ReactNode }) {
 
   const markMealAsCompleted = (mealId: string) => {
     dispatch({ type: 'MARK_MEAL_COMPLETED', payload: mealId });
+  };
+
+  const unmarkMealAsCompleted = (mealId: string) => {
+    dispatch({ type: 'UNMARK_MEAL_COMPLETED', payload: mealId });
+  };
+
+  const markEntireMealAsCompleted = (mealId: string) => {
+    dispatch({ type: 'MARK_ENTIRE_MEAL_COMPLETED', payload: mealId });
   };
 
   const markMealFoodAsCompleted = (mealId: string, foodId: string) => {
@@ -186,6 +231,8 @@ export function DietProvider({ children }: { children: ReactNode }) {
   const contextValue: DietContextType = {
     ...state,
     markMealAsCompleted,
+    unmarkMealAsCompleted,
+    markEntireMealAsCompleted,
     markMealFoodAsCompleted,
     substituteFoodInMeal,
     loadDayPlan,

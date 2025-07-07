@@ -11,6 +11,8 @@ const Index = () => {
     foods, 
     isLoading,
     markMealAsCompleted,
+    unmarkMealAsCompleted,
+    markEntireMealAsCompleted,
     getMealProgress,
     getDailyProgress,
     getCurrentDayCalories
@@ -98,6 +100,8 @@ const Index = () => {
                 foods={foods}
                 progress={getMealProgress(meal.id)}
                 onMarkCompleted={() => markMealAsCompleted(meal.id)}
+                onUnmarkCompleted={() => unmarkMealAsCompleted(meal.id)}
+                onMarkEntireCompleted={() => markEntireMealAsCompleted(meal.id)}
                 onViewDetails={() => navigate(`/meal/${meal.id}`)}
               />
             </div>

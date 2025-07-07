@@ -12,6 +12,8 @@ interface MealCardProps {
   foods: Food[];
   progress: number;
   onMarkCompleted: () => void;
+  onUnmarkCompleted: () => void;
+  onMarkEntireCompleted: () => void;
   onViewDetails: () => void;
   className?: string;
 }
@@ -21,6 +23,8 @@ export function MealCard({
   foods, 
   progress, 
   onMarkCompleted, 
+  onUnmarkCompleted,
+  onMarkEntireCompleted,
   onViewDetails,
   className 
 }: MealCardProps) {
@@ -111,16 +115,41 @@ export function MealCard({
           </div>
         </div>
         
-        {!isCompleted && progress === 100 && (
-          <Button
-            onClick={onMarkCompleted}
-            size="sm"
-            className="bg-success hover:bg-success/90 text-success-foreground rounded-xl h-9 px-4"
-          >
-            <Check className="w-4 h-4 mr-2" />
-            Concluir
-          </Button>
-        )}
+        <div className="flex gap-2">
+          {isCompleted ? (
+            <Button
+              onClick={onUnmarkCompleted}
+              size="sm"
+              variant="outline"
+              className="border-success/30 text-success hover:bg-success/10 rounded-xl h-9 px-4"
+            >
+              Desfazer
+            </Button>
+          ) : (
+            <>
+              {progress === 100 && (
+                <Button
+                  onClick={onMarkCompleted}
+                  size="sm"
+                  className="bg-success hover:bg-success/90 text-success-foreground rounded-xl h-9 px-4"
+                >
+                  <Check className="w-4 h-4 mr-2" />
+                  Concluir
+                </Button>
+              )}
+              {progress < 100 && (
+                <Button
+                  onClick={onMarkEntireCompleted}
+                  size="sm"
+                  variant="outline"
+                  className="border-primary/30 text-primary hover:bg-primary/10 rounded-xl h-9 px-4"
+                >
+                  Concluir Tudo
+                </Button>
+              )}
+            </>
+          )}
+        </div>
       </div>
       
       {progress > 0 && progress < 100 && (

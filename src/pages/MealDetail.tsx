@@ -12,7 +12,9 @@ export default function MealDetail() {
   const { 
     currentDayPlan, 
     foods, 
-    markMealAsCompleted, 
+    markMealAsCompleted,
+    unmarkMealAsCompleted,
+    markEntireMealAsCompleted,
     markMealFoodAsCompleted,
     getMealProgress 
   } = useDiet();
@@ -145,32 +147,59 @@ export default function MealDetail() {
         </div>
 
         {/* Complete Meal Button */}
-        {canComplete && (
+        {!meal.isCompleted && (
           <Card className="p-4">
             <div className="text-center space-y-3">
-              <p className="text-sm text-muted-foreground">
-                Todos os alimentos foram marcados como consumidos!
-              </p>
-              <Button
-                onClick={() => markMealAsCompleted(mealId)}
-                size="lg"
-                className="bg-gradient-to-r from-primary to-primary-hover text-primary-foreground shadow-primary"
-              >
-                <Check className="w-5 h-5 mr-2" />
-                Marcar Refeição como Concluída
-              </Button>
+              {canComplete ? (
+                <>
+                  <p className="text-sm text-muted-foreground">
+                    Todos os alimentos foram marcados como consumidos!
+                  </p>
+                  <Button
+                    onClick={() => markMealAsCompleted(mealId)}
+                    size="lg"
+                    className="bg-gradient-to-r from-primary to-primary-hover text-primary-foreground shadow-primary"
+                  >
+                    <Check className="w-5 h-5 mr-2" />
+                    Marcar Refeição como Concluída
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <p className="text-sm text-muted-foreground">
+                    Marque todos os alimentos ou conclua a refeição completa
+                  </p>
+                  <Button
+                    onClick={() => markEntireMealAsCompleted(mealId)}
+                    size="lg"
+                    variant="outline"
+                    className="border-primary/30 text-primary hover:bg-primary/10"
+                  >
+                    <Check className="w-5 h-5 mr-2" />
+                    Concluir Refeição Completa
+                  </Button>
+                </>
+              )}
             </div>
           </Card>
         )}
 
         {meal.isCompleted && (
           <Card className="p-4 bg-success/5 border-success/20">
-            <div className="text-center">
+            <div className="text-center space-y-3">
               <Check className="w-8 h-8 text-success mx-auto mb-2" />
               <h3 className="font-semibold text-success">Refeição Concluída!</h3>
               <p className="text-sm text-success/80">
                 Concluída em {meal.completedAt ? new Date(meal.completedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : ''}
               </p>
+              <Button
+                onClick={() => unmarkMealAsCompleted(mealId)}
+                size="sm"
+                variant="outline"
+                className="border-success/30 text-success hover:bg-success/10"
+              >
+                Desfazer Conclusão
+              </Button>
             </div>
           </Card>
         )}
