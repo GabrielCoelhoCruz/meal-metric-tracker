@@ -1,11 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Settings } from 'lucide-react';
+import { Settings, Utensils } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DailyHeader } from '@/components/DailyHeader';
 import { MealCard } from '@/components/MealCard';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useDiet } from '@/contexts/DietContext';
+import { createTodayCustomPlan } from '@/utils/customMealPlan';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -100,6 +101,21 @@ const Index = () => {
           <div className="text-body-small">
             {completedMeals}/{currentDayPlan.meals.length}
           </div>
+        </div>
+        
+        {/* Botão TACO Plan */}
+        <div className="mb-6">
+          <Button
+            onClick={createTodayCustomPlan}
+            variant="outline"
+            className="w-full h-auto p-4 flex items-center justify-center gap-3 border-2 border-dashed border-primary/30 hover:border-primary/60 bg-primary/5 hover:bg-primary/10"
+          >
+            <Utensils className="w-5 h-5 text-primary" />
+            <div className="text-center">
+              <div className="font-semibold text-primary">Criar Plano TACO</div>
+              <div className="text-sm text-muted-foreground">6 refeições • 2243 kcal • Baseado na Tabela TACO</div>
+            </div>
+          </Button>
         </div>
         
         <div className="space-y-3 pb-24">
