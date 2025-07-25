@@ -14,7 +14,186 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      daily_plans: {
+        Row: {
+          created_at: string
+          date: string
+          id: string
+          target_calories: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          id?: string
+          target_calories?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          id?: string
+          target_calories?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      foods: {
+        Row: {
+          calories_per_unit: number
+          carbohydrates_per_unit: number
+          category: Database["public"]["Enums"]["food_category"]
+          created_at: string
+          default_quantity: number
+          default_unit: string
+          fat_per_unit: number
+          fiber_per_unit: number | null
+          id: string
+          is_custom: boolean | null
+          name: string
+          protein_per_unit: number
+          sodium_per_unit: number | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          calories_per_unit: number
+          carbohydrates_per_unit: number
+          category: Database["public"]["Enums"]["food_category"]
+          created_at?: string
+          default_quantity: number
+          default_unit: string
+          fat_per_unit: number
+          fiber_per_unit?: number | null
+          id?: string
+          is_custom?: boolean | null
+          name: string
+          protein_per_unit: number
+          sodium_per_unit?: number | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          calories_per_unit?: number
+          carbohydrates_per_unit?: number
+          category?: Database["public"]["Enums"]["food_category"]
+          created_at?: string
+          default_quantity?: number
+          default_unit?: string
+          fat_per_unit?: number
+          fiber_per_unit?: number | null
+          id?: string
+          is_custom?: boolean | null
+          name?: string
+          protein_per_unit?: number
+          sodium_per_unit?: number | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      meal_foods: {
+        Row: {
+          created_at: string
+          food_id: string
+          id: string
+          is_completed: boolean | null
+          meal_id: string
+          quantity: number
+          substituted_food_id: string | null
+          unit: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          food_id: string
+          id?: string
+          is_completed?: boolean | null
+          meal_id: string
+          quantity: number
+          substituted_food_id?: string | null
+          unit: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          food_id?: string
+          id?: string
+          is_completed?: boolean | null
+          meal_id?: string
+          quantity?: number
+          substituted_food_id?: string | null
+          unit?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meal_foods_food_id_fkey"
+            columns: ["food_id"]
+            isOneToOne: false
+            referencedRelation: "foods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meal_foods_meal_id_fkey"
+            columns: ["meal_id"]
+            isOneToOne: false
+            referencedRelation: "meals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meal_foods_substituted_food_id_fkey"
+            columns: ["substituted_food_id"]
+            isOneToOne: false
+            referencedRelation: "foods"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meals: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          daily_plan_id: string
+          id: string
+          is_completed: boolean | null
+          name: string
+          scheduled_time: string
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          daily_plan_id: string
+          id?: string
+          is_completed?: boolean | null
+          name: string
+          scheduled_time: string
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          daily_plan_id?: string
+          id?: string
+          is_completed?: boolean | null
+          name?: string
+          scheduled_time?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meals_daily_plan_id_fkey"
+            columns: ["daily_plan_id"]
+            isOneToOne: false
+            referencedRelation: "daily_plans"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +202,14 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      food_category:
+        | "protein"
+        | "carbohydrate"
+        | "fruit"
+        | "vegetable"
+        | "dairy"
+        | "fat"
+        | "supplement"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +336,16 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      food_category: [
+        "protein",
+        "carbohydrate",
+        "fruit",
+        "vegetable",
+        "dairy",
+        "fat",
+        "supplement",
+      ],
+    },
   },
 } as const
