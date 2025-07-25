@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Minus, Plus, Scale } from 'lucide-react';
 import { Food, MealFood, calculateTotalNutrition } from '@/types/diet';
+import { validateQuantity, sanitizeNumber } from '@/lib/validation';
+import { useThrottle } from '@/hooks/useThrottle';
 
 interface EditQuantityDialogProps {
   mealFood: MealFood;
@@ -20,9 +22,17 @@ export function EditQuantityDialog({ mealFood, food, onUpdateQuantity, children 
   const displayFood = mealFood.substitutedFood || food;
   const nutrition = calculateTotalNutrition(displayFood, quantity);
 
+  // Throttle the update function to prevent rapid consecutive calls
+  const throttledUpdateQuantity = useThrottle(onUpdateQuantity, 300);
+
   const handleSave = () => {
-    onUpdateQuantity(quantity);
-    setIsOpen(false);
+    try {
+      const validatedQuantity = validateQuantity(quantity);
+      throttledUpdateQuantity(validatedQuantity);
+      setIsOpen(false);
+    } catch (error) {
+      console.error('Invalid quantity:', error);
+    }
   };
 
   const handleCancel = () => {
@@ -31,8 +41,14 @@ export function EditQuantityDialog({ mealFood, food, onUpdateQuantity, children 
   };
 
   const adjustQuantity = (delta: number) => {
-    const newQuantity = Math.max(0, quantity + delta);
-    setQuantity(newQuantity);
+    try {
+      const sanitizedDelta = sanitizeNumber(delta);
+      const newQuantity = Math.max(0, quantity + sanitizedDelta);
+      const validatedQuantity = validateQuantity(newQuantity);
+      setQuantity(validatedQuantity);
+    } catch (error) {
+      console.error('Invalid quantity adjustment:', error);
+    }
   };
 
   const commonQuantities = [
@@ -80,9 +96,19 @@ export function EditQuantityDialog({ mealFood, food, onUpdateQuantity, children 
                 id="quantity"
                 type="number"
                 value={quantity}
-                onChange={(e) => setQuantity(Number(e.target.value))}
+                onChange={(e) => {
+                  try {
+                    const value = sanitizeNumber(e.target.value);
+                    const validatedValue = validateQuantity(value);
+                    setQuantity(validatedValue);
+                  } catch (error) {
+                    // Keep current value if invalid
+                    console.warn('Invalid input ignored:', error);
+                  }
+                }}
                 className="text-center text-lg font-semibold"
                 min="0"
+                max="10000"
                 step="5"
               />
               
@@ -106,7 +132,14 @@ export function EditQuantityDialog({ mealFood, food, onUpdateQuantity, children 
                   key={option.label}
                   variant={quantity === option.value ? "default" : "outline"}
                   size="sm"
-                  onClick={() => setQuantity(option.value)}
+                  onClick={() => {
+                    try {
+                      const validatedValue = validateQuantity(option.value);
+                      setQuantity(validatedValue);
+                    } catch (error) {
+                      console.error('Invalid preset quantity:', error);
+                    }
+                  }}
                   className="text-xs"
                 >
                   {option.label}
