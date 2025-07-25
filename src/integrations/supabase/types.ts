@@ -199,7 +199,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_fixed_meal_plan: {
+        Args: { plan_date: string; user_uuid: string }
+        Returns: undefined
+      }
     }
     Enums: {
       food_category:
