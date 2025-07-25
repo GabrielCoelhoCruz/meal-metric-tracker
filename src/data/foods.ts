@@ -188,5 +188,5 @@ export const defaultMealPlan = {
       ]
     }
   ],
-  targetCalories: 2243
+  targetCalories: 2346 // Calculado com base nos valores nutricionais corretos
 };
