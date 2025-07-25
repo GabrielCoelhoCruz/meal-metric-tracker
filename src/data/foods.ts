@@ -35,18 +35,18 @@ export const initialFoods: Food[] = [
   },
   {
     id: "food-3", 
-    name: "Whey Protein",
+    name: "Whey Protein Concentrado DUX",
     category: FoodCategory.PROTEIN,
     nutritionalInfo: {
-      calories: 410, // Por 100g
-      carbohydrates: 4.0,
-      protein: 80.0,
-      fat: 8.0,
+      calories: 407, // Por 100g (122 kcal / 30g * 100g)
+      carbohydrates: 19.0, // 5.7g / 30g * 100g
+      protein: 66.7, // 20g / 30g * 100g  
+      fat: 7.0, // 2.1g / 30g * 100g
       fiber: 0,
-      sodium: 200
+      sodium: 380 // 114mg / 30g * 100g
     },
     defaultUnit: "gramas", 
-    defaultQuantity: 40
+    defaultQuantity: 30 // 1 dosador = 30g
   },
   // Carboidratos
   {
