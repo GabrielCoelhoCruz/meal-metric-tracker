@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { DailyPlan, Meal, MealFood, Food } from '@/types/diet';
-import { initialFoods, defaultMealPlan } from '@/data/foods';
+import { useDietPersistence } from '@/hooks/useDietPersistence';
 import { useMotivationalToast } from '@/hooks/useMotivationalToast';
 
 interface DietState {
@@ -27,7 +27,8 @@ interface DietContextType extends DietState {
 
 type DietAction = 
   | { type: 'SET_LOADING'; payload: boolean }
-  | { type: 'SET_DAILY_PLAN'; payload: DailyPlan }
+  | { type: 'SET_DAILY_PLAN'; payload: DailyPlan | null }
+  | { type: 'SET_FOODS'; payload: Food[] }
   | { type: 'MARK_MEAL_COMPLETED'; payload: string }
   | { type: 'UNMARK_MEAL_COMPLETED'; payload: string }
   | { type: 'MARK_ENTIRE_MEAL_COMPLETED'; payload: string }
@@ -40,7 +41,7 @@ type DietAction =
 
 const initialState: DietState = {
   currentDayPlan: null,
-  foods: initialFoods,
+  foods: [],
   isLoading: false
 };
 
@@ -53,6 +54,9 @@ function dietReducer(state: DietState, action: DietAction): DietState {
     
     case 'SET_DAILY_PLAN':
       return { ...state, currentDayPlan: action.payload, isLoading: false };
+    
+    case 'SET_FOODS':
+      return { ...state, foods: action.payload };
     
     case 'MARK_MEAL_COMPLETED':
       if (!state.currentDayPlan) return state;
@@ -208,82 +212,84 @@ function dietReducer(state: DietState, action: DietAction): DietState {
 export function DietProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(dietReducer, initialState);
   const { showFoodCompletionToast, showMealCompletionToast, showDailyGoalToast } = useMotivationalToast();
+  const { loadDayPlan: loadDayPlanFromDB, loadFoods, updateMealCompletion, updateMealFoodCompletion, updateMealFoodQuantity: updateQuantityInDB, isLoading: persistenceLoading } = useDietPersistence();
 
-  const markMealAsCompleted = (mealId: string) => {
-    dispatch({ type: 'MARK_MEAL_COMPLETED', payload: mealId });
-    showMealCompletionToast();
-    
-    // Check if all meals are completed for daily goal
-    setTimeout(() => {
-      const progress = getDailyProgress();
-      if (progress === 100) {
-        showDailyGoalToast();
-      }
-    }, 100);
+  const markMealAsCompleted = async (mealId: string) => {
+    const success = await updateMealCompletion(mealId, true);
+    if (success) {
+      dispatch({ type: 'MARK_MEAL_COMPLETED', payload: mealId });
+      showMealCompletionToast();
+      
+      // Check if all meals are completed for daily goal
+      setTimeout(() => {
+        const progress = getDailyProgress();
+        if (progress === 100) {
+          showDailyGoalToast();
+        }
+      }, 100);
+    }
   };
 
-  const unmarkMealAsCompleted = (mealId: string) => {
-    dispatch({ type: 'UNMARK_MEAL_COMPLETED', payload: mealId });
+  const unmarkMealAsCompleted = async (mealId: string) => {
+    const success = await updateMealCompletion(mealId, false);
+    if (success) {
+      dispatch({ type: 'UNMARK_MEAL_COMPLETED', payload: mealId });
+    }
   };
 
-  const markEntireMealAsCompleted = (mealId: string) => {
-    dispatch({ type: 'MARK_ENTIRE_MEAL_COMPLETED', payload: mealId });
-    showMealCompletionToast();
-    
-    // Check if all meals are completed for daily goal
-    setTimeout(() => {
-      const progress = getDailyProgress();
-      if (progress === 100) {
-        showDailyGoalToast();
-      }
-    }, 100);
+  const markEntireMealAsCompleted = async (mealId: string) => {
+    const success = await updateMealCompletion(mealId, true);
+    if (success) {
+      dispatch({ type: 'MARK_ENTIRE_MEAL_COMPLETED', payload: mealId });
+      showMealCompletionToast();
+      
+      // Check if all meals are completed for daily goal
+      setTimeout(() => {
+        const progress = getDailyProgress();
+        if (progress === 100) {
+          showDailyGoalToast();
+        }
+      }, 100);
+    }
   };
 
-  const markMealFoodAsCompleted = (mealId: string, foodId: string) => {
+  const markMealFoodAsCompleted = async (mealId: string, foodId: string) => {
     const wasCompleted = state.currentDayPlan?.meals
       .find(m => m.id === mealId)?.foods
       .find(f => f.id === foodId)?.isCompleted;
     
-    dispatch({ type: 'MARK_MEAL_FOOD_COMPLETED', payload: { mealId, foodId } });
-    
-    // Show motivational toast when completing food
-    if (!wasCompleted) {
-      showFoodCompletionToast();
+    const success = await updateMealFoodCompletion(foodId, !wasCompleted);
+    if (success) {
+      dispatch({ type: 'MARK_MEAL_FOOD_COMPLETED', payload: { mealId, foodId } });
+      
+      // Show motivational toast when completing food
+      if (!wasCompleted) {
+        showFoodCompletionToast();
+      }
     }
   };
 
-  const updateMealFoodQuantity = (mealId: string, foodId: string, newQuantity: number) => {
-    dispatch({ type: 'UPDATE_MEAL_FOOD_QUANTITY', payload: { mealId, foodId, newQuantity } });
+  const updateMealFoodQuantity = async (mealId: string, foodId: string, newQuantity: number) => {
+    const success = await updateQuantityInDB(foodId, newQuantity);
+    if (success) {
+      dispatch({ type: 'UPDATE_MEAL_FOOD_QUANTITY', payload: { mealId, foodId, newQuantity } });
+    }
   };
 
   const substituteFoodInMeal = (mealId: string, originalFoodId: string, newFood: Food, quantity: number) => {
     dispatch({ type: 'SUBSTITUTE_FOOD', payload: { mealId, originalFoodId, newFood, quantity } });
   };
 
-  const loadDayPlan = (date: string) => {
+  const loadDayPlan = async (date: string) => {
     dispatch({ type: 'SET_LOADING', payload: true });
     
-    // Simular carregamento e criar plano do dia
-    setTimeout(() => {
-      const dayPlan: DailyPlan = {
-        id: `plan-${date}`,
-        date,
-        targetCalories: defaultMealPlan.targetCalories,
-        meals: defaultMealPlan.meals.map(mealTemplate => ({
-          ...mealTemplate,
-          foods: mealTemplate.foods.map(foodTemplate => ({
-            id: `${mealTemplate.id}-${foodTemplate.foodId}`,
-            foodId: foodTemplate.foodId,
-            quantity: foodTemplate.quantity,
-            unit: foodTemplate.unit,
-            isCompleted: false
-          })),
-          isCompleted: false
-        }))
-      };
-      
+    try {
+      const dayPlan = await loadDayPlanFromDB(date);
       dispatch({ type: 'SET_DAILY_PLAN', payload: dayPlan });
-    }, 500);
+    } catch (error) {
+      console.error('Error loading day plan:', error);
+      dispatch({ type: 'SET_DAILY_PLAN', payload: null });
+    }
   };
 
   const getMealProgress = (mealId: string): number => {
@@ -329,13 +335,30 @@ export function DietProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    // Carregar plano do dia atual
-    const today = new Date().toISOString().split('T')[0];
-    loadDayPlan(today);
+    // Carregar alimentos e plano do dia atual
+    const initializeApp = async () => {
+      dispatch({ type: 'SET_LOADING', payload: true });
+      
+      try {
+        // Load foods first
+        const foods = await loadFoods();
+        dispatch({ type: 'SET_FOODS', payload: foods });
+        
+        // Then load today's plan
+        const today = new Date().toISOString().split('T')[0];
+        await loadDayPlan(today);
+      } catch (error) {
+        console.error('Error initializing app:', error);
+        dispatch({ type: 'SET_LOADING', payload: false });
+      }
+    };
+    
+    initializeApp();
   }, []);
 
   const contextValue: DietContextType = {
     ...state,
+    isLoading: state.isLoading || persistenceLoading,
     markMealAsCompleted,
     unmarkMealAsCompleted,
     markEntireMealAsCompleted,
