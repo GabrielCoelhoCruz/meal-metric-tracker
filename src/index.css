@@ -157,10 +157,24 @@
   }
 
   .dark.theme-mono {
-    --primary: 0 0% 80%;
-    --primary-hover: 0 0% 90%;
-    --accent: 0 0% 20%;
-    --accent-foreground: 0 0% 90%;
+    --primary: 0 0% 85%;
+    --primary-hover: 0 0% 95%;
+    --primary-light: 0 0% 90%;
+    --primary-dark: 0 0% 70%;
+    --accent: 0 0% 15%;
+    --accent-foreground: 0 0% 95%;
+    --secondary: 0 0% 20%;
+    --secondary-hover: 0 0% 25%;
+    --secondary-foreground: 0 0% 95%;
+    --muted: 0 0% 12%;
+    --muted-hover: 0 0% 18%;
+    --muted-foreground: 0 0% 75%;
+    --border: 0 0% 20%;
+    --input: 0 0% 15%;
+    --card: 0 0% 8%;
+    --card-secondary: 0 0% 10%;
+    --foreground: 0 0% 95%;
+    --ring: 0 0% 85%;
   }
 
   .dark {
