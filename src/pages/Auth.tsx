@@ -5,12 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Mail, Lock, AlertCircle, CheckCircle } from 'lucide-react';
+import { Loader2, Mail, Lock, AlertCircle, CheckCircle, UserPlus, ExternalLink } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [connectionStatus, setConnectionStatus] = useState<'testing' | 'connected' | 'error' | null>(null);
@@ -39,62 +38,33 @@ const Auth = () => {
     }
   };
 
-  const handleAuth = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      console.log('Attempting auth with:', { email, isSignUp });
+      console.log('Attempting login with:', { email });
       
-      if (isSignUp) {
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/`
-          }
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+
+      console.log('SignIn response:', { data, error });
+
+      if (error) {
+        console.error('SignIn error:', error);
+        toast({
+          title: "Erro no login",
+          description: error.message,
+          variant: "destructive"
         });
-
-        console.log('SignUp response:', { data, error });
-
-        if (error) {
-          console.error('SignUp error:', error);
-          toast({
-            title: "Erro no cadastro",
-            description: error.message,
-            variant: "destructive"
-          });
-        } else {
-          toast({
-            title: "Sucesso!",
-            description: "Conta criada com sucesso! Você já pode fazer login.",
-            variant: "default"
-          });
-          // Switch to login mode after successful signup
-          setIsSignUp(false);
-        }
       } else {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password
+        toast({
+          title: "Bem-vindo!",
+          description: "Login realizado com sucesso",
+          variant: "default"
         });
-
-        console.log('SignIn response:', { data, error });
-
-        if (error) {
-          console.error('SignIn error:', error);
-          toast({
-            title: "Erro no login",
-            description: error.message,
-            variant: "destructive"
-          });
-        } else {
-          toast({
-            title: "Bem-vindo!",
-            description: "Login realizado com sucesso",
-            variant: "default"
-          });
-        }
       }
     } catch (error) {
       console.error('Auth catch error:', error);
@@ -110,112 +80,134 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">
-            {isSignUp ? 'Criar Conta' : 'Login'}
-          </CardTitle>
-          <p className="text-muted-foreground">
-            {isSignUp 
-              ? 'Crie sua conta para começar a usar o Meal Tracker'
-              : 'Entre na sua conta para acessar seus planos'
-            }
-          </p>
-        </CardHeader>
-        <CardContent>
-          {/* Connection Status */}
-          {connectionStatus && (
-            <div className="mb-4">
-              {connectionStatus === 'testing' && (
-                <Alert>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  <AlertDescription>Testando conexão com Supabase...</AlertDescription>
-                </Alert>
-              )}
-              {connectionStatus === 'connected' && (
-                <Alert className="border-green-200 bg-green-50 dark:bg-green-950">
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                  <AlertDescription className="text-green-800 dark:text-green-200">
-                    Conexão com Supabase estabelecida!
-                  </AlertDescription>
-                </Alert>
-              )}
-              {connectionStatus === 'error' && (
-                <Alert variant="destructive">
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>
-                    Erro de conexão. 
-                    <Button 
-                      variant="link" 
-                      className="h-auto p-0 ml-1 text-red-600 underline"
-                      onClick={testConnection}
-                    >
-                      Tentar novamente
-                    </Button>
-                  </AlertDescription>
-                </Alert>
-              )}
-            </div>
-          )}
-          <form onSubmit={handleAuth} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="seu@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10"
-                  required
-                />
+      <div className="w-full max-w-md space-y-4">
+        <Card>
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">Login</CardTitle>
+            <p className="text-muted-foreground">
+              Entre na sua conta para acessar seus planos
+            </p>
+          </CardHeader>
+          <CardContent>
+            {/* Connection Status */}
+            {connectionStatus && (
+              <div className="mb-4">
+                {connectionStatus === 'testing' && (
+                  <Alert>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <AlertDescription>Testando conexão com Supabase...</AlertDescription>
+                  </Alert>
+                )}
+                {connectionStatus === 'connected' && (
+                  <Alert className="border-green-200 bg-green-50 dark:bg-green-950">
+                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <AlertDescription className="text-green-800 dark:text-green-200">
+                      Conexão com Supabase estabelecida!
+                    </AlertDescription>
+                  </Alert>
+                )}
+                {connectionStatus === 'error' && (
+                  <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertDescription>
+                      Erro de conexão. 
+                      <Button 
+                        variant="link" 
+                        className="h-auto p-0 ml-1 text-red-600 underline"
+                        onClick={testConnection}
+                      >
+                        Tentar novamente
+                      </Button>
+                    </AlertDescription>
+                  </Alert>
+                )}
               </div>
-            </div>
+            )}
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10"
-                  required
-                  minLength={6}
-                />
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="seu@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="pl-10"
+                    required
+                  />
+                </div>
               </div>
-            </div>
 
-            <Button 
-              type="submit" 
-              className="w-full" 
-              disabled={isLoading}
-            >
-              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {isSignUp ? 'Criar Conta' : 'Entrar'}
-            </Button>
+              <div className="space-y-2">
+                <Label htmlFor="password">Senha</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-10"
+                    required
+                    minLength={6}
+                  />
+                </div>
+              </div>
 
-            <div className="text-center">
-              <Button
-                type="button"
-                variant="link"
-                onClick={() => setIsSignUp(!isSignUp)}
-                className="text-sm"
+              <Button 
+                type="submit" 
+                className="w-full" 
+                disabled={isLoading}
               >
-                {isSignUp 
-                  ? 'Já tem conta? Faça login'
-                  : 'Não tem conta? Cadastre-se'
-                }
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Entrar
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        {/* Instructions for manual user creation */}
+        <Card className="border-dashed">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <UserPlus className="w-5 h-5" />
+              Precisa de uma conta?
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3 text-sm text-muted-foreground">
+              <p>
+                Os usuários são criados manualmente pelo administrador do sistema.
+              </p>
+              
+              <div className="space-y-2">
+                <p className="font-medium text-foreground">Para criar um usuário:</p>
+                <ol className="list-decimal list-inside space-y-1 ml-2">
+                  <li>Acesse o painel do Supabase</li>
+                  <li>Vá em Authentication → Users</li>
+                  <li>Clique em "Add user"</li>
+                  <li>Preencha email e senha</li>
+                  <li>Marque "Auto Confirm User"</li>
+                </ol>
+              </div>
+
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full mt-3"
+                onClick={() => window.open('https://supabase.com/dashboard/project/hdbyrjeyralxfxqrsrws/auth/users', '_blank')}
+              >
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Abrir Painel do Supabase
               </Button>
             </div>
-          </form>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
