@@ -19,8 +19,10 @@ const Auth = () => {
     setIsLoading(true);
 
     try {
+      console.log('Attempting auth with:', { email, isSignUp });
+      
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
@@ -28,7 +30,10 @@ const Auth = () => {
           }
         });
 
+        console.log('SignUp response:', { data, error });
+
         if (error) {
+          console.error('SignUp error:', error);
           toast({
             title: "Erro no cadastro",
             description: error.message,
@@ -37,17 +42,22 @@ const Auth = () => {
         } else {
           toast({
             title: "Sucesso!",
-            description: "Verifique seu email para confirmar a conta",
+            description: "Conta criada com sucesso! Você já pode fazer login.",
             variant: "default"
           });
+          // Switch to login mode after successful signup
+          setIsSignUp(false);
         }
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password
         });
 
+        console.log('SignIn response:', { data, error });
+
         if (error) {
+          console.error('SignIn error:', error);
           toast({
             title: "Erro no login",
             description: error.message,
@@ -62,9 +72,10 @@ const Auth = () => {
         }
       }
     } catch (error) {
+      console.error('Auth catch error:', error);
       toast({
         title: "Erro",
-        description: "Erro inesperado. Tente novamente.",
+        description: `Erro inesperado: ${error instanceof Error ? error.message : 'Tente novamente.'}`,
         variant: "destructive"
       });
     } finally {
