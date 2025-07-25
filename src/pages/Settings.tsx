@@ -1,14 +1,16 @@
 import React from 'react';
-import { User, Bell, Palette, Database, Info, ChevronRight } from 'lucide-react';
+import { User, Bell, Palette, Database, Info, ChevronRight, LogOut } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 
 export default function Settings() {
   const navigate = useNavigate();
+  const { signOut, user } = useAuth();
 
   const settingsGroups = [
     {
@@ -134,6 +136,33 @@ export default function Settings() {
               <span className="text-sm">Histórico</span>
             </Button>
           </div>
+        </div>
+
+        {/* User Info & Logout */}
+        <div className="space-y-3">
+          <h3 className="text-h4 px-2">Conta</h3>
+          <Card className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center">
+                  <User className="w-5 h-5 text-success" />
+                </div>
+                <div>
+                  <div className="font-medium">Usuário Logado</div>
+                  <div className="text-body-small">{user?.email}</div>
+                </div>
+              </div>
+            </div>
+          </Card>
+          
+          <Button
+            variant="outline"
+            onClick={signOut}
+            className="w-full h-12 flex items-center justify-center gap-2 text-destructive border-destructive/30 hover:bg-destructive/10"
+          >
+            <LogOut className="w-4 h-4" />
+            Sair da Conta
+          </Button>
         </div>
       </div>
     </div>
