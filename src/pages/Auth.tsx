@@ -1,18 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Mail, Lock } from 'lucide-react';
+import { Loader2, Mail, Lock, AlertCircle, CheckCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [connectionStatus, setConnectionStatus] = useState<'testing' | 'connected' | 'error' | null>(null);
   const { toast } = useToast();
+
+  // Test Supabase connection on component mount
+  useEffect(() => {
+    testConnection();
+  }, []);
+
+  const testConnection = async () => {
+    setConnectionStatus('testing');
+    try {
+      const { data, error } = await supabase.auth.getSession();
+      console.log('Connection test:', { data, error });
+      
+      if (error) {
+        console.error('Connection error:', error);
+        setConnectionStatus('error');
+      } else {
+        setConnectionStatus('connected');
+      }
+    } catch (error) {
+      console.error('Connection catch error:', error);
+      setConnectionStatus('error');
+    }
+  };
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,6 +123,40 @@ const Auth = () => {
           </p>
         </CardHeader>
         <CardContent>
+          {/* Connection Status */}
+          {connectionStatus && (
+            <div className="mb-4">
+              {connectionStatus === 'testing' && (
+                <Alert>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <AlertDescription>Testando conexão com Supabase...</AlertDescription>
+                </Alert>
+              )}
+              {connectionStatus === 'connected' && (
+                <Alert className="border-green-200 bg-green-50 dark:bg-green-950">
+                  <CheckCircle className="h-4 w-4 text-green-600" />
+                  <AlertDescription className="text-green-800 dark:text-green-200">
+                    Conexão com Supabase estabelecida!
+                  </AlertDescription>
+                </Alert>
+              )}
+              {connectionStatus === 'error' && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    Erro de conexão. 
+                    <Button 
+                      variant="link" 
+                      className="h-auto p-0 ml-1 text-red-600 underline"
+                      onClick={testConnection}
+                    >
+                      Tentar novamente
+                    </Button>
+                  </AlertDescription>
+                </Alert>
+              )}
+            </div>
+          )}
           <form onSubmit={handleAuth} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
