@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Bell, Palette, Database, Info, ChevronRight, LogOut } from 'lucide-react';
+import { User, Bell, Palette, Database, Info, ChevronRight, LogOut, ArrowLeft } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -8,6 +8,7 @@ import { NotificationSettings } from '@/components/NotificationSettings';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
+import { BottomNavigation } from '@/components/BottomNavigation';
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -73,14 +74,25 @@ export default function Settings() {
   ];
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      {/* Header */}
-      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border">
-        <div className="px-4 py-4">
-          <h1 className="text-h3">Configurações</h1>
-          <p className="text-body-small">Personalize sua experiência</p>
-        </div>
-      </div>
+    <div className="bg-gray-50 min-h-screen">
+      <div className="container mx-auto max-w-sm p-4">
+        {/* Header */}
+        <header className="flex items-center justify-between mb-6">
+          <button 
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2 text-gray-600 font-medium py-2 px-4 rounded-full border border-gray-300 bg-white shadow-sm"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Voltar
+          </button>
+        </header>
+
+        <main>
+          {/* Title Section */}
+          <section className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-800">Configurações</h1>
+            <p className="text-gray-500 mt-2">Personalize sua experiência</p>
+          </section>
 
       <div className="px-4 py-6 space-y-6">
         {settingsGroups.map((group, groupIndex) => (
@@ -187,7 +199,10 @@ export default function Settings() {
             </div>
           </div>
         )}
+        </main>
       </div>
+      
+      <BottomNavigation />
     </div>
   );
 }

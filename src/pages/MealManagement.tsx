@@ -92,10 +92,18 @@ export default function MealManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      {/* Header */}
-      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border/40">
-        <div className="px-4 py-3">
+    <div className="bg-gray-50 min-h-screen">
+      <div className="container mx-auto max-w-sm p-4">
+        {/* Header */}
+        <header className="flex items-center justify-between mb-6">
+          <button 
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2 text-gray-600 font-medium py-2 px-4 rounded-full border border-gray-300 bg-white shadow-sm"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Voltar
+          </button>
+        </header>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <Button
