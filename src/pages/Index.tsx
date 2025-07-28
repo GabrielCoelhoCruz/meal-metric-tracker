@@ -44,7 +44,7 @@ const Index = () => {
         <div className="px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-h3">Meal Tracker</h1>
+              <h1 className="text-h3">🏆 Dieta</h1>
               <p className="text-body-small">Hoje • {new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' })}</p>
             </div>
             <div className="flex items-center gap-4">
@@ -103,20 +103,6 @@ const Index = () => {
           </div>
         </div>
         
-        {/* Botão TACO Plan */}
-        <div className="mb-6">
-          <Button
-            onClick={createTodayCustomPlan}
-            variant="outline"
-            className="w-full h-auto p-4 flex items-center justify-center gap-3 border-2 border-dashed border-primary/30 hover:border-primary/60 bg-primary/5 hover:bg-primary/10"
-          >
-            <Utensils className="w-5 h-5 text-primary" />
-            <div className="text-center">
-              <div className="font-semibold text-primary">Criar Plano TACO</div>
-              <div className="text-sm text-muted-foreground">6 refeições • 2243 kcal • Baseado na Tabela TACO</div>
-            </div>
-          </Button>
-        </div>
         
         <div className="space-y-3 pb-24">
           {currentDayPlan.meals.map((meal, index) => (

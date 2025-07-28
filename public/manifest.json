@@ -1,6 +1,6 @@
 {
-  "name": "Meal Metric Tracker",
-  "short_name": "MealTracker",
+  "name": "🏆 Dieta",
+  "short_name": "🏆 Dieta",
   "description": "Sistema completo de controle de dieta e rastreamento de refeições",
   "start_url": "/",
   "display": "standalone",
