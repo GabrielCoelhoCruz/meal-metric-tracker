@@ -94,111 +94,108 @@ export default function Settings() {
             <p className="text-gray-500 mt-2">Personalize sua experiência</p>
           </section>
 
-      <div className="px-4 py-6 space-y-6">
-        {settingsGroups.map((group, groupIndex) => (
-          <div key={groupIndex} className="space-y-3">
-            <h3 className="text-h4 px-2">{group.title}</h3>
-            <div className="space-y-2">
-              {group.items.map((item, itemIndex) => {
-                const Icon = item.icon;
-                return (
-                  <Card 
-                    key={itemIndex} 
-                    className={cn(
-                      "p-4 transition-all duration-200",
-                      item.onClick && "cursor-pointer hover:bg-muted/50 active:scale-[0.99]"
-                    )}
-                    onClick={item.onClick || undefined}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                          <Icon className="w-5 h-5 text-primary" />
-                        </div>
-                        <div>
-                          <div className="font-medium">{item.label}</div>
-                          <div className="text-body-small">{item.description}</div>
+          <div className="space-y-6">
+            {settingsGroups.map((group, groupIndex) => (
+              <div key={groupIndex} className="space-y-3">
+                <h3 className="text-lg font-semibold text-gray-800">{group.title}</h3>
+                <div className="space-y-2">
+                  {group.items.map((item, itemIndex) => {
+                    const Icon = item.icon;
+                    return (
+                      <div 
+                        key={itemIndex} 
+                        className={cn(
+                          "bg-white p-4 rounded-2xl shadow-sm transition-all duration-200",
+                          item.onClick && "cursor-pointer hover:shadow-md active:scale-[0.99]"
+                        )}
+                        onClick={item.onClick || undefined}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                              <Icon className="w-5 h-5 text-blue-600" />
+                            </div>
+                            <div>
+                              <div className="font-medium text-gray-800">{item.label}</div>
+                              <div className="text-sm text-gray-500">{item.description}</div>
+                            </div>
+                          </div>
+                          {item.component}
                         </div>
                       </div>
-                      {item.component}
-                    </div>
-                  </Card>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-
-        {/* Quick Actions */}
-        <div className="space-y-3">
-          <h3 className="text-h4 px-2">Ações Rápidas</h3>
-          <div className="grid grid-cols-2 gap-3">
-            <Button
-              variant="outline"
-              onClick={() => navigate('/meal-management')}
-              className="h-20 flex-col gap-2"
-            >
-              <Database className="w-5 h-5" />
-              <span className="text-sm">Refeições</span>
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => navigate('/history')}
-              className="h-20 flex-col gap-2"
-            >
-              <Info className="w-5 h-5" />
-              <span className="text-sm">Histórico</span>
-            </Button>
-          </div>
-        </div>
-
-        {/* User Info & Logout */}
-        <div className="space-y-3">
-          <h3 className="text-h4 px-2">Conta</h3>
-          <Card className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center">
-                  <User className="w-5 h-5 text-success" />
-                </div>
-                <div>
-                  <div className="font-medium">Usuário Logado</div>
-                  <div className="text-body-small">{user?.email}</div>
+                    );
+                  })}
                 </div>
               </div>
-            </div>
-          </Card>
-          
-          <Button
-            variant="outline"
-            onClick={signOut}
-            className="w-full h-12 flex items-center justify-center gap-2 text-destructive border-destructive/30 hover:bg-destructive/10"
-          >
-            <LogOut className="w-4 h-4" />
-            Sair da Conta
-          </Button>
-        </div>
+            ))}
 
-        {/* Notification Settings Modal */}
-        {showNotificationSettings && (
-          <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm">
-            <div className="fixed inset-x-4 top-20 bottom-20 bg-background rounded-lg border shadow-lg overflow-y-auto">
-              <div className="sticky top-0 bg-background border-b p-4 flex items-center justify-between">
-                <h2 className="text-h3">Configurações de Notificação</h2>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowNotificationSettings(false)}
+            {/* Quick Actions */}
+            <div className="space-y-3">
+              <h3 className="text-lg font-semibold text-gray-800">Ações Rápidas</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => navigate('/meal-management')}
+                  className="bg-white p-4 rounded-2xl shadow-sm h-20 flex flex-col items-center justify-center gap-2 hover:shadow-md transition-shadow"
                 >
-                  Fechar
-                </Button>
-              </div>
-              <div className="p-4">
-                <NotificationSettings />
+                  <Database className="w-5 h-5 text-gray-600" />
+                  <span className="text-sm text-gray-700">Refeições</span>
+                </button>
+                <button
+                  onClick={() => navigate('/history')}
+                  className="bg-white p-4 rounded-2xl shadow-sm h-20 flex flex-col items-center justify-center gap-2 hover:shadow-md transition-shadow"
+                >
+                  <Info className="w-5 h-5 text-gray-600" />
+                  <span className="text-sm text-gray-700">Histórico</span>
+                </button>
               </div>
             </div>
+
+            {/* User Info & Logout */}
+            <div className="space-y-3 mb-24">
+              <h3 className="text-lg font-semibold text-gray-800">Conta</h3>
+              <div className="bg-white p-4 rounded-2xl shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-green-50 flex items-center justify-center">
+                      <User className="w-5 h-5 text-green-600" />
+                    </div>
+                    <div>
+                      <div className="font-medium text-gray-800">Usuário Logado</div>
+                      <div className="text-sm text-gray-500">{user?.email}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <button
+                onClick={signOut}
+                className="w-full bg-white p-4 rounded-2xl shadow-sm h-12 flex items-center justify-center gap-2 text-red-600 border border-red-200 hover:bg-red-50 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                Sair da Conta
+              </button>
+            </div>
+
+            {/* Notification Settings Modal */}
+            {showNotificationSettings && (
+              <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm">
+                <div className="fixed inset-x-4 top-20 bottom-20 bg-white rounded-lg shadow-lg overflow-y-auto">
+                  <div className="sticky top-0 bg-white border-b p-4 flex items-center justify-between">
+                    <h2 className="text-lg font-semibold text-gray-800">Configurações de Notificação</h2>
+                    <button
+                      onClick={() => setShowNotificationSettings(false)}
+                      className="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm hover:bg-gray-200 transition-colors"
+                    >
+                      Fechar
+                    </button>
+                  </div>
+                  <div className="p-4">
+                    <NotificationSettings />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-        )}
         </main>
       </div>
       
