@@ -6,6 +6,9 @@ const urlsToCache = [
   '/manifest.json'
 ];
 
+// Store for scheduled notifications
+let scheduledNotifications = new Map();
+
 // Install event - cache resources
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -43,4 +46,72 @@ self.addEventListener('activate', (event) => {
     })
   );
   self.clients.claim();
+});
+
+// Handle messages from the main thread
+self.addEventListener('message', (event) => {
+  const { type, payload } = event.data;
+
+  switch (type) {
+    case 'SCHEDULE_NOTIFICATION':
+      showNotification(payload.title, payload.body, payload.tag);
+      break;
+    
+    case 'CLEAR_NOTIFICATIONS':
+      // Clear all scheduled notifications
+      scheduledNotifications.forEach(timeoutId => clearTimeout(timeoutId));
+      scheduledNotifications.clear();
+      break;
+  }
+});
+
+// Function to show notification
+function showNotification(title, body, tag) {
+  const options = {
+    body,
+    tag,
+    icon: '/pwa-192x192.png',
+    badge: '/pwa-192x192.png',
+    vibrate: [100, 50, 100],
+    data: {
+      timestamp: Date.now(),
+      url: '/'
+    },
+    actions: [
+      {
+        action: 'view',
+        title: 'Ver App',
+        icon: '/pwa-192x192.png'
+      }
+    ]
+  };
+
+  self.registration.showNotification(title, options);
+}
+
+// Handle notification click
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  const urlToOpen = new URL('/', self.location.origin).href;
+
+  const promiseChain = clients.matchAll({
+    type: 'window',
+    includeUncontrolled: true
+  }).then((windowClients) => {
+    // Check if there's already a window/tab open with the target URL
+    for (let i = 0; i < windowClients.length; i++) {
+      const client = windowClients[i];
+      if (client.url === urlToOpen && 'focus' in client) {
+        return client.focus();
+      }
+    }
+
+    // If no window/tab is already open, open a new one
+    if (clients.openWindow) {
+      return clients.openWindow(urlToOpen);
+    }
+  });
+
+  event.waitUntil(promiseChain);
 });

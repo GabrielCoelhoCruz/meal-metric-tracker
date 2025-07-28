@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { User, Bell, Palette, Database, Info, ChevronRight, LogOut } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { NotificationSettings } from '@/components/NotificationSettings';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
@@ -11,6 +12,7 @@ import { cn } from '@/lib/utils';
 export default function Settings() {
   const navigate = useNavigate();
   const { signOut, user } = useAuth();
+  const [showNotificationSettings, setShowNotificationSettings] = useState(false);
 
   const settingsGroups = [
     {
@@ -30,10 +32,10 @@ export default function Settings() {
       items: [
         {
           icon: Bell,
-          label: 'Lembrete de Refeições',
-          description: 'Receber notificações',
-          component: <Switch defaultChecked />,
-          onClick: null
+          label: 'Configurar Notificações',
+          description: 'Lembretes de refeições, hidratação e mais',
+          component: <ChevronRight className="w-4 h-4 text-muted-foreground" />,
+          onClick: () => setShowNotificationSettings(true)
         }
       ]
     },
@@ -164,6 +166,27 @@ export default function Settings() {
             Sair da Conta
           </Button>
         </div>
+
+        {/* Notification Settings Modal */}
+        {showNotificationSettings && (
+          <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm">
+            <div className="fixed inset-x-4 top-20 bottom-20 bg-background rounded-lg border shadow-lg overflow-y-auto">
+              <div className="sticky top-0 bg-background border-b p-4 flex items-center justify-between">
+                <h2 className="text-h3">Configurações de Notificação</h2>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowNotificationSettings(false)}
+                >
+                  Fechar
+                </Button>
+              </div>
+              <div className="p-4">
+                <NotificationSettings />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
