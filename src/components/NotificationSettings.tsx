@@ -88,6 +88,31 @@ export const NotificationSettings = () => {
 
       {permission === 'granted' && (
         <>
+          {/* Sync with Supabase */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="h-5 w-5" />
+                Sincronização com Refeições
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label htmlFor="sync-supabase">Usar horários das refeições do plano</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Sincronizar automaticamente com os horários configurados nas suas refeições
+                  </p>
+                </div>
+                <Switch
+                  id="sync-supabase"
+                  checked={settings.useSupabaseMealTimes}
+                  onCheckedChange={(checked) => updateSettings({ useSupabaseMealTimes: checked })}
+                />
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Meal Reminders */}
           <Card>
             <CardHeader>
@@ -107,43 +132,63 @@ export const NotificationSettings = () => {
               </div>
 
               {settings.mealReminders && (
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="breakfast-time">Café da Manhã</Label>
-                    <Input
-                      id="breakfast-time"
-                      type="time"
-                      value={settings.mealTimes.breakfast}
-                      onChange={(e) => handleMealTimeChange('breakfast', e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="lunch-time">Almoço</Label>
-                    <Input
-                      id="lunch-time"
-                      type="time"
-                      value={settings.mealTimes.lunch}
-                      onChange={(e) => handleMealTimeChange('lunch', e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="snack-time">Lanche</Label>
-                    <Input
-                      id="snack-time"
-                      type="time"
-                      value={settings.mealTimes.snack}
-                      onChange={(e) => handleMealTimeChange('snack', e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="dinner-time">Jantar</Label>
-                    <Input
-                      id="dinner-time"
-                      type="time"
-                      value={settings.mealTimes.dinner}
-                      onChange={(e) => handleMealTimeChange('dinner', e.target.value)}
-                    />
-                  </div>
+                <div className="space-y-4">
+                  {settings.useSupabaseMealTimes ? (
+                    <div className="p-3 bg-muted rounded-lg">
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Horários sincronizados com suas refeições:
+                      </p>
+                      <div className="grid grid-cols-1 gap-2">
+                        {Object.entries(settings.mealTimes).map(([key, time]) => (
+                          <div key={key} className="flex justify-between items-center text-sm">
+                            <span className="capitalize">
+                              {key.replace(/_/g, ' ').replace(/meal (\d+)/, 'Refeição $1')}
+                            </span>
+                            <span className="font-mono">{time}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="breakfast-time">Café da Manhã</Label>
+                        <Input
+                          id="breakfast-time"
+                          type="time"
+                          value={settings.mealTimes.breakfast || '08:00'}
+                          onChange={(e) => handleMealTimeChange('breakfast', e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="lunch-time">Almoço</Label>
+                        <Input
+                          id="lunch-time"
+                          type="time"
+                          value={settings.mealTimes.lunch || '12:00'}
+                          onChange={(e) => handleMealTimeChange('lunch', e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="snack-time">Lanche</Label>
+                        <Input
+                          id="snack-time"
+                          type="time"
+                          value={settings.mealTimes.snack || '15:00'}
+                          onChange={(e) => handleMealTimeChange('snack', e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="dinner-time">Jantar</Label>
+                        <Input
+                          id="dinner-time"
+                          type="time"
+                          value={settings.mealTimes.dinner || '19:00'}
+                          onChange={(e) => handleMealTimeChange('dinner', e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>

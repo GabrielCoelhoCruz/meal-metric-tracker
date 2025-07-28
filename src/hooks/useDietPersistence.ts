@@ -83,7 +83,7 @@ export const useDietPersistence = () => {
   const convertDatabaseMealToMeal = (dbMeal: DatabaseMeal, mealFoods: MealFood[]): Meal => ({
     id: dbMeal.id,
     name: dbMeal.name,
-    scheduledTime: dbMeal.scheduled_time,
+    scheduledTime: dbMeal.scheduled_time.slice(0, 5), // Remove seconds: HH:MM:SS -> HH:MM
     foods: mealFoods,
     isCompleted: dbMeal.is_completed,
     completedAt: dbMeal.completed_at ? new Date(dbMeal.completed_at) : undefined,

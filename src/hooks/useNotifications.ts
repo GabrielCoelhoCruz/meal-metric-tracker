@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useDiet } from '@/contexts/DietContext';
 
 export interface NotificationSettings {
   mealReminders: boolean;
@@ -6,12 +7,10 @@ export interface NotificationSettings {
   planningReminders: boolean;
   educationalTips: boolean;
   mealTimes: {
-    breakfast: string;
-    lunch: string;
-    snack: string;
-    dinner: string;
+    [key: string]: string; // Dynamic meal times from Supabase
   };
   hydrationInterval: number; // in hours
+  useSupabaseMealTimes: boolean; // New option to sync with Supabase
 }
 
 const defaultSettings: NotificationSettings = {
@@ -25,13 +24,15 @@ const defaultSettings: NotificationSettings = {
     snack: '15:00',
     dinner: '19:00'
   },
-  hydrationInterval: 2
+  hydrationInterval: 2,
+  useSupabaseMealTimes: true
 };
 
 export const useNotifications = () => {
   const [permission, setPermission] = useState<NotificationPermission>('default');
   const [settings, setSettings] = useState<NotificationSettings>(defaultSettings);
   const [isSupported, setIsSupported] = useState(false);
+  const { currentDayPlan } = useDiet();
 
   useEffect(() => {
     // Check if notifications are supported
@@ -47,6 +48,33 @@ export const useNotifications = () => {
       setSettings(JSON.parse(savedSettings));
     }
   }, []);
+
+  // Sync meal times from Supabase when data is loaded
+  useEffect(() => {
+    if (currentDayPlan && settings.useSupabaseMealTimes) {
+      const supabaseMealTimes: { [key: string]: string } = {};
+      
+      currentDayPlan.meals.forEach((meal, index) => {
+        // Create a key based on meal name or index
+        const key = meal.name.toLowerCase()
+          .replace(/\s+/g, '_')
+          .replace(/[^\w]/g, '')
+          .replace(/refeicao_?(\d+)/, 'meal_$1') || `meal_${index + 1}`;
+        
+        supabaseMealTimes[key] = meal.scheduledTime;
+      });
+
+      // Update settings with Supabase meal times if they differ
+      const currentMealTimesStr = JSON.stringify(settings.mealTimes);
+      const supabaseMealTimesStr = JSON.stringify(supabaseMealTimes);
+      
+      if (currentMealTimesStr !== supabaseMealTimesStr && Object.keys(supabaseMealTimes).length > 0) {
+        updateSettings({
+          mealTimes: { ...settings.mealTimes, ...supabaseMealTimes }
+        });
+      }
+    }
+  }, [currentDayPlan, settings.useSupabaseMealTimes]);
 
   const requestPermission = useCallback(async () => {
     if (!isSupported) return false;
@@ -86,22 +114,27 @@ export const useNotifications = () => {
     }, delay);
   }, [permission, isSupported]);
 
-  const scheduleMealReminders = useCallback((mealSettings: NotificationSettings['mealTimes']) => {
+  const scheduleMealReminders = useCallback((mealSettings: { [key: string]: string }) => {
     if (!settings.mealReminders) return;
 
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
 
-    const meals = [
-      { key: 'breakfast', name: 'Café da Manhã', time: mealSettings.breakfast },
-      { key: 'lunch', name: 'Almoço', time: mealSettings.lunch },
-      { key: 'snack', name: 'Lanche', time: mealSettings.snack },
-      { key: 'dinner', name: 'Jantar', time: mealSettings.dinner }
-    ];
+    // Get meal times from settings (could be from Supabase or manual)
+    Object.entries(mealSettings).forEach(([mealKey, mealTime]) => {
+      if (!mealTime) return;
+      
+      // Garantir que o tempo está no formato HH:MM (remover segundos se existir)
+      const timeFormatted = mealTime.includes(':') ? mealTime.split(':').slice(0, 2).join(':') : mealTime;
+      const [hours, minutes] = timeFormatted.split(':').map(Number);
+      
+      if (isNaN(hours) || isNaN(minutes)) return;
 
-    meals.forEach(meal => {
-      const [hours, minutes] = meal.time.split(':').map(Number);
+      // Generate meal name based on key
+      const mealName = mealKey.replace(/_/g, ' ')
+        .replace(/meal (\d+)/, 'Refeição $1')
+        .replace(/\b\w/g, l => l.toUpperCase());
       
       // Schedule for today if time hasn't passed
       const todayTime = new Date(today);
@@ -109,9 +142,9 @@ export const useNotifications = () => {
       
       if (todayTime > new Date()) {
         scheduleNotification(
-          `${meal.name} - Hora da Refeição!`,
-          `Está na hora do seu ${meal.name.toLowerCase()}. Vamos manter sua dieta em dia!`,
-          `meal-${meal.key}-${todayTime.getTime()}`,
+          `${mealName} - Hora da Refeição!`,
+          `Está na hora da sua ${mealName.toLowerCase()}. Vamos manter sua dieta em dia!`,
+          `meal-${mealKey}-${todayTime.getTime()}`,
           todayTime
         );
       }
@@ -121,9 +154,9 @@ export const useNotifications = () => {
       tomorrowTime.setHours(hours, minutes, 0, 0);
       
       scheduleNotification(
-        `${meal.name} - Hora da Refeição!`,
-        `Está na hora do seu ${meal.name.toLowerCase()}. Vamos manter sua dieta em dia!`,
-        `meal-${meal.key}-${tomorrowTime.getTime()}`,
+        `${mealName} - Hora da Refeição!`,
+        `Está na hora da sua ${mealName.toLowerCase()}. Vamos manter sua dieta em dia!`,
+        `meal-${mealKey}-${tomorrowTime.getTime()}`,
         tomorrowTime
       );
     });
