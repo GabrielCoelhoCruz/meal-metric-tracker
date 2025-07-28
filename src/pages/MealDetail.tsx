@@ -1,10 +1,11 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Clock, ChefHat, Check } from 'lucide-react';
+import { ArrowLeft, Clock, ChefHat, Check, MoreHorizontal, Scale, RotateCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { FoodItem } from '@/components/FoodItem';
 import { useDiet } from '@/contexts/DietContext';
+import { BottomNavigation } from '@/components/BottomNavigation';
 
 export default function MealDetail() {
   const { mealId } = useParams<{ mealId: string }>();
@@ -61,151 +62,197 @@ export default function MealDetail() {
     navigate(`/food-exchange/${mealId}/${foodId}`);
   };
 
-  const canComplete = progress === 100 && !meal.isCompleted;
+  const handleQuantityChange = (mealFoodId: string, multiplier: number) => {
+    const mealFood = meal.foods.find(mf => mf.id === mealFoodId);
+    const food = foods.find(f => f.id === mealFood?.foodId);
+    if (mealFood && food) {
+      const newQuantity = food.defaultQuantity * multiplier;
+      updateMealFoodQuantity(mealId, mealFoodId, newQuantity);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-4xl mx-auto p-4 pb-20 space-y-6">
+    <div className="bg-gray-50 min-h-screen">
+      <div className="container mx-auto max-w-sm p-4">
         {/* Header */}
-        <div className="flex items-center gap-4">
-          <Button
-            variant="outline"
-            size="sm"
+        <header className="flex items-center justify-between mb-6">
+          <button 
             onClick={() => navigate('/')}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 text-gray-600 font-medium py-2 px-4 rounded-full border border-gray-300 bg-white shadow-sm"
           >
             <ArrowLeft className="w-4 h-4" />
             Voltar
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold">{meal.name}</h1>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          </button>
+        </header>
+
+        <main>
+          {/* Meal Title Section */}
+          <section className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-800">{meal.name}</h1>
+            <div className="flex items-center gap-4 mt-2 text-gray-500">
               <div className="flex items-center gap-1">
-                <Clock className="w-4 h-4" />
+                <Clock className="w-5 h-5" />
                 <span>{meal.scheduledTime}</span>
               </div>
               <div className="flex items-center gap-1">
-                <ChefHat className="w-4 h-4" />
+                <ChefHat className="w-5 h-5" />
                 <span>{Math.round(totalCalories)} kcal</span>
               </div>
             </div>
-          </div>
-        </div>
+          </section>
 
-        {/* Nutrition Summary */}
-        <Card className="p-4">
-          <h3 className="font-semibold mb-3">Informações Nutricionais</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center">
-              <p className="text-2xl font-bold text-primary">{Math.round(totalCalories)}</p>
-              <p className="text-sm text-muted-foreground">Calorias</p>
+          {/* Nutrition Info */}
+          <section className="bg-white p-6 rounded-2xl shadow-sm mb-8">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Informações Nutricionais</h2>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-center">
+                <p className="text-3xl font-bold text-blue-600">{Math.round(totalCalories)}</p>
+                <p className="text-sm text-gray-500">Calorias</p>
+              </div>
+              <div className="text-center">
+                <p className="text-3xl font-bold text-orange-500">{Math.round(totalMacros.carbs)}g</p>
+                <p className="text-sm text-gray-500">Carboidratos</p>
+              </div>
+              <div className="text-center">
+                <p className="text-3xl font-bold text-green-500">{Math.round(totalMacros.protein)}g</p>
+                <p className="text-sm text-gray-500">Proteínas</p>
+              </div>
+              <div className="text-center">
+                <p className="text-3xl font-bold text-red-500">{Math.round(totalMacros.fat)}g</p>
+                <p className="text-sm text-gray-500">Gorduras</p>
+              </div>
             </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-orange-600">{Math.round(totalMacros.carbs)}g</p>
-              <p className="text-sm text-muted-foreground">Carboidratos</p>
+            <div className="mt-6">
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-sm font-medium text-gray-700">Progresso da refeição</span>
+                <span className="text-sm font-medium text-gray-700">{Math.round(progress)}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2.5">
+                <div 
+                  className="bg-blue-600 h-2.5 rounded-full transition-all duration-300" 
+                  style={{ width: `${progress}%` }}
+                ></div>
+              </div>
             </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-blue-600">{Math.round(totalMacros.protein)}g</p>
-              <p className="text-sm text-muted-foreground">Proteínas</p>
-            </div>
-            <div className="text-center">
-              <p className="text-2xl font-bold text-yellow-600">{Math.round(totalMacros.fat)}g</p>
-              <p className="text-sm text-muted-foreground">Gorduras</p>
-            </div>
-          </div>
-          
-          <div className="mt-4 p-3 bg-muted rounded-lg">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Progresso da refeição</span>
-              <span className="text-sm font-semibold">{Math.round(progress)}%</span>
-            </div>
-            <div className="w-full bg-background rounded-full h-2 mt-2">
-              <div 
-                className="bg-primary rounded-full h-2 transition-all duration-300"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-          </div>
-        </Card>
+          </section>
 
-        {/* Food List */}
-        <div className="space-y-3">
-          <h3 className="font-semibold">Alimentos ({meal.foods.length})</h3>
-          {meal.foods.map(mealFood => {
-            const food = foods.find(f => f.id === mealFood.foodId);
-            if (!food) return null;
-            
-            return (
-              <FoodItem
-                key={mealFood.id}
-                mealFood={mealFood}
-                food={food}
-                onToggleCompleted={() => markMealFoodAsCompleted(mealId, mealFood.id)}
-                onSubstitute={() => handleSubstitute(mealFood.id)}
-                onUpdateQuantity={(newQuantity) => updateMealFoodQuantity(mealId, mealFood.id, newQuantity)}
-              />
-            );
-          })}
-        </div>
+          {/* Food List */}
+          <section>
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Alimentos ({meal.foods.length})</h2>
+            <div className="space-y-4">
+              {meal.foods.map(mealFood => {
+                const food = foods.find(f => f.id === mealFood.foodId);
+                if (!food) return null;
 
-        {/* Complete Meal Button */}
-        {!meal.isCompleted && (
-          <Card className="p-4">
-            <div className="text-center space-y-3">
-              {canComplete ? (
-                <>
-                  <p className="text-sm text-muted-foreground">
-                    Todos os alimentos foram marcados como consumidos!
-                  </p>
-                  <Button
-                    onClick={() => markMealAsCompleted(mealId)}
-                    size="lg"
-                    className="bg-gradient-to-r from-primary to-primary-hover text-primary-foreground shadow-primary"
-                  >
-                    <Check className="w-5 h-5 mr-2" />
-                    Marcar Refeição como Concluída
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <p className="text-sm text-muted-foreground">
-                    Marque todos os alimentos ou conclua a refeição completa
-                  </p>
-                  <Button
-                    onClick={() => markEntireMealAsCompleted(mealId)}
-                    size="lg"
-                    variant="outline"
-                    className="border-primary/30 text-primary hover:bg-primary/10"
-                  >
-                    <Check className="w-5 h-5 mr-2" />
-                    Concluir Refeição Completa
-                  </Button>
-                </>
-              )}
-            </div>
-          </Card>
-        )}
+                const multiplier = mealFood.quantity / food.defaultQuantity;
+                const calories = Math.round(food.nutritionalInfo.calories * multiplier);
+                const carbs = Math.round(food.nutritionalInfo.carbohydrates * multiplier);
+                const protein = Math.round(food.nutritionalInfo.protein * multiplier);
+                const fat = Math.round(food.nutritionalInfo.fat * multiplier);
 
-        {meal.isCompleted && (
-          <Card className="p-4 bg-success/5 border-success/20">
-            <div className="text-center space-y-3">
-              <Check className="w-8 h-8 text-success mx-auto mb-2" />
-              <h3 className="font-semibold text-success">Refeição Concluída!</h3>
-              <p className="text-sm text-success/80">
-                Concluída em {meal.completedAt ? new Date(meal.completedAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : ''}
-              </p>
-              <Button
-                onClick={() => unmarkMealAsCompleted(mealId)}
-                size="sm"
-                variant="outline"
-                className="border-success/30 text-success hover:bg-success/10"
-              >
-                Desfazer Conclusão
-              </Button>
+                return (
+                  <div key={mealFood.id} className="bg-white p-4 rounded-2xl shadow-sm">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-start gap-4">
+                        <div className="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center">
+                          <ChefHat className="w-8 h-8 text-gray-400" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-800">
+                            {food.name.length > 15 ? `${food.name.substring(0, 15)}...` : food.name}
+                          </h3>
+                          <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
+                            <span>{mealFood.quantity}{mealFood.unit}</span>
+                            <span className="text-gray-300">•</span>
+                            <span className="font-medium text-gray-700">{calories} <span className="font-normal text-gray-500">kcal</span></span>
+                          </div>
+                        </div>
+                      </div>
+                      <button 
+                        onClick={() => markMealFoodAsCompleted(mealId, mealFood.id)}
+                        className="text-gray-500 hover:text-primary"
+                      >
+                        {mealFood.isCompleted ? (
+                          <Check className="w-5 h-5 text-green-500" />
+                        ) : (
+                          <MoreHorizontal className="w-5 h-5" />
+                        )}
+                      </button>
+                    </div>
+                    
+                    <div className="flex items-center justify-between mt-4">
+                      <div className="flex gap-2">
+                        <button 
+                          onClick={() => handleQuantityChange(mealFood.id, 0.5)}
+                          className={`py-1 px-3 rounded-full text-sm font-medium ${
+                            Math.abs(multiplier - 0.5) < 0.1 
+                              ? 'bg-blue-600 text-white' 
+                              : 'bg-blue-100 text-blue-700'
+                          }`}
+                        >
+                          0.5x
+                        </button>
+                        <button 
+                          onClick={() => handleQuantityChange(mealFood.id, 1)}
+                          className={`py-1 px-3 rounded-full text-sm font-medium ${
+                            Math.abs(multiplier - 1) < 0.1 
+                              ? 'bg-blue-600 text-white' 
+                              : 'bg-blue-100 text-blue-700'
+                          }`}
+                        >
+                          1x
+                        </button>
+                        <button 
+                          onClick={() => handleQuantityChange(mealFood.id, 1.5)}
+                          className={`py-1 px-3 rounded-full text-sm font-medium ${
+                            Math.abs(multiplier - 1.5) < 0.1 
+                              ? 'bg-blue-600 text-white' 
+                              : 'bg-blue-100 text-blue-700'
+                          }`}
+                        >
+                          1.5x
+                        </button>
+                        <button 
+                          onClick={() => handleQuantityChange(mealFood.id, 2)}
+                          className={`py-1 px-3 rounded-full text-sm font-medium ${
+                            Math.abs(multiplier - 2) < 0.1 
+                              ? 'bg-blue-600 text-white' 
+                              : 'bg-blue-100 text-blue-700'
+                          }`}
+                        >
+                          2x
+                        </button>
+                      </div>
+                      <div className="flex gap-4 text-gray-500">
+                        <button onClick={() => handleSubstitute(mealFood.id)}>
+                          <RotateCw className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-3 gap-4 text-center mt-4 border-t pt-4">
+                      <div>
+                        <p className="font-bold text-gray-700">{carbs}g</p>
+                        <p className="text-xs text-gray-500">C</p>
+                      </div>
+                      <div>
+                        <p className="font-bold text-gray-700">{protein}g</p>
+                        <p className="text-xs text-gray-500">P</p>
+                      </div>
+                      <div>
+                        <p className="font-bold text-gray-700">{fat}g</p>
+                        <p className="text-xs text-gray-500">G</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          </Card>
-        )}
+          </section>
+        </main>
       </div>
+      
+      <BottomNavigation />
     </div>
   );
 }
