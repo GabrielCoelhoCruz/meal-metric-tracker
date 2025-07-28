@@ -38,6 +38,81 @@ export const NotificationSettings = () => {
     });
   };
 
+  const testNotification = () => {
+    if (permission !== 'granted') {
+      toast({
+        title: "Permissão Necessária",
+        description: "Ative as notificações primeiro para testar.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Test immediate notification
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({
+        type: 'SCHEDULE_NOTIFICATION',
+        payload: { 
+          title: '🍽️ Teste de Notificação!', 
+          body: 'Perfeito! As notificações estão funcionando no seu dispositivo.',
+          tag: `test-${Date.now()}`
+        }
+      });
+    } else {
+      // Fallback to regular notification
+      new Notification('🍽️ Teste de Notificação!', { 
+        body: 'Perfeito! As notificações estão funcionando no seu dispositivo.',
+        tag: `test-${Date.now()}`,
+        icon: '/pwa-192x192.png'
+      });
+    }
+
+    toast({
+      title: "Notificação de Teste Enviada!",
+      description: "Verifique se apareceu uma notificação no seu dispositivo.",
+    });
+  };
+
+  const testScheduledNotification = () => {
+    if (permission !== 'granted') {
+      toast({
+        title: "Permissão Necessária",
+        description: "Ative as notificações primeiro para testar.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Schedule a test notification for 5 seconds from now
+    const testTime = new Date();
+    testTime.setSeconds(testTime.getSeconds() + 5);
+
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({
+        type: 'SCHEDULE_NOTIFICATION',
+        payload: { 
+          title: '⏰ Teste de Lembrete!', 
+          body: 'Esta é uma simulação de como você receberá os lembretes das refeições.',
+          tag: `scheduled-test-${Date.now()}`
+        }
+      });
+    } else {
+      // Use setTimeout for fallback
+      setTimeout(() => {
+        new Notification('⏰ Teste de Lembrete!', { 
+          body: 'Esta é uma simulação de como você receberá os lembretes das refeições.',
+          tag: `scheduled-test-${Date.now()}`,
+          icon: '/pwa-192x192.png'
+        });
+      }, 5000);
+    }
+
+    toast({
+      title: "Lembrete Programado!",
+      description: "Você receberá uma notificação em 5 segundos.",
+    });
+  };
+
   if (!isSupported) {
     return (
       <Card>
@@ -66,11 +141,29 @@ export const NotificationSettings = () => {
             Status das Notificações
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           {permission === 'granted' ? (
-            <div className="flex items-center gap-2 text-green-600">
-              <Bell className="h-4 w-4" />
-              <span>Notificações ativadas</span>
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-green-600">
+                <Bell className="h-4 w-4" />
+                <span>Notificações ativadas</span>
+              </div>
+              <Button 
+                onClick={testNotification} 
+                variant="outline" 
+                size="sm"
+                className="w-full"
+              >
+                🧪 Testar Notificação
+              </Button>
+              <Button 
+                onClick={testScheduledNotification} 
+                variant="outline" 
+                size="sm"
+                className="w-full"
+              >
+                ⏰ Testar Lembrete (5s)
+              </Button>
             </div>
           ) : (
             <div className="space-y-3">
