@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search, Calculator, Check, ArrowRightLeft } from 'lucide-react';
+import { ArrowLeft, Search, Calculator, Check, ArrowRightLeft, Clock, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useDiet } from '@/contexts/DietContext';
 import { Food, calculateEquivalentQuantity, calculateTotalNutrition } from '@/types/diet';
+import { BottomNavigation } from '@/components/BottomNavigation';
 
 export default function FoodExchange() {
   const { mealId, foodId } = useParams<{ mealId: string; foodId: string }>();
@@ -78,193 +79,199 @@ export default function FoodExchange() {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      <div className="max-w-4xl mx-auto p-4 space-y-6">
+    <div className="bg-gray-50 min-h-screen">
+      <div className="container mx-auto max-w-sm p-4">
         {/* Header */}
-        <div className="flex items-center gap-4">
-          <Button
-            variant="outline"
-            size="sm"
+        <header className="flex items-center justify-between mb-6">
+          <button 
             onClick={() => navigate(`/meal/${mealId}`)}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 text-gray-600 font-medium py-2 px-4 rounded-full border border-gray-300 bg-white shadow-sm"
           >
             <ArrowLeft className="w-4 h-4" />
             Voltar
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold">Trocar Alimento</h1>
-            <p className="text-sm text-muted-foreground">
+          </button>
+        </header>
+
+        <main>
+          {/* Title Section */}
+          <section className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-800">Trocar Alimento</h1>
+            <p className="text-gray-500 mt-2">
               Escolha um substituto para {originalFood.name}
             </p>
-          </div>
-        </div>
+          </section>
 
-        {/* Original Food Info */}
-        <Card className="p-4">
-          <h3 className="font-semibold mb-3 flex items-center gap-2">
-            <ArrowRightLeft className="w-5 h-5" />
-            Alimento Original
-          </h3>
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <h4 className="font-medium">{originalFood.name}</h4>
-                <Badge variant="outline" className={getCategoryColor(originalFood.category)}>
-                  {originalFood.category}
-                </Badge>
+          {/* Original Food Info */}
+          <section className="bg-white p-6 rounded-2xl shadow-sm mb-8">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <ArrowRightLeft className="w-5 h-5" />
+              Alimento Original
+            </h2>
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <h3 className="font-medium text-gray-800">{originalFood.name}</h3>
+                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(originalFood.category)}`}>
+                    {originalFood.category}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-500">
+                  {mealFood.quantity} {mealFood.unit}
+                </p>
               </div>
-              <p className="text-sm text-muted-foreground">
-                {mealFood.quantity} {mealFood.unit}
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="text-lg font-bold text-primary">
-                {Math.round(originalNutrition.calories)} kcal
-              </p>
-              <div className="flex gap-3 text-xs text-muted-foreground">
-                <span>C: {Math.round(originalNutrition.carbohydrates)}g</span>
-                <span>P: {Math.round(originalNutrition.protein)}g</span>
-                <span>G: {Math.round(originalNutrition.fat)}g</span>
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        {/* Search */}
-        <div className="space-y-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
-            <Input
-              placeholder="Buscar alimentos..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-        </div>
-
-        {/* Suggested Foods */}
-        <div className="space-y-4">
-          {sameCategoryFoods.length > 0 && (
-            <div>
-              <h3 className="font-semibold mb-3">
-                Sugestões da mesma categoria ({originalFood.category})
-              </h3>
-              <div className="grid gap-3">
-                {sameCategoryFoods.map(food => {
-                  const equivalentQuantity = calculateEquivalentQuantity(originalFood, mealFood.quantity, food);
-                  const newNutrition = calculateTotalNutrition(food, equivalentQuantity);
-                  const isSelected = selectedFood?.id === food.id;
-                  
-                  return (
-                    <Card 
-                      key={food.id}
-                      className={`p-4 cursor-pointer transition-all duration-200 hover:shadow-md ${
-                        isSelected ? 'border-primary bg-primary/5' : ''
-                      }`}
-                      onClick={() => setSelectedFood(food)}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-medium">{food.name}</h4>
-                            <Badge variant="outline" className={getCategoryColor(food.category)}>
-                              {food.category}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground">
-                            {Math.round(equivalentQuantity)} {food.defaultUnit}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-lg font-bold text-primary">
-                            {Math.round(newNutrition.calories)} kcal
-                          </p>
-                          <div className="flex gap-3 text-xs text-muted-foreground">
-                            <span>C: {Math.round(newNutrition.carbohydrates)}g</span>
-                            <span>P: {Math.round(newNutrition.protein)}g</span>
-                            <span>G: {Math.round(newNutrition.fat)}g</span>
-                          </div>
-                        </div>
-                      </div>
-                    </Card>
-                  );
-                })}
+              <div className="text-right">
+                <p className="text-lg font-bold text-blue-600">
+                  {Math.round(originalNutrition.calories)} kcal
+                </p>
+                <div className="flex gap-3 text-xs text-gray-500">
+                  <span>C: {Math.round(originalNutrition.carbohydrates)}g</span>
+                  <span>P: {Math.round(originalNutrition.protein)}g</span>
+                  <span>G: {Math.round(originalNutrition.fat)}g</span>
+                </div>
               </div>
             </div>
-          )}
+          </section>
 
-          {otherFoods.length > 0 && (
-            <div>
-              <h3 className="font-semibold mb-3">Outras opções</h3>
-              <div className="grid gap-3">
-                {otherFoods.slice(0, 10).map(food => {
-                  const equivalentQuantity = calculateEquivalentQuantity(originalFood, mealFood.quantity, food);
-                  const newNutrition = calculateTotalNutrition(food, equivalentQuantity);
-                  const isSelected = selectedFood?.id === food.id;
-                  
-                  return (
-                    <Card 
-                      key={food.id}
-                      className={`p-4 cursor-pointer transition-all duration-200 hover:shadow-md ${
-                        isSelected ? 'border-primary bg-primary/5' : ''
-                      }`}
-                      onClick={() => setSelectedFood(food)}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-medium">{food.name}</h4>
-                            <Badge variant="outline" className={getCategoryColor(food.category)}>
-                              {food.category}
-                            </Badge>
+          {/* Search */}
+          <section className="mb-8">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Buscar alimentos..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 rounded-2xl border border-gray-200 bg-white text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+          </section>
+
+          {/* Suggested Foods */}
+          <section>
+            {sameCategoryFoods.length > 0 && (
+              <div className="mb-8">
+                <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                  Sugestões da mesma categoria ({originalFood.category})
+                </h2>
+                <div className="space-y-4">
+                  {sameCategoryFoods.map(food => {
+                    const equivalentQuantity = calculateEquivalentQuantity(originalFood, mealFood.quantity, food);
+                    const newNutrition = calculateTotalNutrition(food, equivalentQuantity);
+                    const isSelected = selectedFood?.id === food.id;
+                    
+                    return (
+                      <div 
+                        key={food.id}
+                        className={`bg-white p-4 rounded-2xl shadow-sm cursor-pointer transition-all duration-200 ${
+                          isSelected ? 'ring-2 ring-blue-500 bg-blue-50' : 'hover:shadow-md'
+                        }`}
+                        onClick={() => setSelectedFood(food)}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-medium text-gray-800">{food.name}</h3>
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(food.category)}`}>
+                                {food.category}
+                              </span>
+                            </div>
+                            <p className="text-sm text-gray-500">
+                              {Math.round(equivalentQuantity)} {food.defaultUnit}
+                            </p>
                           </div>
-                          <p className="text-sm text-muted-foreground">
-                            {Math.round(equivalentQuantity)} {food.defaultUnit}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-lg font-bold text-primary">
-                            {Math.round(newNutrition.calories)} kcal
-                          </p>
-                          <div className="flex gap-3 text-xs text-muted-foreground">
-                            <span>C: {Math.round(newNutrition.carbohydrates)}g</span>
-                            <span>P: {Math.round(newNutrition.protein)}g</span>
-                            <span>G: {Math.round(newNutrition.fat)}g</span>
+                          <div className="text-right">
+                            <p className="text-lg font-bold text-blue-600">
+                              {Math.round(newNutrition.calories)} kcal
+                            </p>
+                            <div className="flex gap-3 text-xs text-gray-500">
+                              <span>C: {Math.round(newNutrition.carbohydrates)}g</span>
+                              <span>P: {Math.round(newNutrition.protein)}g</span>
+                              <span>G: {Math.round(newNutrition.fat)}g</span>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </Card>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
 
-        {/* Confirm Button */}
-        {selectedFood && (
-          <Card className="p-4">
-            <div className="text-center space-y-3">
-              <div className="flex items-center justify-center gap-2">
-                <Calculator className="w-5 h-5 text-primary" />
-                <h3 className="font-semibold">Equivalência Calculada</h3>
+            {otherFoods.length > 0 && (
+              <div>
+                <h2 className="text-xl font-semibold text-gray-800 mb-4">Outras opções</h2>
+                <div className="space-y-4">
+                  {otherFoods.slice(0, 10).map(food => {
+                    const equivalentQuantity = calculateEquivalentQuantity(originalFood, mealFood.quantity, food);
+                    const newNutrition = calculateTotalNutrition(food, equivalentQuantity);
+                    const isSelected = selectedFood?.id === food.id;
+                    
+                    return (
+                      <div 
+                        key={food.id}
+                        className={`bg-white p-4 rounded-2xl shadow-sm cursor-pointer transition-all duration-200 ${
+                          isSelected ? 'ring-2 ring-blue-500 bg-blue-50' : 'hover:shadow-md'
+                        }`}
+                        onClick={() => setSelectedFood(food)}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-medium text-gray-800">{food.name}</h3>
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getCategoryColor(food.category)}`}>
+                                {food.category}
+                              </span>
+                            </div>
+                            <p className="text-sm text-gray-500">
+                              {Math.round(equivalentQuantity)} {food.defaultUnit}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-lg font-bold text-blue-600">
+                              {Math.round(newNutrition.calories)} kcal
+                            </p>
+                            <div className="flex gap-3 text-xs text-gray-500">
+                              <span>C: {Math.round(newNutrition.carbohydrates)}g</span>
+                              <span>P: {Math.round(newNutrition.protein)}g</span>
+                              <span>G: {Math.round(newNutrition.fat)}g</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-              <p className="text-sm text-muted-foreground">
-                {originalFood.name} ({mealFood.quantity} {mealFood.unit}) → {selectedFood.name} ({Math.round(calculateEquivalentQuantity(originalFood, mealFood.quantity, selectedFood))} {selectedFood.defaultUnit})
-              </p>
-              <Button
-                onClick={handleSubstitute}
-                size="lg"
-                className="bg-gradient-to-r from-primary to-primary-hover text-primary-foreground shadow-primary"
-              >
-                <Check className="w-5 h-5 mr-2" />
-                Confirmar Substituição
-              </Button>
-            </div>
-          </Card>
-        )}
+            )}
+          </section>
+
+          {/* Confirm Button */}
+          {selectedFood && (
+            <section className="fixed bottom-24 left-4 right-4 max-w-sm mx-auto">
+              <div className="bg-white p-4 rounded-2xl shadow-lg">
+                <div className="text-center space-y-3">
+                  <div className="flex items-center justify-center gap-2">
+                    <Calculator className="w-5 h-5 text-blue-600" />
+                    <h3 className="font-semibold text-gray-800">Equivalência Calculada</h3>
+                  </div>
+                  <p className="text-sm text-gray-500">
+                    {originalFood.name} ({mealFood.quantity} {mealFood.unit}) → {selectedFood.name} ({Math.round(calculateEquivalentQuantity(originalFood, mealFood.quantity, selectedFood))} {selectedFood.defaultUnit})
+                  </p>
+                  <button
+                    onClick={handleSubstitute}
+                    className="w-full bg-blue-600 text-white py-3 px-6 rounded-full font-semibold shadow-lg hover:bg-blue-700 transition-colors"
+                  >
+                    <Check className="w-5 h-5 mr-2 inline" />
+                    Confirmar Substituição
+                  </button>
+                </div>
+              </div>
+            </section>
+          )}
+        </main>
       </div>
+      
+      <BottomNavigation />
     </div>
   );
 }

@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
-import { Calendar, TrendingUp, Award, ChevronRight } from 'lucide-react';
+import { Calendar, TrendingUp, Award, ChevronRight, ArrowLeft } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
+import { BottomNavigation } from '@/components/BottomNavigation';
+import { useNavigate } from 'react-router-dom';
 
 export default function History() {
+  const navigate = useNavigate();
   const [selectedPeriod, setSelectedPeriod] = useState('week');
   
   // Mock data - substituir por dados reais do contexto
@@ -43,137 +46,150 @@ export default function History() {
   const currentData = mockHistory[selectedPeriod as keyof typeof mockHistory];
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      {/* Header */}
-      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border">
-        <div className="px-4 py-4">
-          <h1 className="text-h3">Histórico</h1>
-          <p className="text-body-small">Acompanhe seu progresso</p>
-        </div>
-      </div>
+    <div className="bg-gray-50 min-h-screen">
+      <div className="container mx-auto max-w-sm p-4">
+        {/* Header */}
+        <header className="flex items-center justify-between mb-6">
+          <button 
+            onClick={() => navigate('/')}
+            className="flex items-center gap-2 text-gray-600 font-medium py-2 px-4 rounded-full border border-gray-300 bg-white shadow-sm"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Voltar
+          </button>
+        </header>
 
-      <div className="px-4 py-6 space-y-6">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 gap-4">
-          <Card className="p-4 text-center">
-            <div className="text-data-large text-primary">{Math.round((currentData.completedMeals / currentData.totalMeals) * 100)}%</div>
-            <div className="text-label">Taxa de Conclusão</div>
-          </Card>
-          <Card className="p-4 text-center">
-            <div className="text-data-large text-accent">{currentData.avgCalories}</div>
-            <div className="text-label">Média Diária</div>
-          </Card>
-          <Card className="p-4 text-center">
-            <div className="text-data-large text-success">{currentData.streak}</div>
-            <div className="text-label">Sequência</div>
-          </Card>
-          <Card className="p-4 text-center">
-            <div className="text-data-large text-warning">{currentData.completedMeals}</div>
-            <div className="text-label">Refeições</div>
-          </Card>
-        </div>
+        <main>
+          {/* Title Section */}
+          <section className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-800">Histórico</h1>
+            <p className="text-gray-500 mt-2">Acompanhe seu progresso</p>
+          </section>
 
-        {/* Period Selector */}
-        <Tabs value={selectedPeriod} onValueChange={setSelectedPeriod} className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="week">Semana</TabsTrigger>
-            <TabsTrigger value="month">Mês</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="week" className="space-y-4 mt-6">
-            <div className="space-y-3">
-              {mockHistory.week.days.map((day, index) => (
-                <Card key={day.date} className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className={cn(
-                        "w-3 h-3 rounded-full",
-                        day.completed ? "bg-success" : "bg-muted"
-                      )} />
-                      <div>
-                        <div className="font-medium">
-                          {new Date(day.date).toLocaleDateString('pt-BR', { 
-                            weekday: 'long', 
-                            day: 'numeric', 
-                            month: 'short' 
-                          })}
-                        </div>
-                        <div className="text-body-small">
-                          {day.meals} refeições • {day.calories} kcal
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {day.completed && (
-                        <Badge variant="outline" className="bg-success-light text-success border-success/20">
-                          Completo
-                        </Badge>
-                      )}
-                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                    </div>
-                  </div>
-                </Card>
-              ))}
+          {/* Stats Cards */}
+          <section className="bg-white p-6 rounded-2xl shadow-sm mb-8">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-center">
+                <p className="text-3xl font-bold text-blue-600">{Math.round((currentData.completedMeals / currentData.totalMeals) * 100)}%</p>
+                <p className="text-sm text-gray-500">Taxa de Conclusão</p>
+              </div>
+              <div className="text-center">
+                <p className="text-3xl font-bold text-orange-500">{currentData.avgCalories}</p>
+                <p className="text-sm text-gray-500">Média Diária</p>
+              </div>
+              <div className="text-center">
+                <p className="text-3xl font-bold text-green-500">{currentData.streak}</p>
+                <p className="text-sm text-gray-500">Sequência</p>
+              </div>
+              <div className="text-center">
+                <p className="text-3xl font-bold text-red-500">{currentData.completedMeals}</p>
+                <p className="text-sm text-gray-500">Refeições</p>
+              </div>
             </div>
-          </TabsContent>
+          </section>
 
-          <TabsContent value="month" className="space-y-4 mt-6">
-            <div className="space-y-3">
-              {mockHistory.month.weeks.map((week, index) => (
-                <Card key={week.week} className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <TrendingUp className="w-5 h-5 text-primary" />
-                      <div>
-                        <div className="font-medium">{week.week}</div>
-                        <div className="text-body-small">
-                          {week.completion}% completa • {week.avgCalories} kcal média
+          {/* Period Selector */}
+          <section>
+            <Tabs value={selectedPeriod} onValueChange={setSelectedPeriod} className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-6">
+                <TabsTrigger value="week">Semana</TabsTrigger>
+                <TabsTrigger value="month">Mês</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="week" className="space-y-4">
+                {mockHistory.week.days.map((day, index) => (
+                  <div key={day.date} className="bg-white p-4 rounded-2xl shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className={cn(
+                          "w-3 h-3 rounded-full",
+                          day.completed ? "bg-green-500" : "bg-gray-300"
+                        )} />
+                        <div>
+                          <div className="font-medium text-gray-800">
+                            {new Date(day.date).toLocaleDateString('pt-BR', { 
+                              weekday: 'long', 
+                              day: 'numeric', 
+                              month: 'short' 
+                            })}
+                          </div>
+                          <div className="text-sm text-gray-500">
+                            {day.meals} refeições • {day.calories} kcal
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="text-data-small text-primary">{week.completion}%</div>
-                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                      <div className="flex items-center gap-2">
+                        {day.completed && (
+                          <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                            Completo
+                          </span>
+                        )}
+                        <ChevronRight className="w-4 h-4 text-gray-400" />
+                      </div>
                     </div>
                   </div>
-                  <div className="mt-3 progress-container">
-                    <div 
-                      className="progress-fill"
-                      style={{ width: `${week.completion}%` }}
-                    />
-                  </div>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
+                ))}
+              </TabsContent>
 
-        {/* Achievements Section */}
-        <Card className="p-4">
-          <div className="flex items-center gap-3 mb-4">
-            <Award className="w-5 h-5 text-warning" />
-            <h3 className="font-semibold">Conquistas</h3>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div className="flex items-center gap-2 p-2 bg-success-light rounded-lg">
-              <div className="w-2 h-2 bg-success rounded-full" />
-              <span className="text-sm">7 dias seguidos</span>
+              <TabsContent value="month" className="space-y-4">
+                {mockHistory.month.weeks.map((week, index) => (
+                  <div key={week.week} className="bg-white p-4 rounded-2xl shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <TrendingUp className="w-5 h-5 text-blue-600" />
+                        <div>
+                          <div className="font-medium text-gray-800">{week.week}</div>
+                          <div className="text-sm text-gray-500">
+                            {week.completion}% completa • {week.avgCalories} kcal média
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="text-lg font-bold text-blue-600">{week.completion}%</div>
+                        <ChevronRight className="w-4 h-4 text-gray-400" />
+                      </div>
+                    </div>
+                    <div className="mt-3 w-full bg-gray-200 rounded-full h-2">
+                      <div 
+                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${week.completion}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </TabsContent>
+            </Tabs>
+          </section>
+
+          {/* Achievements Section */}
+          <section className="bg-white p-6 rounded-2xl shadow-sm mt-8 mb-24">
+            <div className="flex items-center gap-3 mb-4">
+              <Award className="w-5 h-5 text-yellow-500" />
+              <h2 className="text-lg font-semibold text-gray-800">Conquistas</h2>
             </div>
-            <div className="flex items-center gap-2 p-2 bg-primary/10 rounded-lg">
-              <div className="w-2 h-2 bg-primary rounded-full" />
-              <span className="text-sm">50 refeições</span>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="flex items-center gap-2 p-2 bg-green-50 rounded-lg">
+                <div className="w-2 h-2 bg-green-500 rounded-full" />
+                <span className="text-sm text-gray-700">7 dias seguidos</span>
+              </div>
+              <div className="flex items-center gap-2 p-2 bg-blue-50 rounded-lg">
+                <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                <span className="text-sm text-gray-700">50 refeições</span>
+              </div>
+              <div className="flex items-center gap-2 p-2 bg-orange-50 rounded-lg">
+                <div className="w-2 h-2 bg-orange-500 rounded-full" />
+                <span className="text-sm text-gray-700">Meta mensal</span>
+              </div>
+              <div className="flex items-center gap-2 p-2 bg-gray-100 rounded-lg">
+                <div className="w-2 h-2 bg-gray-400 rounded-full" />
+                <span className="text-sm text-gray-500">30 dias perfeitos</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2 p-2 bg-accent/10 rounded-lg">
-              <div className="w-2 h-2 bg-accent rounded-full" />
-              <span className="text-sm">Meta mensal</span>
-            </div>
-            <div className="flex items-center gap-2 p-2 bg-muted rounded-lg">
-              <div className="w-2 h-2 bg-muted-foreground rounded-full" />
-              <span className="text-sm text-muted-foreground">30 dias perfeitos</span>
-            </div>
-          </div>
-        </Card>
+          </section>
+        </main>
       </div>
+      
+      <BottomNavigation />
     </div>
   );
 }

@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Clock, ChefHat, Check, MoreHorizontal, Scale, RotateCw } from 'lucide-react';
+import { ArrowLeft, Clock, ChefHat, Check, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { FoodItem } from '@/components/FoodItem';
 import { useDiet } from '@/contexts/DietContext';
 import { BottomNavigation } from '@/components/BottomNavigation';
+import { FoodActionModal } from '@/components/FoodActionModal';
 
 export default function MealDetail() {
   const { mealId } = useParams<{ mealId: string }>();
   const navigate = useNavigate();
+  const [selectedMealFood, setSelectedMealFood] = useState<{ mealFood: any; food: any } | null>(null);
   const { 
     currentDayPlan, 
     foods, 
@@ -169,8 +170,8 @@ export default function MealDetail() {
                         </div>
                       </div>
                       <button 
-                        onClick={() => markMealFoodAsCompleted(mealId, mealFood.id)}
-                        className="text-gray-500 hover:text-primary"
+                        onClick={() => setSelectedMealFood({ mealFood, food })}
+                        className="text-gray-500 hover:text-blue-600"
                       >
                         {mealFood.isCompleted ? (
                           <Check className="w-5 h-5 text-green-500" />
@@ -178,56 +179,6 @@ export default function MealDetail() {
                           <MoreHorizontal className="w-5 h-5" />
                         )}
                       </button>
-                    </div>
-                    
-                    <div className="flex items-center justify-between mt-4">
-                      <div className="flex gap-2">
-                        <button 
-                          onClick={() => handleQuantityChange(mealFood.id, 0.5)}
-                          className={`py-1 px-3 rounded-full text-sm font-medium ${
-                            Math.abs(multiplier - 0.5) < 0.1 
-                              ? 'bg-blue-600 text-white' 
-                              : 'bg-blue-100 text-blue-700'
-                          }`}
-                        >
-                          0.5x
-                        </button>
-                        <button 
-                          onClick={() => handleQuantityChange(mealFood.id, 1)}
-                          className={`py-1 px-3 rounded-full text-sm font-medium ${
-                            Math.abs(multiplier - 1) < 0.1 
-                              ? 'bg-blue-600 text-white' 
-                              : 'bg-blue-100 text-blue-700'
-                          }`}
-                        >
-                          1x
-                        </button>
-                        <button 
-                          onClick={() => handleQuantityChange(mealFood.id, 1.5)}
-                          className={`py-1 px-3 rounded-full text-sm font-medium ${
-                            Math.abs(multiplier - 1.5) < 0.1 
-                              ? 'bg-blue-600 text-white' 
-                              : 'bg-blue-100 text-blue-700'
-                          }`}
-                        >
-                          1.5x
-                        </button>
-                        <button 
-                          onClick={() => handleQuantityChange(mealFood.id, 2)}
-                          className={`py-1 px-3 rounded-full text-sm font-medium ${
-                            Math.abs(multiplier - 2) < 0.1 
-                              ? 'bg-blue-600 text-white' 
-                              : 'bg-blue-100 text-blue-700'
-                          }`}
-                        >
-                          2x
-                        </button>
-                      </div>
-                      <div className="flex gap-4 text-gray-500">
-                        <button onClick={() => handleSubstitute(mealFood.id)}>
-                          <RotateCw className="w-5 h-5" />
-                        </button>
-                      </div>
                     </div>
                     
                     <div className="grid grid-cols-3 gap-4 text-center mt-4 border-t pt-4">
@@ -253,6 +204,19 @@ export default function MealDetail() {
       </div>
       
       <BottomNavigation />
+      
+      {/* Food Action Modal */}
+      {selectedMealFood && (
+        <FoodActionModal
+          isOpen={!!selectedMealFood}
+          onClose={() => setSelectedMealFood(null)}
+          mealFood={selectedMealFood.mealFood}
+          food={selectedMealFood.food}
+          onToggleCompleted={() => markMealFoodAsCompleted(mealId, selectedMealFood.mealFood.id)}
+          onUpdateQuantity={(quantity) => updateMealFoodQuantity(mealId, selectedMealFood.mealFood.id, quantity)}
+          onSubstitute={() => handleSubstitute(selectedMealFood.mealFood.id)}
+        />
+      )}
     </div>
   );
 }
