@@ -1,12 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Settings, Utensils } from 'lucide-react';
+import { Settings, RotateCcw, Check, UtensilsCrossed, Dumbbell, Coffee, Apple } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { DailyHeader } from '@/components/DailyHeader';
-import { MealCard } from '@/components/MealCard';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useDiet } from '@/contexts/DietContext';
-import { createTodayCustomPlan } from '@/utils/customMealPlan';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -22,6 +19,24 @@ const Index = () => {
     getCurrentDayCalories
   } = useDiet();
 
+  const getMealIcon = (mealName: string) => {
+    const name = mealName.toLowerCase();
+    if (name.includes('café') || name.includes('manhã')) return Coffee;
+    if (name.includes('lanche')) return Apple;
+    if (name.includes('almoço') || name.includes('jantar')) return UtensilsCrossed;
+    if (name.includes('treino')) return Dumbbell;
+    return UtensilsCrossed;
+  };
+
+  const getMealCalories = (meal: any) => {
+    return meal.foods.reduce((total: number, mealFood: any) => {
+      const food = foods.find(f => f.id === mealFood.foodId);
+      if (!food) return total;
+      const multiplier = mealFood.quantity / food.defaultQuantity;
+      return total + (food.nutritionalInfo.calories * multiplier);
+    }, 0);
+  };
+
   if (isLoading || !currentDayPlan) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -36,92 +51,124 @@ const Index = () => {
   const progress = getDailyProgress();
   const consumedCalories = getCurrentDayCalories();
   const completedMeals = currentDayPlan.meals.filter(m => m.isCompleted).length;
+  const remainingCalories = Math.max(0, currentDayPlan.targetCalories - consumedCalories);
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      {/* Header Clean */}
-      <div className="sticky top-0 z-40 bg-background/95 backdrop-blur-md border-b border-border">
-        <div className="px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-h3">🏆 Dieta</h1>
-              <p className="text-body-small">Hoje • {new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' })}</p>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <div className="text-data-medium text-primary">{Math.round(consumedCalories)}</div>
-                <div className="text-body-small">de {currentDayPlan.targetCalories} kcal</div>
-              </div>
-              <div className="flex items-center gap-1">
-                <ThemeToggle />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => navigate('/meal-management')}
-                  className="touch-target rounded-lg"
-                >
-                  <Settings className="w-5 h-5" />
-                </Button>
-              </div>
-            </div>
-          </div>
+    <div className="max-w-sm mx-auto min-h-screen bg-background">
+      {/* Header */}
+      <header className="p-6 flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold">Olá!</h1>
+          <p className="text-sm text-muted-foreground">
+            {new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' })}, Hoje
+          </p>
         </div>
-      </div>
+        <div className="flex items-center space-x-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-10 h-10 rounded-full bg-muted"
+            onClick={() => window.location.reload()}
+          >
+            <RotateCcw className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-10 h-10 rounded-full bg-muted"
+            onClick={() => navigate('/meal-management')}
+          >
+            <Settings className="w-4 h-4" />
+          </Button>
+        </div>
+      </header>
 
-      {/* Clean Status Cards */}
-      <div className="px-4 py-6 bg-background-secondary">
-        <div className="grid grid-cols-3 gap-4">
-          <div className="card-elevated p-4 text-center">
-            <div className="text-data-large text-primary">{Math.round(progress)}%</div>
-            <div className="text-label">Progresso</div>
-          </div>
-          <div className="card-elevated p-4 text-center">
-            <div className="text-data-large text-accent">{completedMeals}</div>
-            <div className="text-label">Concluídas</div>
-          </div>
-          <div className="card-elevated p-4 text-center">
-            <div className="text-data-large text-success">{Math.max(0, currentDayPlan.targetCalories - consumedCalories)}</div>
-            <div className="text-label">Restante</div>
-          </div>
-        </div>
-        
-        {/* Clean Progress Bar */}
-        <div className="mt-6 progress-container">
-          <div 
-            className="progress-fill"
-            style={{ width: `${Math.min(100, (consumedCalories / currentDayPlan.targetCalories) * 100)}%` }}
-          />
-        </div>
-      </div>
-
-      {/* Clean Meals List */}
-      <div className="px-4 py-6 space-md">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-h4">Refeições de Hoje</h2>
-          <div className="text-body-small">
-            {completedMeals}/{currentDayPlan.meals.length}
-          </div>
-        </div>
-        
-        
-        <div className="space-y-3 pb-24">
-          {currentDayPlan.meals.map((meal, index) => (
+      {/* Calories Card */}
+      <div className="px-6 pb-6">
+        <div className="bg-primary text-primary-foreground rounded-2xl p-6 text-center shadow-lg">
+          <p className="text-sm opacity-80">Calorias Restantes</p>
+          <p className="text-4xl font-bold my-2">{remainingCalories}</p>
+          <div className="w-full bg-white/30 rounded-full h-2 mt-4">
             <div 
-              key={meal.id} 
-              className="animate-fade-in" 
-              style={{ animationDelay: `${index * 50}ms` }}
-            >
-              <MealCard
-                meal={meal}
-                foods={foods}
-                progress={getMealProgress(meal.id)}
-                onMarkCompleted={() => markMealAsCompleted(meal.id)}
-                onUnmarkCompleted={() => unmarkMealAsCompleted(meal.id)}
-                onMarkEntireCompleted={() => markEntireMealAsCompleted(meal.id)}
-                onViewDetails={() => navigate(`/meal/${meal.id}`)}
-              />
-            </div>
-          ))}
+              className="bg-primary-foreground h-2 rounded-full transition-all duration-300" 
+              style={{ width: `${Math.min(100, (consumedCalories / currentDayPlan.targetCalories) * 100)}%` }}
+            />
+          </div>
+          <div className="flex justify-between text-xs mt-2 opacity-80">
+            <span>Consumido: {Math.round(consumedCalories)} kcal</span>
+            <span>Meta: {currentDayPlan.targetCalories} kcal</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Meals Section */}
+      <div className="px-6 pb-24">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold">Refeições de Hoje</h2>
+          <span className="text-sm font-medium text-primary">
+            {completedMeals}/{currentDayPlan.meals.length} Concluídas
+          </span>
+        </div>
+
+        <div className="space-y-4">
+          {currentDayPlan.meals.map((meal, index) => {
+            const MealIcon = getMealIcon(meal.name);
+            const mealCalories = getMealCalories(meal);
+            
+            return (
+              <div 
+                key={meal.id}
+                className={`p-4 rounded-2xl border cursor-pointer transition-all duration-200 hover:scale-[1.02] ${
+                  meal.isCompleted 
+                    ? 'bg-muted border-border' 
+                    : 'bg-background border-border hover:shadow-md'
+                }`}
+                onClick={() => navigate(`/meal/${meal.id}`)}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center mr-4 ${
+                      meal.isCompleted 
+                        ? 'bg-success text-success-foreground' 
+                        : 'bg-muted text-muted-foreground'
+                    }`}>
+                      {meal.isCompleted ? (
+                        <Check className="w-5 h-5" />
+                      ) : (
+                        <MealIcon className="w-5 h-5" />
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">{meal.name}</h3>
+                      <p className="text-xs text-muted-foreground">
+                        {meal.scheduledTime} • {Math.round(mealCalories)} kcal
+                      </p>
+                    </div>
+                  </div>
+                  <div onClick={(e) => e.stopPropagation()}>
+                    {meal.isCompleted ? (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs font-medium text-destructive hover:text-destructive"
+                        onClick={() => unmarkMealAsCompleted(meal.id)}
+                      >
+                        Desfazer
+                      </Button>
+                    ) : (
+                      <Button
+                        size="sm"
+                        className="text-sm font-semibold"
+                        onClick={() => markEntireMealAsCompleted(meal.id)}
+                      >
+                        Concluir
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
