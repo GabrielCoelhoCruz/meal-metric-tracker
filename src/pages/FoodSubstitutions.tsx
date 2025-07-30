@@ -106,6 +106,11 @@ const FoodSubstitutions = () => {
           to: "150g de patinho (1 bife médio)", 
           calories: "~200 kcal" 
         },
+        { 
+          from: "4 ovos inteiros (240g)", 
+          to: "40g de whey + 20g de pasta de amendoim", 
+          calories: "~200 kcal" 
+        },
       ]
     },
   ];
