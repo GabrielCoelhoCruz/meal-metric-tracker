@@ -338,6 +338,30 @@ export const useDietPersistence = () => {
     }
   };
 
+  const substituteFoodInMeal = async (mealFoodId: string, newFoodId: string, newQuantity: number) => {
+    try {
+      const { error } = await supabase
+        .from('meal_foods')
+        .update({ 
+          substituted_food_id: newFoodId,
+          quantity: newQuantity
+        })
+        .eq('id', mealFoodId);
+
+      if (error) {
+        console.error('Error substituting food:', error);
+        toast.error('Erro ao substituir alimento');
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error substituting food:', error);
+      toast.error('Erro ao substituir alimento');
+      return false;
+    }
+  };
+
   return {
     isLoading,
     loadFoods,
@@ -345,5 +369,6 @@ export const useDietPersistence = () => {
     updateMealCompletion,
     updateMealFoodCompletion,
     updateMealFoodQuantity,
+    substituteFoodInMeal,
   };
 };

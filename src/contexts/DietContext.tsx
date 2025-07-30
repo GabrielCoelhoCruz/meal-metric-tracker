@@ -212,7 +212,15 @@ function dietReducer(state: DietState, action: DietAction): DietState {
 export function DietProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(dietReducer, initialState);
   const { showFoodCompletionToast, showMealCompletionToast, showDailyGoalToast } = useMotivationalToast();
-  const { loadDayPlan: loadDayPlanFromDB, loadFoods, updateMealCompletion, updateMealFoodCompletion, updateMealFoodQuantity: updateQuantityInDB, isLoading: persistenceLoading } = useDietPersistence();
+  const { 
+    loadDayPlan: loadDayPlanFromDB, 
+    loadFoods, 
+    updateMealCompletion, 
+    updateMealFoodCompletion, 
+    updateMealFoodQuantity: updateQuantityInDB, 
+    substituteFoodInMeal: substituteFoodInDB,
+    isLoading: persistenceLoading 
+  } = useDietPersistence();
 
   const markMealAsCompleted = async (mealId: string) => {
     const success = await updateMealCompletion(mealId, true);
@@ -276,8 +284,11 @@ export function DietProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const substituteFoodInMeal = (mealId: string, originalFoodId: string, newFood: Food, quantity: number) => {
-    dispatch({ type: 'SUBSTITUTE_FOOD', payload: { mealId, originalFoodId, newFood, quantity } });
+  const substituteFoodInMeal = async (mealId: string, originalFoodId: string, newFood: Food, quantity: number) => {
+    const success = await substituteFoodInDB(originalFoodId, newFood.id, quantity);
+    if (success) {
+      dispatch({ type: 'SUBSTITUTE_FOOD', payload: { mealId, originalFoodId, newFood, quantity } });
+    }
   };
 
   const loadDayPlan = async (date: string) => {
@@ -313,7 +324,8 @@ export function DietProvider({ children }: { children: ReactNode }) {
       .filter(meal => meal.isCompleted)
       .reduce((total, meal) => {
         return total + meal.foods.reduce((mealTotal, mealFood) => {
-          const food = state.foods.find(f => f.id === mealFood.foodId);
+          // Use substituted food if available, otherwise use original food
+          const food = mealFood.substitutedFood || state.foods.find(f => f.id === mealFood.foodId);
           if (!food) return mealTotal;
           
           const multiplier = mealFood.quantity / food.defaultQuantity;
