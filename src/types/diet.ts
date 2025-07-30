@@ -69,5 +69,8 @@ export const calculateTotalNutrition = (food: Food, quantity: number): Nutrition
 
 export const calculateEquivalentQuantity = (originalFood: Food, originalQuantity: number, targetFood: Food): number => {
   const originalCalories = calculateTotalNutrition(originalFood, originalQuantity).calories;
-  return (originalCalories / targetFood.nutritionalInfo.calories) * targetFood.defaultQuantity;
+  // Calcular quantas unidades do targetFood são necessárias para ter as mesmas calorias
+  const targetUnits = originalCalories / targetFood.nutritionalInfo.calories;
+  // Retornar a quantidade equivalente baseada na quantidade padrão do targetFood
+  return targetUnits * targetFood.defaultQuantity;
 };
