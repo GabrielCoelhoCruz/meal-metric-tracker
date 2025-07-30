@@ -286,13 +286,9 @@ export function DietProvider({ children }: { children: ReactNode }) {
   };
 
   const substituteFoodInMeal = async (mealId: string, originalFoodId: string, newFood: Food, quantity: number) => {
-    console.log('Substituting food:', { mealId, originalFoodId, newFood, quantity });
     const success = await substituteFoodInDB(originalFoodId, newFood.id, quantity);
     if (success) {
-      console.log('Substitution successful, updating context');
       dispatch({ type: 'SUBSTITUTE_FOOD', payload: { mealId, originalFoodId, newFood, quantity } });
-    } else {
-      console.error('Substitution failed');
     }
   };
 
