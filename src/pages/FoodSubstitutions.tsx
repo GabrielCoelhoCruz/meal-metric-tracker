@@ -133,7 +133,7 @@ const FoodSubstitutions = () => {
       </header>
 
       {/* Content */}
-      <div className="p-6 space-y-6">
+      <div className="p-6 space-y-6 pb-24">
         <div className="text-center mb-6">
           <p className="text-muted-foreground">
             Veja opções mais saudáveis para seus alimentos favoritos
