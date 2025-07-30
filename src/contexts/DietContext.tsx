@@ -159,11 +159,12 @@ function dietReducer(state: DietState, action: DietAction): DietState {
                   ...meal,
                   foods: meal.foods.map(food =>
                     food.id === action.payload.originalFoodId
-                      ? {
-                          ...food,
-                          substitutedFood: action.payload.newFood,
-                          quantity: action.payload.quantity
-                        }
+                       ? {
+                           ...food,
+                           substitutedFood: action.payload.newFood,
+                           quantity: action.payload.quantity,
+                           unit: action.payload.newFood.defaultUnit
+                         }
                       : food
                   )
                 }

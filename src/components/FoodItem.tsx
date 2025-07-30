@@ -120,7 +120,7 @@ export function FoodItem({
                   data-quantity-trigger
                 >
                   <Scale className="w-3 h-3" />
-                  {mealFood.quantity} {mealFood.unit}
+                  {mealFood.quantity} {displayFood.defaultUnit}
                 </button>
               </EditQuantityDialog>
               <div className="text-base font-bold text-foreground">
@@ -131,7 +131,7 @@ export function FoodItem({
             {/* Botões de Quantidade Rápida */}
             <div className="flex gap-1 mb-3">
               {[0.5, 1, 1.5, 2].map((multiplier) => {
-                const baseQuantity = food.defaultQuantity;
+                const baseQuantity = displayFood.defaultQuantity;
                 const newQuantity = baseQuantity * multiplier;
                 const isActive = Math.abs(mealFood.quantity - newQuantity) < 0.1;
                 
