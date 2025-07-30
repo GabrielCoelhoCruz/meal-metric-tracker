@@ -9,48 +9,105 @@ const FoodSubstitutions = () => {
 
   const substitutions = [
     {
-      category: "Carboidratos",
+      category: "Carboidratos - Pães e Tapioca",
       items: [
-        { from: "Arroz branco (1 xícara)", to: "Quinoa (1 xícara)", calories: "~220 kcal" },
-        { from: "Pão branco (2 fatias)", to: "Pão integral (2 fatias)", calories: "~160 kcal" },
-        { from: "Macarrão comum (100g)", to: "Macarrão integral (100g)", calories: "~350 kcal" },
-        { from: "Batata frita (100g)", to: "Batata doce assada (100g)", calories: "~86 kcal" },
+        { 
+          from: "2 pães francês (100g)", 
+          to: "6 fatias de pão de forma (100g)", 
+          calories: "~270 kcal" 
+        },
+        { 
+          from: "2 pães francês (100g)", 
+          to: "80g de tapioca", 
+          calories: "~270 kcal" 
+        },
+        { 
+          from: "6 fatias de pão de forma (100g)", 
+          to: "80g de tapioca", 
+          calories: "~270 kcal" 
+        },
       ]
     },
     {
-      category: "Proteínas",
+      category: "Frutas - Porções Equivalentes",
       items: [
-        { from: "Carne vermelha (100g)", to: "Peito de frango (100g)", calories: "~165 kcal" },
-        { from: "Bacon (30g)", to: "Peito de peru (30g)", calories: "~35 kcal" },
-        { from: "Ovo frito (1 unidade)", to: "Clara de ovo (2 unidades)", calories: "~34 kcal" },
-        { from: "Queijo amarelo (30g)", to: "Ricota (30g)", calories: "~41 kcal" },
+        { 
+          from: "100g de banana (1 unidade média)", 
+          to: "150g de maçã (1 unidade grande)", 
+          calories: "~60 kcal" 
+        },
+        { 
+          from: "100g de banana (1 unidade média)", 
+          to: "250g de morango (12-15 unidades)", 
+          calories: "~60 kcal" 
+        },
+        { 
+          from: "100g de banana (1 unidade média)", 
+          to: "250g de melão (2 fatias)", 
+          calories: "~60 kcal" 
+        },
+        { 
+          from: "150g de maçã (1 unidade grande)", 
+          to: "250g de morango (12-15 unidades)", 
+          calories: "~60 kcal" 
+        },
+        { 
+          from: "150g de mamão (1 fatia grande)", 
+          to: "120g de maçã (1 unidade média)", 
+          calories: "~50 kcal" 
+        },
+        { 
+          from: "150g de mamão (1 fatia grande)", 
+          to: "200g de morango (10-12 unidades)", 
+          calories: "~50 kcal" 
+        },
       ]
     },
     {
-      category: "Gorduras Saudáveis",
+      category: "Carboidratos - Cereais e Tubérculos",
       items: [
-        { from: "Manteiga (1 colher)", to: "Abacate (2 colheres)", calories: "~50 kcal" },
-        { from: "Maionese (1 colher)", to: "Azeite extra virgem (1 colher)", calories: "~40 kcal" },
-        { from: "Creme de leite (2 colheres)", to: "Iogurte grego (2 colheres)", calories: "~30 kcal" },
+        { 
+          from: "150g de arroz cozido (3 colheres de servir)", 
+          to: "250g de batata cozida (2 unidades médias)", 
+          calories: "~150 kcal" 
+        },
+        { 
+          from: "150g de arroz cozido (3 colheres de servir)", 
+          to: "300g de abóbora cozida (1 xícara)", 
+          calories: "~150 kcal" 
+        },
+        { 
+          from: "250g de batata cozida (2 unidades médias)", 
+          to: "300g de abóbora cozida (1 xícara)", 
+          calories: "~150 kcal" 
+        },
       ]
     },
     {
-      category: "Doces e Lanches",
+      category: "Proteínas - Carnes",
       items: [
-        { from: "Chocolate ao leite (30g)", to: "Chocolate 70% cacau (20g)", calories: "~110 kcal" },
-        { from: "Biscoito recheado (3 unidades)", to: "Castanhas (10 unidades)", calories: "~60 kcal" },
-        { from: "Refrigerante (350ml)", to: "Água com limão", calories: "~5 kcal" },
-        { from: "Sorvete (1 bola)", to: "Frozen yogurt (1 bola)", calories: "~80 kcal" },
+        { 
+          from: "150g de filé de frango (1 peito pequeno)", 
+          to: "130g de patinho (1 bife médio)", 
+          calories: "~200 kcal" 
+        },
+        { 
+          from: "150g de filé de frango (1 peito pequeno)", 
+          to: "120g de músculo (1 porção)", 
+          calories: "~200 kcal" 
+        },
+        { 
+          from: "130g de patinho (1 bife médio)", 
+          to: "120g de músculo (1 porção)", 
+          calories: "~200 kcal" 
+        },
+        { 
+          from: "4 ovos inteiros (240g)", 
+          to: "150g de patinho (1 bife médio)", 
+          calories: "~200 kcal" 
+        },
       ]
     },
-    {
-      category: "Bebidas",
-      items: [
-        { from: "Suco de caixinha (200ml)", to: "Fruta inteira", calories: "~60 kcal" },
-        { from: "Café com açúcar", to: "Café com adoçante natural", calories: "~5 kcal" },
-        { from: "Energético (350ml)", to: "Chá verde (350ml)", calories: "~5 kcal" },
-      ]
-    }
   ];
 
   return (
