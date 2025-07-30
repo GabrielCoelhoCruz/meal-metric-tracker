@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Settings, RotateCcw, Check, UtensilsCrossed, Dumbbell, Coffee, Apple } from 'lucide-react';
+import { Settings, RotateCcw, Check, UtensilsCrossed, Dumbbell, Coffee, Apple, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useDiet } from '@/contexts/DietContext';
@@ -63,7 +63,7 @@ const Index = () => {
             {new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' })}, Hoje
           </p>
         </div>
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2">
           <Button
             variant="ghost"
             size="sm"
@@ -71,6 +71,14 @@ const Index = () => {
             onClick={() => window.location.reload()}
           >
             <RotateCcw className="w-4 h-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-10 h-10 rounded-full bg-muted"
+            onClick={() => navigate('/food-substitutions')}
+          >
+            <RefreshCw className="w-4 h-4" />
           </Button>
           <Button
             variant="ghost"

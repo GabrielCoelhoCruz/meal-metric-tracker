@@ -12,6 +12,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import MealDetail from "./pages/MealDetail";
 import FoodExchange from "./pages/FoodExchange";
+import FoodSubstitutions from "./pages/FoodSubstitutions";
 import MealManagement from "./pages/MealManagement";
 import MealEditor from "./pages/MealEditor";
 import History from "./pages/History";
@@ -49,6 +50,7 @@ const AppContent = () => {
             <Route path="/" element={<Index />} />
             <Route path="/meal/:mealId" element={<MealDetail />} />
             <Route path="/food-exchange/:mealId/:foodId" element={<FoodExchange />} />
+            <Route path="/food-substitutions" element={<FoodSubstitutions />} />
             <Route path="/meal-management" element={<MealManagement />} />
             <Route path="/meal-editor/:mealId" element={<MealEditor />} />
             <Route path="/history" element={<History />} />
