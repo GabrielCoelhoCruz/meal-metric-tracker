@@ -72,5 +72,9 @@ export const calculateEquivalentQuantity = (originalFood: Food, originalQuantity
   // Calcular quantas unidades do targetFood são necessárias para ter as mesmas calorias
   const targetUnits = originalCalories / targetFood.nutritionalInfo.calories;
   // Retornar a quantidade equivalente baseada na quantidade padrão do targetFood
-  return targetUnits * targetFood.defaultQuantity;
+  const equivalentQuantity = targetUnits * targetFood.defaultQuantity;
+  
+  // Validação: limitar quantidade máxima para evitar valores absurdos
+  const maxReasonableQuantity = targetFood.defaultQuantity * 50; // Máximo 50x a quantidade padrão
+  return Math.min(equivalentQuantity, maxReasonableQuantity);
 };
