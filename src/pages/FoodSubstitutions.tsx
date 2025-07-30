@@ -162,8 +162,8 @@ const FoodSubstitutions = () => {
           </Card>
         ))}
 
-        <div className="text-center mt-8 p-4 bg-muted rounded-lg">
-          <p className="text-sm text-muted-foreground">
+        <div className="text-center mt-8 p-4 bg-muted rounded-lg mx-2">
+          <p className="text-sm text-muted-foreground leading-relaxed">
             💡 <strong>Dica:</strong> Faça substituições gradualmente para se adaptar aos novos sabores e texturas.
           </p>
         </div>
