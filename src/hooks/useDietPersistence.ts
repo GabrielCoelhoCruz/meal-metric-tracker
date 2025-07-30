@@ -340,11 +340,25 @@ export const useDietPersistence = () => {
 
   const substituteFoodInMeal = async (mealFoodId: string, newFoodId: string, newQuantity: number) => {
     try {
+      // Get the new food to get its default unit
+      const { data: newFood, error: foodError } = await supabase
+        .from('foods')
+        .select('default_unit')
+        .eq('id', newFoodId)
+        .single();
+
+      if (foodError) {
+        console.error('Error getting new food data:', foodError);
+        toast.error('Erro ao buscar dados do novo alimento');
+        return false;
+      }
+
       const { error } = await supabase
         .from('meal_foods')
         .update({ 
           substituted_food_id: newFoodId,
-          quantity: newQuantity
+          quantity: newQuantity,
+          unit: newFood.default_unit
         })
         .eq('id', mealFoodId);
 
