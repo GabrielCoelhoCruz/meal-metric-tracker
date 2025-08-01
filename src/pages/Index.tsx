@@ -5,8 +5,6 @@ import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useDiet } from '@/contexts/DietContext';
 import { StreakCard } from '@/components/StreakCard';
-import { WeeklyChart } from '@/components/WeeklyChart';
-import { StatsCards } from '@/components/StatsCards';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -116,11 +114,6 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Analytics Cards */}
-        <StatsCards />
-        
-        {/* Weekly Chart */}
-        <WeeklyChart />
       </div>
 
       {/* Meals Section */}
