@@ -101,10 +101,69 @@ export function useMotivationalToast() {
     });
   };
 
+  const showCalorieGoalToast = (percentage: number) => {
+    if (percentage >= 90 && percentage <= 110) {
+      toast({
+        title: "Perfeito! 🎯",
+        description: "Você atingiu sua meta calórica ideal!",
+        duration: 4000,
+      });
+    } else if (percentage > 110) {
+      toast({
+        title: "Atenção! ⚠️",
+        description: "Você ultrapassou um pouco sua meta calórica.",
+        duration: 4000,
+      });
+    }
+  };
+
+  const showProgressToast = (completed: number, total: number) => {
+    const percentage = (completed / total) * 100;
+    
+    if (percentage === 50) {
+      toast({
+        title: "Meio caminho! 🌟",
+        description: "Você já completou metade das suas refeições!",
+        duration: 3000,
+      });
+    } else if (percentage === 75) {
+      toast({
+        title: "Quase lá! 🚀",
+        description: "Só mais uma refeição para completar o dia!",
+        duration: 3000,
+      });
+    }
+  };
+
+  const showWeeklyStreakToast = (days: number) => {
+    if (days === 7) {
+      toast({
+        title: "Uma semana perfeita! 🏆",
+        description: "7 dias consecutivos de dedicação!",
+        duration: 5000,
+      });
+    } else if (days === 14) {
+      toast({
+        title: "Duas semanas incríveis! 💪",
+        description: "Sua consistência é inspiradora!",
+        duration: 5000,
+      });
+    } else if (days === 30) {
+      toast({
+        title: "Um mês de sucesso! 🔥",
+        description: "Você é incrível! Continue assim!",
+        duration: 6000,
+      });
+    }
+  };
+
   return {
     showFoodCompletionToast,
     showMealCompletionToast,
     showStreakToast,
-    showDailyGoalToast
+    showDailyGoalToast,
+    showCalorieGoalToast,
+    showProgressToast,
+    showWeeklyStreakToast
   };
 }

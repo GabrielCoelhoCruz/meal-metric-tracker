@@ -1,9 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Settings, RotateCcw, Check, UtensilsCrossed, Dumbbell, Coffee, Apple, RefreshCw } from 'lucide-react';
+import { Settings, RotateCcw, Check, UtensilsCrossed, Dumbbell, Coffee, Apple, RefreshCw, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useDiet } from '@/contexts/DietContext';
+import { StreakCard } from '@/components/StreakCard';
+import { WeeklyChart } from '@/components/WeeklyChart';
+import { StatsCards } from '@/components/StatsCards';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -64,13 +67,14 @@ const Index = () => {
           </p>
         </div>
         <div className="flex items-center space-x-2">
+          <ThemeToggle />
           <Button
             variant="ghost"
             size="sm"
             className="w-10 h-10 rounded-full bg-muted"
-            onClick={() => window.location.reload()}
+            onClick={() => navigate('/analytics')}
           >
-            <RotateCcw className="w-4 h-4" />
+            <BarChart3 className="w-4 h-4" />
           </Button>
           <Button
             variant="ghost"
@@ -84,29 +88,39 @@ const Index = () => {
             variant="ghost"
             size="sm"
             className="w-10 h-10 rounded-full bg-muted"
-            onClick={() => navigate('/meal-management')}
+            onClick={() => navigate('/settings')}
           >
             <Settings className="w-4 h-4" />
           </Button>
         </div>
       </header>
 
-      {/* Calories Card */}
-      <div className="px-6 pb-6">
-        <div className="bg-primary text-primary-foreground rounded-2xl p-6 text-center shadow-lg">
-          <p className="text-sm opacity-80">Calorias Restantes</p>
-          <p className="text-4xl font-bold my-2">{remainingCalories}</p>
-          <div className="w-full bg-white/30 rounded-full h-2 mt-4">
+      {/* Stats Section */}
+      <div className="px-6 pb-6 space-y-4">
+        {/* Streak Card */}
+        <StreakCard />
+        
+        {/* Calories Card */}
+        <div className="bg-card border border-border rounded-xl p-6 text-center shadow-card">
+          <p className="text-sm text-muted-foreground">Calorias Restantes</p>
+          <p className="text-4xl font-bold my-2 text-foreground">{remainingCalories}</p>
+          <div className="w-full bg-muted rounded-full h-2 mt-4">
             <div 
-              className="bg-primary-foreground h-2 rounded-full transition-all duration-300" 
+              className="bg-primary h-2 rounded-full transition-all duration-300" 
               style={{ width: `${Math.min(100, (consumedCalories / currentDayPlan.targetCalories) * 100)}%` }}
             />
           </div>
-          <div className="flex justify-between text-xs mt-2 opacity-80">
+          <div className="flex justify-between text-xs mt-2 text-muted-foreground">
             <span>Consumido: {Math.round(consumedCalories)} kcal</span>
             <span>Meta: {currentDayPlan.targetCalories} kcal</span>
           </div>
         </div>
+
+        {/* Analytics Cards */}
+        <StatsCards />
+        
+        {/* Weekly Chart */}
+        <WeeklyChart />
       </div>
 
       {/* Meals Section */}
