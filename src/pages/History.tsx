@@ -46,13 +46,13 @@ export default function History() {
   const currentData = mockHistory[selectedPeriod as keyof typeof mockHistory];
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-background min-h-screen">
       <div className="container mx-auto max-w-sm p-4">
         {/* Header */}
         <header className="flex items-center justify-between mb-6">
           <button 
             onClick={() => navigate('/')}
-            className="flex items-center gap-2 text-gray-600 font-medium py-2 px-4 rounded-full border border-gray-300 bg-white shadow-sm"
+            className="flex items-center gap-2 text-muted-foreground font-medium py-2 px-4 rounded-full border border-border bg-card shadow-sm"
           >
             <ArrowLeft className="w-4 h-4" />
             Voltar
@@ -62,12 +62,12 @@ export default function History() {
         <main>
           {/* Title Section */}
           <section className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-800">Histórico</h1>
-            <p className="text-gray-500 mt-2">Acompanhe seu progresso</p>
+            <h1 className="text-3xl font-bold text-foreground">Histórico</h1>
+            <p className="text-muted-foreground mt-2">Acompanhe seu progresso</p>
           </section>
 
           {/* Stats Cards */}
-          <section className="bg-white p-6 rounded-2xl shadow-sm mb-8">
+          <section className="bg-card p-6 rounded-2xl shadow-sm mb-8">
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center">
                 <p className="text-3xl font-bold text-blue-600">{Math.round((currentData.completedMeals / currentData.totalMeals) * 100)}%</p>

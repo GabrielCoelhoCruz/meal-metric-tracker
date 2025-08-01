@@ -73,13 +73,13 @@ export default function MealDetail() {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-background min-h-screen">
       <div className="container mx-auto max-w-sm p-4">
         {/* Header */}
         <header className="flex items-center justify-between mb-6">
           <button 
             onClick={() => navigate('/')}
-            className="flex items-center gap-2 text-gray-600 font-medium py-2 px-4 rounded-full border border-gray-300 bg-white shadow-sm"
+            className="flex items-center gap-2 text-muted-foreground font-medium py-2 px-4 rounded-full border border-border bg-card shadow-sm"
           >
             <ArrowLeft className="w-4 h-4" />
             Voltar
@@ -89,8 +89,8 @@ export default function MealDetail() {
         <main>
           {/* Meal Title Section */}
           <section className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-800">{meal.name}</h1>
-            <div className="flex items-center gap-4 mt-2 text-gray-500">
+            <h1 className="text-3xl font-bold text-foreground">{meal.name}</h1>
+            <div className="flex items-center gap-4 mt-2 text-muted-foreground">
               <div className="flex items-center gap-1">
                 <Clock className="w-5 h-5" />
                 <span>{meal.scheduledTime}</span>
@@ -103,34 +103,34 @@ export default function MealDetail() {
           </section>
 
           {/* Nutrition Info */}
-          <section className="bg-white p-6 rounded-2xl shadow-sm mb-8">
-            <h2 className="text-lg font-semibold text-gray-800 mb-4">Informações Nutricionais</h2>
+          <section className="bg-card p-6 rounded-2xl shadow-sm mb-8">
+            <h2 className="text-lg font-semibold text-foreground mb-4">Informações Nutricionais</h2>
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center">
-                <p className="text-3xl font-bold text-blue-600">{Math.round(totalCalories)}</p>
-                <p className="text-sm text-gray-500">Calorias</p>
+                <p className="text-3xl font-bold text-primary">{Math.round(totalCalories)}</p>
+                <p className="text-sm text-muted-foreground">Calorias</p>
               </div>
               <div className="text-center">
-                <p className="text-3xl font-bold text-orange-500">{Math.round(totalMacros.carbs)}g</p>
-                <p className="text-sm text-gray-500">Carboidratos</p>
+                <p className="text-3xl font-bold text-warning">{Math.round(totalMacros.carbs)}g</p>
+                <p className="text-sm text-muted-foreground">Carboidratos</p>
               </div>
               <div className="text-center">
-                <p className="text-3xl font-bold text-green-500">{Math.round(totalMacros.protein)}g</p>
-                <p className="text-sm text-gray-500">Proteínas</p>
+                <p className="text-3xl font-bold text-success">{Math.round(totalMacros.protein)}g</p>
+                <p className="text-sm text-muted-foreground">Proteínas</p>
               </div>
               <div className="text-center">
-                <p className="text-3xl font-bold text-red-500">{Math.round(totalMacros.fat)}g</p>
-                <p className="text-sm text-gray-500">Gorduras</p>
+                <p className="text-3xl font-bold text-destructive">{Math.round(totalMacros.fat)}g</p>
+                <p className="text-sm text-muted-foreground">Gorduras</p>
               </div>
             </div>
             <div className="mt-6">
               <div className="flex justify-between items-center mb-1">
-                <span className="text-sm font-medium text-gray-700">Progresso da refeição</span>
-                <span className="text-sm font-medium text-gray-700">{Math.round(progress)}%</span>
+                <span className="text-sm font-medium text-foreground">Progresso da refeição</span>
+                <span className="text-sm font-medium text-foreground">{Math.round(progress)}%</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2.5">
+              <div className="w-full bg-muted rounded-full h-2.5">
                 <div 
-                  className="bg-blue-600 h-2.5 rounded-full transition-all duration-300" 
+                  className="bg-primary h-2.5 rounded-full transition-all duration-300" 
                   style={{ width: `${progress}%` }}
                 ></div>
               </div>
@@ -139,7 +139,7 @@ export default function MealDetail() {
 
           {/* Food List */}
           <section>
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Alimentos ({meal.foods.length})</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-4">Alimentos ({meal.foods.length})</h2>
             <div className="space-y-4">
               {meal.foods.map(mealFood => {
                 const food = foods.find(f => f.id === mealFood.foodId);
@@ -152,29 +152,29 @@ export default function MealDetail() {
                 const fat = Math.round(food.nutritionalInfo.fat * multiplier);
 
                 return (
-                  <div key={mealFood.id} className="bg-white p-4 rounded-2xl shadow-sm">
+                  <div key={mealFood.id} className="bg-card p-4 rounded-2xl shadow-sm">
                     <div className="flex items-start justify-between">
                       <div className="flex items-start gap-4">
-                        <div className="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center">
-                          <ChefHat className="w-8 h-8 text-gray-400" />
+                        <div className="w-16 h-16 bg-muted rounded-xl flex items-center justify-center">
+                          <ChefHat className="w-8 h-8 text-muted-foreground" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-semibold text-gray-800">
+                          <h3 className="text-lg font-semibold text-foreground">
                             {food.name.length > 15 ? `${food.name.substring(0, 15)}...` : food.name}
                           </h3>
-                          <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
                             <span>{mealFood.quantity}{mealFood.unit}</span>
-                            <span className="text-gray-300">•</span>
-                            <span className="font-medium text-gray-700">{calories} <span className="font-normal text-gray-500">kcal</span></span>
+                            <span className="text-muted">•</span>
+                            <span className="font-medium text-foreground">{calories} <span className="font-normal text-muted-foreground">kcal</span></span>
                           </div>
                         </div>
                       </div>
                       <button 
                         onClick={() => setSelectedMealFood({ mealFood, food })}
-                        className="text-gray-500 hover:text-blue-600"
+                        className="text-muted-foreground hover:text-primary"
                       >
                         {mealFood.isCompleted ? (
-                          <Check className="w-5 h-5 text-green-500" />
+                          <Check className="w-5 h-5 text-success" />
                         ) : (
                           <MoreHorizontal className="w-5 h-5" />
                         )}
@@ -183,16 +183,16 @@ export default function MealDetail() {
                     
                     <div className="grid grid-cols-3 gap-4 text-center mt-4 border-t pt-4">
                       <div>
-                        <p className="font-bold text-gray-700">{carbs}g</p>
-                        <p className="text-xs text-gray-500">C</p>
+                        <p className="font-bold text-foreground">{carbs}g</p>
+                        <p className="text-xs text-muted-foreground">C</p>
                       </div>
                       <div>
-                        <p className="font-bold text-gray-700">{protein}g</p>
-                        <p className="text-xs text-gray-500">P</p>
+                        <p className="font-bold text-foreground">{protein}g</p>
+                        <p className="text-xs text-muted-foreground">P</p>
                       </div>
                       <div>
-                        <p className="font-bold text-gray-700">{fat}g</p>
-                        <p className="text-xs text-gray-500">G</p>
+                        <p className="font-bold text-foreground">{fat}g</p>
+                        <p className="text-xs text-muted-foreground">G</p>
                       </div>
                     </div>
                   </div>

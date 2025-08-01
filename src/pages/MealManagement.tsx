@@ -93,7 +93,7 @@ export default function MealManagement() {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-background min-h-screen">
       <div className="container mx-auto max-w-sm p-4">
         {/* Header */}
         <header className="flex items-center justify-between mb-6">
