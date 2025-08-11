@@ -1,6 +1,15 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useDiet } from '@/contexts/DietContext';
 
+// Track scheduled timeouts to avoid duplications/leaks
+const localTimeouts: number[] = [];
+const clearLocalTimeouts = () => {
+  while (localTimeouts.length) {
+    const id = localTimeouts.pop();
+    if (id) clearTimeout(id);
+  }
+};
+
 export interface NotificationSettings {
   mealReminders: boolean;
   hydrationReminders: boolean;
@@ -100,7 +109,7 @@ export const useNotifications = () => {
 
     if (delay <= 0) return; // Don't schedule past notifications
 
-    setTimeout(() => {
+    const id = window.setTimeout(() => {
       // Double-check mute at send time
       const currentMute = (settings.muteUntil ?? 0);
       if (currentMute && Date.now() < currentMute) return;
@@ -115,6 +124,7 @@ export const useNotifications = () => {
         new Notification(title, { body, tag });
       }
     }, delay);
+    localTimeouts.push(id);
   }, [permission, isSupported, settings.muteUntil]);
 
   const scheduleMealReminders = useCallback((mealSettings: { [key: string]: string }) => {
@@ -256,6 +266,9 @@ export const useNotifications = () => {
   const scheduleAllNotifications = useCallback((currentSettings: NotificationSettings) => {
     if (permission !== 'granted') return;
 
+    // Clear local timers to avoid duplicates
+    clearLocalTimeouts();
+
     // Respect mute window
     const muteUntil = currentSettings.muteUntil ?? 0;
     if (muteUntil && Date.now() < muteUntil) {
@@ -286,6 +299,24 @@ export const useNotifications = () => {
       scheduleAllNotifications(settings);
     }
   }, [permission, scheduleAllNotifications, settings]);
+
+  // Reschedule when app becomes visible or comes online
+  useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === 'visible' && permission === 'granted') {
+        scheduleAllNotifications(settings);
+      }
+    };
+    const onOnline = () => {
+      if (permission === 'granted') scheduleAllNotifications(settings);
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('online', onOnline);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('online', onOnline);
+    };
+  }, [permission, settings, scheduleAllNotifications]);
 
   const updateSettings = useCallback((newSettings: Partial<NotificationSettings>) => {
     const updatedSettings = { ...settings, ...newSettings } as NotificationSettings;
