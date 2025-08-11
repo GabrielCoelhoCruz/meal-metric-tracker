@@ -8,6 +8,7 @@ const urlsToCache = [
 
 // Store for scheduled notifications
 let scheduledNotifications = new Map();
+let muteUntil = 0; // timestamp in ms
 
 // Install event - cache resources
 self.addEventListener('install', (event) => {
@@ -56,17 +57,24 @@ self.addEventListener('message', (event) => {
     case 'SCHEDULE_NOTIFICATION':
       showNotification(payload.title, payload.body, payload.tag);
       break;
-    
+
     case 'CLEAR_NOTIFICATIONS':
       // Clear all scheduled notifications
       scheduledNotifications.forEach(timeoutId => clearTimeout(timeoutId));
       scheduledNotifications.clear();
+      break;
+
+    case 'SET_MUTE_UNTIL':
+      muteUntil = (payload && payload.muteUntil) || 0;
       break;
   }
 });
 
 // Function to show notification
 function showNotification(title, body, tag) {
+  // Respect mute window
+  if (muteUntil && Date.now() < muteUntil) return;
+
   const options = {
     body,
     tag,

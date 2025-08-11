@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useNotifications } from "@/hooks/useNotifications";
 import { useToast } from "@/hooks/use-toast";
-import { Bell, BellOff, Clock, Droplets, Calendar, BookOpen } from "lucide-react";
+import { Bell, BellOff, Clock, Droplets, Calendar, BookOpen, PauseCircle } from "lucide-react";
 
 export const NotificationSettings = () => {
   const { permission, settings, isSupported, requestPermission, updateSettings } = useNotifications();
@@ -48,6 +48,14 @@ export const NotificationSettings = () => {
       return;
     }
 
+    if (settings.muteUntil && Date.now() < (settings.muteUntil || 0)) {
+      toast({
+        title: "Silenciado",
+        description: `Notificações pausadas até ${new Date(settings.muteUntil!).toLocaleString()}`,
+      });
+      return;
+    }
+
     // Test immediate notification
     if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
       navigator.serviceWorker.controller.postMessage({
@@ -83,7 +91,15 @@ export const NotificationSettings = () => {
       return;
     }
 
-    // Schedule a test notification for 5 seconds from now
+    if (settings.muteUntil && Date.now() < (settings.muteUntil || 0)) {
+      toast({
+        title: "Silenciado",
+        description: `Notificações pausadas até ${new Date(settings.muteUntil!).toLocaleString()}`,
+      });
+      return;
+    }
+
+    // Schedule a test notification for 5 segundos a partir de agora
     const testTime = new Date();
     testTime.setSeconds(testTime.getSeconds() + 5);
 
@@ -181,6 +197,44 @@ export const NotificationSettings = () => {
 
       {permission === 'granted' && (
         <>
+          {/* Mute / Pause */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <PauseCircle className="h-5 w-5" />
+                Pausar Notificações
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">
+                    {settings.muteUntil && Date.now() < (settings.muteUntil || 0)
+                      ? `Silenciado até ${new Date(settings.muteUntil!).toLocaleString()}`
+                      : 'Defina um período para pausar todos os lembretes'}
+                  </p>
+                </div>
+                {settings.muteUntil && Date.now() < (settings.muteUntil || 0) ? (
+                  <Button size="sm" variant="outline" onClick={() => updateSettings({ muteUntil: null })}>
+                    Encerrar silêncio
+                  </Button>
+                ) : null}
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <Button variant="secondary" onClick={() => updateSettings({ muteUntil: Date.now() + 30 * 60 * 1000 })}>30 min</Button>
+                <Button variant="secondary" onClick={() => updateSettings({ muteUntil: Date.now() + 60 * 60 * 1000 })}>1 hora</Button>
+                <Button variant="secondary" onClick={() => updateSettings({ muteUntil: Date.now() + 8 * 60 * 60 * 1000 })}>8 horas</Button>
+                <Button variant="secondary" onClick={() => {
+                  const d = new Date();
+                  d.setDate(d.getDate() + 1);
+                  d.setHours(8, 0, 0, 0);
+                  updateSettings({ muteUntil: d.getTime() });
+                }}>Até amanhã 08:00</Button>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Sync with Supabase */}
           <Card>
             <CardHeader>
@@ -357,22 +411,21 @@ export const NotificationSettings = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BookOpen className="h-5 w-5" />
-                Dicas Educacionais
+                Como ativar e instalar
               </CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="educational-tips">Receber dicas de nutrição</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Dicas periódicas sobre alimentação saudável e hábitos
-                  </p>
-                </div>
-                <Switch
-                  id="educational-tips"
-                  checked={settings.educationalTips}
-                  onCheckedChange={(checked) => updateSettings({ educationalTips: checked })}
-                />
+            <CardContent className="space-y-3">
+              <div className="text-sm text-muted-foreground">
+                <p>Para receber notificações:</p>
+                <ul className="list-disc ml-5 mt-1 space-y-1">
+                  <li>No navegador, permita notificações quando solicitado.</li>
+                  <li>Se negou antes, vá em Configurações do site » Permissões » Notificações e marque Permitir.</li>
+                  <li>No iOS (Safari), adicione o app à tela inicial (Compartilhar » Adicionar à Tela de Início) e permita notificações.</li>
+                  <li>No Android (Chrome), instale o PWA quando aparecer o banner “Adicionar à tela inicial”.</li>
+                </ul>
+              </div>
+              <div className="text-sm text-muted-foreground">
+                <p>Instalação PWA facilita lembretes em background. Abra o app regularmente para manter os agendamentos atualizados.</p>
               </div>
             </CardContent>
           </Card>

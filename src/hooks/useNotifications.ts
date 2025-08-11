@@ -11,6 +11,7 @@ export interface NotificationSettings {
   };
   hydrationInterval: number; // in hours
   useSupabaseMealTimes: boolean; // New option to sync with Supabase
+  muteUntil?: number | null; // timestamp (ms) when mute ends
 }
 
 const defaultSettings: NotificationSettings = {
@@ -25,7 +26,8 @@ const defaultSettings: NotificationSettings = {
     dinner: '19:00'
   },
   hydrationInterval: 2,
-  useSupabaseMealTimes: true
+  useSupabaseMealTimes: true,
+  muteUntil: null
 };
 
 export const useNotifications = () => {
@@ -84,17 +86,14 @@ export const useNotifications = () => {
     return result === 'granted';
   }, [isSupported]);
 
-  const updateSettings = useCallback((newSettings: Partial<NotificationSettings>) => {
-    const updatedSettings = { ...settings, ...newSettings };
-    setSettings(updatedSettings);
-    localStorage.setItem('notificationSettings', JSON.stringify(updatedSettings));
-    
-    // Reschedule notifications with new settings
-    scheduleAllNotifications(updatedSettings);
-  }, [settings]);
+
 
   const scheduleNotification = useCallback((title: string, body: string, tag: string, scheduledTime: Date) => {
     if (permission !== 'granted' || !isSupported) return;
+
+    // Respect mute window
+    const muteUntil = settings.muteUntil ?? 0;
+    if (muteUntil && Date.now() < muteUntil) return;
 
     const now = new Date();
     const delay = scheduledTime.getTime() - now.getTime();
@@ -102,6 +101,10 @@ export const useNotifications = () => {
     if (delay <= 0) return; // Don't schedule past notifications
 
     setTimeout(() => {
+      // Double-check mute at send time
+      const currentMute = (settings.muteUntil ?? 0);
+      if (currentMute && Date.now() < currentMute) return;
+
       if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
         navigator.serviceWorker.controller.postMessage({
           type: 'SCHEDULE_NOTIFICATION',
@@ -112,7 +115,7 @@ export const useNotifications = () => {
         new Notification(title, { body, tag });
       }
     }, delay);
-  }, [permission, isSupported]);
+  }, [permission, isSupported, settings.muteUntil]);
 
   const scheduleMealReminders = useCallback((mealSettings: { [key: string]: string }) => {
     if (!settings.mealReminders) return;
@@ -253,6 +256,17 @@ export const useNotifications = () => {
   const scheduleAllNotifications = useCallback((currentSettings: NotificationSettings) => {
     if (permission !== 'granted') return;
 
+    // Respect mute window
+    const muteUntil = currentSettings.muteUntil ?? 0;
+    if (muteUntil && Date.now() < muteUntil) {
+      // Clear any existing and skip scheduling
+      if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_NOTIFICATIONS' });
+        navigator.serviceWorker.controller.postMessage({ type: 'SET_MUTE_UNTIL', payload: { muteUntil } });
+      }
+      return;
+    }
+
     // Clear existing scheduled notifications by reloading the service worker
     if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
       navigator.serviceWorker.controller.postMessage({
@@ -272,6 +286,23 @@ export const useNotifications = () => {
       scheduleAllNotifications(settings);
     }
   }, [permission, scheduleAllNotifications, settings]);
+
+  const updateSettings = useCallback((newSettings: Partial<NotificationSettings>) => {
+    const updatedSettings = { ...settings, ...newSettings } as NotificationSettings;
+    setSettings(updatedSettings);
+    localStorage.setItem('notificationSettings', JSON.stringify(updatedSettings));
+
+    // Inform SW about mute state
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+      navigator.serviceWorker.controller.postMessage({
+        type: 'SET_MUTE_UNTIL',
+        payload: { muteUntil: updatedSettings.muteUntil ?? 0 }
+      });
+    }
+
+    // Reschedule notifications with new settings
+    scheduleAllNotifications(updatedSettings);
+  }, [settings, scheduleAllNotifications]);
 
   return {
     permission,
