@@ -6,7 +6,7 @@ export function StreakCard() {
   const { current, longest } = useStreaks();
 
   return (
-    <div className="bg-gradient-to-r from-primary to-primary-light text-primary-foreground rounded-xl p-4 shadow-primary">
+    <div className="bg-gradient-to-r from-primary to-primary-light text-primary-foreground rounded-xl p-4 shadow-primary animate-enter hover-scale relative overflow-hidden">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
           <div className="bg-foreground/10 p-2 rounded-lg">

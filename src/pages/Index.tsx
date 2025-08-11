@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Settings, RotateCcw, Check, UtensilsCrossed, Dumbbell, Coffee, Apple, RefreshCw, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -54,6 +54,26 @@ const Index = () => {
   const completedMeals = currentDayPlan.meals.filter(m => m.isCompleted).length;
   const remainingCalories = Math.max(0, currentDayPlan.targetCalories - consumedCalories);
 
+  const [showMacros, setShowMacros] = useState(false);
+  const macros = useMemo(() => {
+    if (!currentDayPlan) return { calories: 0, carbs: 0, protein: 0, fat: 0 };
+    const totals = { calories: 0, carbs: 0, protein: 0, fat: 0 };
+    currentDayPlan.meals
+      .filter((m) => m.isCompleted)
+      .forEach((meal) => {
+        meal.foods.forEach((mf: any) => {
+          const food = mf.substitutedFood || foods.find((f) => f.id === mf.foodId);
+          if (!food) return;
+          const mult = mf.quantity / food.defaultQuantity;
+          totals.calories += food.nutritionalInfo.calories * mult;
+          totals.carbs += food.nutritionalInfo.carbohydrates * mult;
+          totals.protein += food.nutritionalInfo.protein * mult;
+          totals.fat += food.nutritionalInfo.fat * mult;
+        });
+      });
+    return totals;
+  }, [currentDayPlan, foods]);
+
   return (
     <div className="max-w-sm mx-auto min-h-screen bg-background">
       {/* Header */}
@@ -102,16 +122,45 @@ const Index = () => {
         <div className="bg-card border border-border rounded-xl p-6 text-center shadow-card">
           <p className="text-sm text-muted-foreground">Calorias Restantes</p>
           <p className="text-4xl font-bold my-2 text-foreground">{remainingCalories}</p>
-          <div className="w-full bg-muted rounded-full h-2 mt-4">
-            <div 
-              className="bg-primary h-2 rounded-full transition-all duration-300" 
-              style={{ width: `${Math.min(100, (consumedCalories / currentDayPlan.targetCalories) * 100)}%` }}
-            />
-          </div>
-          <div className="flex justify-between text-xs mt-2 text-muted-foreground">
-            <span>Consumido: {Math.round(consumedCalories)} kcal</span>
-            <span>Meta: {currentDayPlan.targetCalories} kcal</span>
-          </div>
+
+          <button
+            type="button"
+            aria-expanded={showMacros}
+            onClick={() => setShowMacros((s) => !s)}
+            className="w-full mt-4 text-left focus:outline-none"
+          >
+            <div className="w-full bg-muted rounded-full h-2">
+              <div
+                className="bg-primary h-2 rounded-full transition-all duration-300"
+                style={{
+                  width: `${Math.min(100, (consumedCalories / currentDayPlan.targetCalories) * 100)}%`,
+                }}
+              />
+            </div>
+            <div className="flex justify-between text-xs mt-2 text-muted-foreground">
+              <span>Consumido: {Math.round(consumedCalories)} kcal</span>
+              <span>Meta: {currentDayPlan.targetCalories} kcal</span>
+            </div>
+          </button>
+
+          {showMacros && (
+            <div className="mt-4 animate-fade-in text-left">
+              <div className="grid grid-cols-3 gap-3">
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="text-xs text-muted-foreground">Carboidratos</p>
+                  <p className="text-sm font-semibold text-foreground">{Math.round(macros.carbs)} g</p>
+                </div>
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="text-xs text-muted-foreground">Proteínas</p>
+                  <p className="text-sm font-semibold text-foreground">{Math.round(macros.protein)} g</p>
+                </div>
+                <div className="bg-muted/50 rounded-lg p-3">
+                  <p className="text-xs text-muted-foreground">Gorduras</p>
+                  <p className="text-sm font-semibold text-foreground">{Math.round(macros.fat)} g</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
       </div>
