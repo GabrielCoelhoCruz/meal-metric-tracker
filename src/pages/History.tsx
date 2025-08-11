@@ -146,7 +146,7 @@ export default function History() {
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="text-lg font-bold text-primary">{week.completion}%</div>
-                        <ChevronRight className="w-4 h-4 text-gray-400" />
+                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
                       </div>
                     </div>
                     <div className="mt-3 w-full bg-muted rounded-full h-2">

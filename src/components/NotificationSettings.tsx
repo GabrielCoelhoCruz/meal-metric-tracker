@@ -144,7 +144,7 @@ export const NotificationSettings = () => {
         <CardContent className="space-y-4">
           {permission === 'granted' ? (
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-green-600">
+              <div className="flex items-center gap-2 text-success">
                 <Bell className="h-4 w-4" />
                 <span>Notificações ativadas</span>
               </div>

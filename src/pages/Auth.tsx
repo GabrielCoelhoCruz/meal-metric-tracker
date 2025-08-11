@@ -99,9 +99,9 @@ const Auth = () => {
                   </Alert>
                 )}
                 {connectionStatus === 'connected' && (
-                  <Alert className="border-green-200 bg-green-50 dark:bg-green-950">
-                    <CheckCircle className="h-4 w-4 text-green-600" />
-                    <AlertDescription className="text-green-800 dark:text-green-200">
+                  <Alert className="border-success/20 bg-success/10 dark:bg-success/20">
+                    <CheckCircle className="h-4 w-4 text-success" />
+                    <AlertDescription className="text-success-foreground">
                       Conexão com Supabase estabelecida!
                     </AlertDescription>
                   </Alert>
@@ -113,8 +113,8 @@ const Auth = () => {
                       Erro de conexão. 
                       <Button 
                         variant="link" 
-                        className="h-auto p-0 ml-1 text-red-600 underline"
-                        onClick={testConnection}
+                         className="h-auto p-0 ml-1 text-destructive underline"
+                         onClick={testConnection}
                       >
                         Tentar novamente
                       </Button>

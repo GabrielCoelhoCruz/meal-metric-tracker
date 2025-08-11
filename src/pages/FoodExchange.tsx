@@ -162,8 +162,8 @@ export default function FoodExchange() {
                     return (
                       <div 
                         key={food.id}
-                        className={`bg-white p-4 rounded-2xl shadow-sm cursor-pointer transition-all duration-200 ${
-                          isSelected ? 'ring-2 ring-blue-500 bg-blue-50' : 'hover:shadow-md'
+                        className={`bg-card p-4 rounded-2xl shadow-sm cursor-pointer transition-all duration-200 ${
+                          isSelected ? 'ring-2 ring-primary bg-primary/10' : 'hover:shadow-md'
                         }`}
                         onClick={() => setSelectedFood(food)}
                       >
@@ -209,8 +209,8 @@ export default function FoodExchange() {
                     return (
                       <div 
                         key={food.id}
-                        className={`bg-white p-4 rounded-2xl shadow-sm cursor-pointer transition-all duration-200 ${
-                          isSelected ? 'ring-2 ring-blue-500 bg-blue-50' : 'hover:shadow-md'
+                        className={`bg-card p-4 rounded-2xl shadow-sm cursor-pointer transition-all duration-200 ${
+                          isSelected ? 'ring-2 ring-primary bg-primary/10' : 'hover:shadow-md'
                         }`}
                         onClick={() => setSelectedFood(food)}
                       >

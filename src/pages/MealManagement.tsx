@@ -83,10 +83,10 @@ export default function MealManagement() {
 
   if (!currentDayPlan) {
     return (
-      <div className="bg-gray-50 min-h-screen flex items-center justify-center">
+      <div className="bg-background min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-xl font-semibold mb-2">Carregando...</h2>
-          <p className="text-gray-500">Aguarde enquanto carregamos seus dados</p>
+          <p className="text-muted-foreground">Aguarde enquanto carregamos seus dados</p>
         </div>
       </div>
     );
@@ -99,7 +99,7 @@ export default function MealManagement() {
         <header className="flex items-center justify-between mb-6">
           <button 
             onClick={() => navigate('/')}
-            className="flex items-center gap-2 text-gray-600 font-medium py-2 px-4 rounded-full border border-gray-300 bg-white shadow-sm"
+            className="flex items-center gap-2 text-muted-foreground font-medium py-2 px-4 rounded-full border border-border bg-card shadow-sm"
           >
             <ArrowLeft className="w-4 h-4" />
             Voltar
@@ -111,15 +111,15 @@ export default function MealManagement() {
           <section className="mb-8">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold text-gray-800">Gerenciar Refeições</h1>
-                <p className="text-gray-500 mt-2">
+                <h1 className="text-3xl font-bold text-foreground">Gerenciar Refeições</h1>
+                <p className="text-muted-foreground mt-2">
                   {currentDayPlan.meals.length} refeições configuradas
                 </p>
               </div>
               
               <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
                 <DialogTrigger asChild>
-                  <button className="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition-colors">
+                  <button className="bg-primary text-primary-foreground p-3 rounded-full shadow-lg hover:bg-primary-hover transition-colors">
                     <Plus className="w-5 h-5" />
                   </button>
                 </DialogTrigger>
@@ -177,18 +177,18 @@ export default function MealManagement() {
           {/* Meals List */}
           <section className="space-y-4 mb-24">
             {currentDayPlan.meals.map((meal) => (
-              <div key={meal.id} className="bg-white p-4 rounded-2xl shadow-sm">
+              <div key={meal.id} className="bg-card p-4 rounded-2xl shadow-sm">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold text-lg text-gray-800">{meal.name}</h3>
+                      <h3 className="font-semibold text-lg text-foreground">{meal.name}</h3>
                       {meal.isCompleted && (
-                        <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                        <span className="px-2 py-1 bg-success/10 text-success rounded-full text-xs font-medium">
                           Concluída
                         </span>
                       )}
                     </div>
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <Clock className="w-4 h-4" />
                         {meal.scheduledTime}
@@ -205,13 +205,13 @@ export default function MealManagement() {
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleEditMeal(meal)}
-                      className="p-2 text-gray-500 hover:text-blue-600 rounded-full hover:bg-blue-50 transition-colors"
+                      className="p-2 text-muted-foreground hover:text-primary rounded-full hover:bg-primary/10 transition-colors"
                     >
                       <Edit className="w-4 h-4" />
                     </button>
                     <button
                       onClick={() => handleDeleteMeal(meal.id)}
-                      className="p-2 text-gray-500 hover:text-red-600 rounded-full hover:bg-red-50 transition-colors"
+                      className="p-2 text-muted-foreground hover:text-destructive rounded-full hover:bg-destructive/10 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -220,21 +220,21 @@ export default function MealManagement() {
 
                 {meal.foods.length > 0 ? (
                   <div className="space-y-2">
-                    <h4 className="text-sm font-medium text-gray-500">Alimentos:</h4>
+                    <h4 className="text-sm font-medium text-muted-foreground">Alimentos:</h4>
                     <div className="grid gap-2">
                       {meal.foods.map((mealFood) => {
                         const food = foods.find(f => f.id === mealFood.foodId);
                         if (!food) return null;
                         
                         return (
-                          <div key={mealFood.id} className="flex justify-between items-center p-2 bg-gray-50 rounded-xl">
+                          <div key={mealFood.id} className="flex justify-between items-center p-2 bg-muted rounded-xl">
                             <div>
-                              <span className="font-medium text-gray-800">{food.name}</span>
-                              <span className="text-sm text-gray-500 ml-2">
+                              <span className="font-medium text-foreground">{food.name}</span>
+                              <span className="text-sm text-muted-foreground ml-2">
                                 {mealFood.quantity}{mealFood.unit}
                               </span>
                             </div>
-                            <div className="text-sm font-medium text-gray-600">
+                            <div className="text-sm font-medium text-muted-foreground">
                               {Math.round((food.nutritionalInfo.calories * mealFood.quantity) / food.defaultQuantity)} kcal
                             </div>
                           </div>
@@ -243,11 +243,11 @@ export default function MealManagement() {
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center py-4 text-gray-500">
+                  <div className="text-center py-4 text-muted-foreground">
                     <p className="text-sm">Nenhum alimento adicionado ainda</p>
                     <button
                       onClick={() => navigate(`/meal-editor/${meal.id}`)}
-                      className="mt-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg text-sm hover:bg-blue-200 transition-colors"
+                      className="mt-2 px-4 py-2 bg-primary/10 text-primary rounded-lg text-sm hover:bg-primary/20 transition-colors"
                     >
                       Adicionar alimentos
                     </button>
@@ -258,16 +258,16 @@ export default function MealManagement() {
 
             {currentDayPlan.meals.length === 0 && (
               <div className="text-center py-12">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Plus className="w-8 h-8 text-gray-400" />
+                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Plus className="w-8 h-8 text-muted-foreground" />
                 </div>
-                <h3 className="text-lg font-semibold mb-2 text-gray-800">Nenhuma refeição</h3>
-                <p className="text-gray-500 mb-6">
+                <h3 className="text-lg font-semibold mb-2 text-foreground">Nenhuma refeição</h3>
+                <p className="text-muted-foreground mb-6">
                   Comece criando sua primeira refeição
                 </p>
                 <button 
                   onClick={() => setIsCreateDialogOpen(true)}
-                  className="bg-blue-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition-colors"
+                  className="bg-primary text-primary-foreground px-6 py-3 rounded-full font-semibold hover:bg-primary-hover transition-colors"
                 >
                   Criar primeira refeição
                 </button>
