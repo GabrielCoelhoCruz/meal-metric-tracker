@@ -70,20 +70,20 @@ export default function History() {
           <section className="bg-card p-6 rounded-2xl shadow-sm mb-8">
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center">
-                <p className="text-3xl font-bold text-blue-600">{Math.round((currentData.completedMeals / currentData.totalMeals) * 100)}%</p>
-                <p className="text-sm text-gray-500">Taxa de Conclusão</p>
+                <p className="text-3xl font-bold text-primary">{Math.round((currentData.completedMeals / currentData.totalMeals) * 100)}%</p>
+                <p className="text-sm text-muted-foreground">Taxa de Conclusão</p>
               </div>
               <div className="text-center">
-                <p className="text-3xl font-bold text-orange-500">{currentData.avgCalories}</p>
-                <p className="text-sm text-gray-500">Média Diária</p>
+                <p className="text-3xl font-bold text-accent">{currentData.avgCalories}</p>
+                <p className="text-sm text-muted-foreground">Média Diária</p>
               </div>
               <div className="text-center">
-                <p className="text-3xl font-bold text-green-500">{currentData.streak}</p>
-                <p className="text-sm text-gray-500">Sequência</p>
+                <p className="text-3xl font-bold text-success">{currentData.streak}</p>
+                <p className="text-sm text-muted-foreground">Sequência</p>
               </div>
               <div className="text-center">
-                <p className="text-3xl font-bold text-red-500">{currentData.completedMeals}</p>
-                <p className="text-sm text-gray-500">Refeições</p>
+                <p className="text-3xl font-bold text-destructive">{currentData.completedMeals}</p>
+                <p className="text-sm text-muted-foreground">Refeições</p>
               </div>
             </div>
           </section>
@@ -98,33 +98,33 @@ export default function History() {
 
               <TabsContent value="week" className="space-y-4">
                 {mockHistory.week.days.map((day, index) => (
-                  <div key={day.date} className="bg-white p-4 rounded-2xl shadow-sm">
+                  <div key={day.date} className="bg-card p-4 rounded-2xl shadow-sm">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className={cn(
                           "w-3 h-3 rounded-full",
-                          day.completed ? "bg-green-500" : "bg-gray-300"
+                          day.completed ? "bg-success" : "bg-muted"
                         )} />
                         <div>
-                          <div className="font-medium text-gray-800">
+                          <div className="font-medium text-foreground">
                             {new Date(day.date).toLocaleDateString('pt-BR', { 
                               weekday: 'long', 
                               day: 'numeric', 
                               month: 'short' 
                             })}
                           </div>
-                          <div className="text-sm text-gray-500">
+                          <div className="text-sm text-muted-foreground">
                             {day.meals} refeições • {day.calories} kcal
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
                         {day.completed && (
-                          <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                          <span className="px-2 py-1 bg-success/10 text-success rounded-full text-xs font-medium">
                             Completo
                           </span>
                         )}
-                        <ChevronRight className="w-4 h-4 text-gray-400" />
+                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
                       </div>
                     </div>
                   </div>
@@ -133,25 +133,25 @@ export default function History() {
 
               <TabsContent value="month" className="space-y-4">
                 {mockHistory.month.weeks.map((week, index) => (
-                  <div key={week.week} className="bg-white p-4 rounded-2xl shadow-sm">
+                  <div key={week.week} className="bg-card p-4 rounded-2xl shadow-sm">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <TrendingUp className="w-5 h-5 text-blue-600" />
+                        <TrendingUp className="w-5 h-5 text-primary" />
                         <div>
-                          <div className="font-medium text-gray-800">{week.week}</div>
-                          <div className="text-sm text-gray-500">
+                          <div className="font-medium text-foreground">{week.week}</div>
+                          <div className="text-sm text-muted-foreground">
                             {week.completion}% completa • {week.avgCalories} kcal média
                           </div>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="text-lg font-bold text-blue-600">{week.completion}%</div>
+                        <div className="text-lg font-bold text-primary">{week.completion}%</div>
                         <ChevronRight className="w-4 h-4 text-gray-400" />
                       </div>
                     </div>
-                    <div className="mt-3 w-full bg-gray-200 rounded-full h-2">
+                    <div className="mt-3 w-full bg-muted rounded-full h-2">
                       <div 
-                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                        className="bg-primary h-2 rounded-full transition-all duration-300"
                         style={{ width: `${week.completion}%` }}
                       />
                     </div>
@@ -162,27 +162,27 @@ export default function History() {
           </section>
 
           {/* Achievements Section */}
-          <section className="bg-white p-6 rounded-2xl shadow-sm mt-8 mb-24">
+          <section className="bg-card p-6 rounded-2xl shadow-sm mt-8 mb-24">
             <div className="flex items-center gap-3 mb-4">
-              <Award className="w-5 h-5 text-yellow-500" />
-              <h2 className="text-lg font-semibold text-gray-800">Conquistas</h2>
+              <Award className="w-5 h-5 text-warning" />
+              <h2 className="text-lg font-semibold text-foreground">Conquistas</h2>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <div className="flex items-center gap-2 p-2 bg-green-50 rounded-lg">
-                <div className="w-2 h-2 bg-green-500 rounded-full" />
-                <span className="text-sm text-gray-700">7 dias seguidos</span>
+              <div className="flex items-center gap-2 p-2 bg-success/10 rounded-lg">
+                <div className="w-2 h-2 bg-success rounded-full" />
+                <span className="text-sm text-foreground">7 dias seguidos</span>
               </div>
-              <div className="flex items-center gap-2 p-2 bg-blue-50 rounded-lg">
-                <div className="w-2 h-2 bg-blue-500 rounded-full" />
-                <span className="text-sm text-gray-700">50 refeições</span>
+              <div className="flex items-center gap-2 p-2 bg-primary/10 rounded-lg">
+                <div className="w-2 h-2 bg-primary rounded-full" />
+                <span className="text-sm text-foreground">50 refeições</span>
               </div>
-              <div className="flex items-center gap-2 p-2 bg-orange-50 rounded-lg">
-                <div className="w-2 h-2 bg-orange-500 rounded-full" />
-                <span className="text-sm text-gray-700">Meta mensal</span>
+              <div className="flex items-center gap-2 p-2 bg-accent/10 rounded-lg">
+                <div className="w-2 h-2 bg-accent rounded-full" />
+                <span className="text-sm text-foreground">Meta mensal</span>
               </div>
-              <div className="flex items-center gap-2 p-2 bg-gray-100 rounded-lg">
-                <div className="w-2 h-2 bg-gray-400 rounded-full" />
-                <span className="text-sm text-gray-500">30 dias perfeitos</span>
+              <div className="flex items-center gap-2 p-2 bg-muted rounded-lg">
+                <div className="w-2 h-2 bg-muted-foreground rounded-full" />
+                <span className="text-sm text-muted-foreground">30 dias perfeitos</span>
               </div>
             </div>
           </section>
