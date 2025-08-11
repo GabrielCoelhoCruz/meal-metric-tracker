@@ -369,6 +369,15 @@ export function DietProvider({ children }: { children: ReactNode }) {
     initializeApp();
   }, []);
 
+  useEffect(() => {
+    const handleOnline = () => {
+      const today = new Date().toISOString().split('T')[0];
+      loadDayPlan(today);
+    };
+    window.addEventListener('online', handleOnline);
+    return () => window.removeEventListener('online', handleOnline);
+  }, [loadDayPlan]);
+
   const contextValue: DietContextType = {
     ...state,
     isLoading: state.isLoading || persistenceLoading,

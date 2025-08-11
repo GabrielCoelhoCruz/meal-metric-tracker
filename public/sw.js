@@ -1,9 +1,10 @@
 const CACHE_NAME = 'meal-tracker-v1';
+const RUNTIME_CACHE = 'runtime-v1';
 const urlsToCache = [
   '/',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
-  '/manifest.json'
+  '/manifest.json',
+  '/pwa-192x192.png',
+  '/pwa-512x512.png'
 ];
 
 // Store for scheduled notifications
@@ -21,15 +22,52 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Fetch event - serve from cache, fallback to network
+// Fetch event - runtime caching with offline support
 self.addEventListener('fetch', (event) => {
+  const req = event.request;
+
+  // Only handle GET requests
+  if (req.method !== 'GET') return;
+
+  const url = new URL(req.url);
+  const isSupabase = url.origin.includes('supabase.co');
+
+  // Cache Supabase GET requests (data APIs)
+  if (isSupabase) {
+    event.respondWith(
+      caches.open(RUNTIME_CACHE).then(async (cache) => {
+        try {
+          const res = await fetch(req);
+          cache.put(req, res.clone());
+          return res;
+        } catch (err) {
+          const cached = await cache.match(req);
+          if (cached) return cached;
+          throw err;
+        }
+      })
+    );
+    return;
+  }
+
+  // Handle navigation requests: fallback to cached shell when offline
+  if (req.mode === 'navigate') {
+    event.respondWith(
+      fetch(req).catch(() => caches.match('/'))
+    );
+    return;
+  }
+
+  // Same-origin assets: cache-first
   event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Return cached version or fetch from network
-        return response || fetch(event.request);
-      }
-    )
+    caches.match(req).then((cached) => {
+      if (cached) return cached;
+      return fetch(req).then((res) => {
+        const copy = res.clone();
+        caches.open(RUNTIME_CACHE).then((cache) => cache.put(req, copy));
+        return res;
+      });
+    })
   );
 });
 

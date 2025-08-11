@@ -44,6 +44,7 @@ export function BottomNavigation() {
             <NavLink
               key={item.path}
               to={item.path}
+              aria-label={item.label}
               className={cn(
                 "relative flex flex-col items-center justify-center min-w-[44px] min-h-[44px] p-1 rounded-lg transition-all duration-200",
                 "touch-manipulation", // Otimização para touch
@@ -52,8 +53,8 @@ export function BottomNavigation() {
                   : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
               )}
             >
-              <div className="relative">
-                <Icon size={20} />
+              <div className="relative" aria-hidden>
+                <Icon size={20} aria-hidden />
                 {item.badge && (
                   <Badge 
                     variant="destructive" 

@@ -6,11 +6,15 @@ export function StreakCard() {
   const { current, longest } = useStreaks();
 
   return (
-    <div className="bg-gradient-to-r from-primary to-primary-light text-primary-foreground rounded-xl p-4 shadow-primary animate-enter hover-scale relative overflow-hidden">
+    <div
+      role="region"
+      aria-label={`Sequência atual ${current} dias; recorde ${longest} dias`}
+      className="bg-gradient-to-r from-primary to-primary-light text-primary-foreground rounded-xl p-4 shadow-primary animate-enter hover-scale relative overflow-hidden"
+    >
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <div className="bg-foreground/10 p-2 rounded-lg">
-            <Flame className="w-5 h-5" />
+          <div className="bg-foreground/10 p-2 rounded-lg" aria-hidden>
+            <Flame className="w-5 h-5" aria-hidden />
           </div>
           <div>
             <p className="text-sm opacity-90">Sequência Atual</p>
@@ -19,8 +23,8 @@ export function StreakCard() {
         </div>
         
         <div className="text-right">
-          <div className="flex items-center space-x-1 justify-end mb-1">
-            <Trophy className="w-4 h-4 opacity-80" />
+          <div className="flex items-center space-x-1 justify-end mb-1" aria-hidden>
+            <Trophy className="w-4 h-4 opacity-80" aria-hidden />
             <span className="text-xs opacity-80">Recorde</span>
           </div>
           <p className="text-lg font-semibold">{longest}</p>

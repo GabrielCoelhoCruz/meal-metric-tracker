@@ -88,28 +88,31 @@ const Index = () => {
         <div className="flex items-center space-x-2">
           <ThemeToggle />
           <Button
+            aria-label="Abrir Analytics"
             variant="ghost"
             size="sm"
-            className="w-10 h-10 rounded-full bg-muted"
+            className="w-11 h-11 rounded-full bg-muted min-w-[44px] min-h-[44px]"
             onClick={() => navigate('/analytics')}
           >
-            <BarChart3 className="w-4 h-4" />
+            <BarChart3 className="w-4 h-4" aria-hidden />
           </Button>
           <Button
+            aria-label="Substituições de Alimentos"
             variant="ghost"
             size="sm"
-            className="w-10 h-10 rounded-full bg-muted"
+            className="w-11 h-11 rounded-full bg-muted min-w-[44px] min-h-[44px]"
             onClick={() => navigate('/food-substitutions')}
           >
-            <RefreshCw className="w-4 h-4" />
+            <RefreshCw className="w-4 h-4" aria-hidden />
           </Button>
           <Button
+            aria-label="Abrir Configurações"
             variant="ghost"
             size="sm"
-            className="w-10 h-10 rounded-full bg-muted"
+            className="w-11 h-11 rounded-full bg-muted min-w-[44px] min-h-[44px]"
             onClick={() => navigate('/settings')}
           >
-            <Settings className="w-4 h-4" />
+            <Settings className="w-4 h-4" aria-hidden />
           </Button>
         </div>
       </header>
@@ -132,6 +135,11 @@ const Index = () => {
           >
             <div className="w-full bg-muted rounded-full h-2">
               <div
+                role="progressbar"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={Math.min(100, (consumedCalories / currentDayPlan.targetCalories) * 100)}
+                aria-label="Progresso de calorias do dia"
                 className="bg-primary h-2 rounded-full transition-all duration-300"
                 style={{
                   width: `${Math.min(100, (consumedCalories / currentDayPlan.targetCalories) * 100)}%`,
