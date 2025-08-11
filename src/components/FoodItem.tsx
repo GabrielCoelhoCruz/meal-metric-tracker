@@ -32,15 +32,15 @@ export function FoodItem({
 
   const getCategoryColor = (category: string) => {
     const colors = {
-      protein: 'bg-blue-100 text-blue-800',
-      carbohydrate: 'bg-orange-100 text-orange-800',
-      fruit: 'bg-green-100 text-green-800',
-      vegetable: 'bg-emerald-100 text-emerald-800',
-      dairy: 'bg-purple-100 text-purple-800',
-      fat: 'bg-yellow-100 text-yellow-800',
-      supplement: 'bg-gray-100 text-gray-800'
-    };
-    return colors[category as keyof typeof colors] || colors.supplement;
+      protein: 'bg-primary/10 text-primary',
+      carbohydrate: 'bg-accent/10 text-accent',
+      fruit: 'bg-success/10 text-success',
+      vegetable: 'bg-success/10 text-success',
+      dairy: 'bg-muted text-foreground',
+      fat: 'bg-warning/10 text-warning',
+      supplement: 'bg-muted text-foreground'
+    } as const;
+    return (colors as any)[category] || colors.supplement;
   };
 
   return (

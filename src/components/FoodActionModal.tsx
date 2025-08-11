@@ -59,7 +59,7 @@ export function FoodActionModal({
         
         <div className="space-y-6">
           {/* Current Status */}
-          <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+          <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
             <span className="text-sm font-medium">Status atual</span>
             <Badge variant={mealFood.isCompleted ? "default" : "secondary"}>
               {mealFood.isCompleted ? "Concluído" : "Pendente"}
@@ -101,7 +101,7 @@ export function FoodActionModal({
                 <Scale className="w-4 h-4" />
               </Button>
             </div>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               Quantidade atual: {mealFood.quantity}{mealFood.unit}
             </p>
           </div>
@@ -109,22 +109,22 @@ export function FoodActionModal({
           {/* Nutrition Preview */}
           <div className="space-y-3">
             <Label className="text-sm font-medium">Informações nutricionais</Label>
-            <div className="grid grid-cols-2 gap-3 p-3 bg-gray-50 rounded-lg">
+            <div className="grid grid-cols-2 gap-3 p-3 bg-muted rounded-lg">
               <div className="text-center">
-                <p className="text-lg font-bold text-blue-600">{Math.round(nutrition.calories)}</p>
-                <p className="text-xs text-gray-500">Calorias</p>
+                <p className="text-lg font-bold text-primary">{Math.round(nutrition.calories)}</p>
+                <p className="text-xs text-muted-foreground">Calorias</p>
               </div>
               <div className="text-center">
-                <p className="text-lg font-bold text-orange-500">{Math.round(nutrition.carbohydrates)}g</p>
-                <p className="text-xs text-gray-500">Carboidratos</p>
+                <p className="text-lg font-bold text-accent">{Math.round(nutrition.carbohydrates)}g</p>
+                <p className="text-xs text-muted-foreground">Carboidratos</p>
               </div>
               <div className="text-center">
-                <p className="text-lg font-bold text-green-500">{Math.round(nutrition.protein)}g</p>
-                <p className="text-xs text-gray-500">Proteínas</p>
+                <p className="text-lg font-bold text-success">{Math.round(nutrition.protein)}g</p>
+                <p className="text-xs text-muted-foreground">Proteínas</p>
               </div>
               <div className="text-center">
-                <p className="text-lg font-bold text-red-500">{Math.round(nutrition.fat)}g</p>
-                <p className="text-xs text-gray-500">Gorduras</p>
+                <p className="text-lg font-bold text-destructive">{Math.round(nutrition.fat)}g</p>
+                <p className="text-xs text-muted-foreground">Gorduras</p>
               </div>
             </div>
           </div>

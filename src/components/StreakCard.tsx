@@ -9,7 +9,7 @@ export function StreakCard() {
     <div className="bg-gradient-to-r from-primary to-primary-light text-primary-foreground rounded-xl p-4 shadow-primary">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <div className="bg-white/20 p-2 rounded-lg">
+          <div className="bg-foreground/10 p-2 rounded-lg">
             <Flame className="w-5 h-5" />
           </div>
           <div>
@@ -28,7 +28,7 @@ export function StreakCard() {
       </div>
       
       {current > 0 && (
-        <div className="mt-3 pt-3 border-t border-white/20">
+        <div className="mt-3 pt-3 border-t border-foreground/20">
           <p className="text-xs opacity-80">
             {current === 1 ? 'Ótimo começo!' : 
              current < 7 ? 'Continue assim!' :

@@ -20,10 +20,8 @@ const colors = [
   'bg-success', 
   'bg-accent',
   'bg-warning',
-  'bg-pink-500',
-  'bg-blue-500',
-  'bg-green-500',
-  'bg-yellow-500'
+  'bg-secondary',
+  'bg-destructive'
 ];
 
 export function Confetti({ trigger, onComplete }: ConfettiProps) {
