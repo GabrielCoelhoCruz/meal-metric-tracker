@@ -20,6 +20,26 @@ const Index = () => {
     getCurrentDayCalories
   } = useDiet();
 
+  const [showMacros, setShowMacros] = useState(false);
+  const macros = useMemo(() => {
+    if (!currentDayPlan) return { calories: 0, carbs: 0, protein: 0, fat: 0 };
+    const totals = { calories: 0, carbs: 0, protein: 0, fat: 0 };
+    currentDayPlan.meals
+      .filter((m) => m.isCompleted)
+      .forEach((meal) => {
+        meal.foods.forEach((mf: any) => {
+          const food = mf.substitutedFood || foods.find((f) => f.id === mf.foodId);
+          if (!food) return;
+          const mult = mf.quantity / food.defaultQuantity;
+          totals.calories += food.nutritionalInfo.calories * mult;
+          totals.carbs += food.nutritionalInfo.carbohydrates * mult;
+          totals.protein += food.nutritionalInfo.protein * mult;
+          totals.fat += food.nutritionalInfo.fat * mult;
+        });
+      });
+    return totals;
+  }, [currentDayPlan, foods]);
+
   const getMealIcon = (mealName: string) => {
     const name = mealName.toLowerCase();
     if (name.includes('café') || name.includes('manhã')) return Coffee;
@@ -54,25 +74,6 @@ const Index = () => {
   const completedMeals = currentDayPlan.meals.filter(m => m.isCompleted).length;
   const remainingCalories = Math.max(0, currentDayPlan.targetCalories - consumedCalories);
 
-  const [showMacros, setShowMacros] = useState(false);
-  const macros = useMemo(() => {
-    if (!currentDayPlan) return { calories: 0, carbs: 0, protein: 0, fat: 0 };
-    const totals = { calories: 0, carbs: 0, protein: 0, fat: 0 };
-    currentDayPlan.meals
-      .filter((m) => m.isCompleted)
-      .forEach((meal) => {
-        meal.foods.forEach((mf: any) => {
-          const food = mf.substitutedFood || foods.find((f) => f.id === mf.foodId);
-          if (!food) return;
-          const mult = mf.quantity / food.defaultQuantity;
-          totals.calories += food.nutritionalInfo.calories * mult;
-          totals.carbs += food.nutritionalInfo.carbohydrates * mult;
-          totals.protein += food.nutritionalInfo.protein * mult;
-          totals.fat += food.nutritionalInfo.fat * mult;
-        });
-      });
-    return totals;
-  }, [currentDayPlan, foods]);
 
   return (
     <div className="max-w-sm mx-auto min-h-screen bg-background">
