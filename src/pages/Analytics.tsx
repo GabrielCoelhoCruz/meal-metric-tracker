@@ -1,12 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, TrendingUp, Calendar, Target, Award, Flame, BarChart3, Filter } from 'lucide-react';
+import { ArrowLeft, TrendingUp, Calendar, Target, Award, Flame, BarChart3, Filter, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { useStreaks } from '@/hooks/useStreaks';
 import { WeeklyChart } from '@/components/WeeklyChart';
 import { StatsCards } from '@/components/StatsCards';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { exportToCsv } from '@/utils/csv';
 
 export default function Analytics() {
   const navigate = useNavigate();
@@ -14,6 +15,22 @@ export default function Analytics() {
   const { current, longest } = useStreaks();
   const weeklyStats = getWeeklyStats();
   const trendData = getProgressTrend();
+  const handleExportCsv = () => {
+    const headers = ['Data','Refeições Totais','Refeições Concluídas','Taxa de Conclusão (%)','Calorias Consumidas','Carboidratos (g)','Proteínas (g)','Gorduras (g)','Calorias Alvo'];
+    const rows = dailyRecords.map(d => [
+      String(d.date),
+      d.totalMeals,
+      d.completedMeals,
+      d.completionRate,
+      Math.round(d.consumedCalories),
+      Math.round(d.consumedCarbohydrates),
+      Math.round(d.consumedProtein),
+      Math.round(d.consumedFat),
+      Math.round(d.targetCalories),
+    ]);
+    const file = `analytics-${filters.period}-${String(filters.mealType).replace(/\s+/g,'-')}-${filters.macro}-${new Date().toISOString().slice(0,10)}`;
+    exportToCsv(file, headers, rows);
+  };
 
   return (
     <div className="max-w-sm mx-auto min-h-screen bg-background pb-24">
@@ -32,6 +49,12 @@ export default function Analytics() {
           <p className="text-sm text-muted-foreground">
             Acompanhe seu progresso
           </p>
+        </div>
+        <div className="ml-auto">
+          <Button variant="outline" size="sm" onClick={handleExportCsv}>
+            <Download className="w-4 h-4" />
+            Exportar CSV
+          </Button>
         </div>
       </header>
 
