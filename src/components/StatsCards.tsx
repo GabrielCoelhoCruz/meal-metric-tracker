@@ -1,10 +1,10 @@
 import React from 'react';
 import { TrendingUp, Target, Calendar, Award } from 'lucide-react';
-import { useAnalytics } from '@/hooks/useAnalytics';
+import { useAnalytics, type WeeklyStats } from '@/hooks/useAnalytics';
 
-export function StatsCards() {
+export function StatsCards({ stats: statsProp }: { stats?: WeeklyStats }) {
   const { getWeeklyStats } = useAnalytics();
-  const stats = getWeeklyStats();
+  const stats = statsProp ?? getWeeklyStats();
 
   const cards = [
     {
@@ -21,7 +21,7 @@ export function StatsCards() {
     },
     {
       icon: Target,
-      label: 'Calorias/Dia',
+      label: 'Valor Médio',
       value: stats.averageCalories > 0 ? `${stats.averageCalories}` : '-',
       color: 'text-accent'
     },

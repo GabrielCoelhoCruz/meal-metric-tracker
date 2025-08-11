@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_daily: {
+        Row: {
+          completed_meals: number
+          completion_rate: number
+          consumed_calories: number
+          consumed_carbohydrates: number
+          consumed_fat: number
+          consumed_protein: number
+          created_at: string
+          date: string
+          id: string
+          target_calories: number
+          total_meals: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_meals?: number
+          completion_rate?: number
+          consumed_calories?: number
+          consumed_carbohydrates?: number
+          consumed_fat?: number
+          consumed_protein?: number
+          created_at?: string
+          date: string
+          id?: string
+          target_calories?: number
+          total_meals?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_meals?: number
+          completion_rate?: number
+          consumed_calories?: number
+          consumed_carbohydrates?: number
+          consumed_fat?: number
+          consumed_protein?: number
+          created_at?: string
+          date?: string
+          id?: string
+          target_calories?: number
+          total_meals?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       daily_plans: {
         Row: {
           created_at: string
@@ -201,6 +249,10 @@ export type Database = {
     Functions: {
       create_fixed_meal_plan: {
         Args: { plan_date: string; user_uuid: string }
+        Returns: undefined
+      }
+      refresh_analytics_for_day: {
+        Args: { _user_id: string; _date: string }
         Returns: undefined
       }
     }

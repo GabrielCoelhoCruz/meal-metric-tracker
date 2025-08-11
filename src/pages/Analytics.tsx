@@ -1,17 +1,19 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, TrendingUp, Calendar, Target, Award, Flame, BarChart3 } from 'lucide-react';
+import { ArrowLeft, TrendingUp, Calendar, Target, Award, Flame, BarChart3, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { useStreaks } from '@/hooks/useStreaks';
 import { WeeklyChart } from '@/components/WeeklyChart';
 import { StatsCards } from '@/components/StatsCards';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function Analytics() {
   const navigate = useNavigate();
-  const { dailyRecords, getWeeklyStats } = useAnalytics();
+  const { dailyRecords, getWeeklyStats, filters, setFilters, mealTypes, getProgressTrend } = useAnalytics();
   const { current, longest } = useStreaks();
   const weeklyStats = getWeeklyStats();
+  const trendData = getProgressTrend();
 
   return (
     <div className="max-w-sm mx-auto min-h-screen bg-background pb-24">
@@ -32,6 +34,43 @@ export default function Analytics() {
           </p>
         </div>
       </header>
+
+      {/* Filters */}
+      <div className="px-6 pb-4">
+        <div className="bg-card border border-border rounded-xl p-3">
+          <div className="flex items-center gap-2 mb-3">
+            <Filter className="w-4 h-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">Filtros</span>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            <Select value={filters.period} onValueChange={(v: any) => setFilters(f => ({ ...f, period: v }))}>
+              <SelectTrigger><SelectValue placeholder="Período" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="7d">7 dias</SelectItem>
+                <SelectItem value="30d">30 dias</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={filters.mealType} onValueChange={(v: any) => setFilters(f => ({ ...f, mealType: v }))}>
+              <SelectTrigger><SelectValue placeholder="Refeição" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas</SelectItem>
+                {mealTypes.map((mt) => (
+                  <SelectItem key={mt} value={mt}>{mt}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={filters.macro} onValueChange={(v: any) => setFilters(f => ({ ...f, macro: v }))}>
+              <SelectTrigger><SelectValue placeholder="Métrica" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="calories">Calorias</SelectItem>
+                <SelectItem value="carbs">Carboidratos</SelectItem>
+                <SelectItem value="protein">Proteínas</SelectItem>
+                <SelectItem value="fat">Gorduras</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </div>
 
       {/* Quick Stats */}
       <div className="px-6 pb-6">
@@ -58,12 +97,12 @@ export default function Analytics() {
         </div>
 
         {/* Weekly Stats Cards */}
-        <StatsCards />
+        <StatsCards stats={weeklyStats} />
       </div>
 
       {/* Weekly Progress Chart */}
       <div className="px-6 pb-6">
-        <WeeklyChart />
+        <WeeklyChart trendData={trendData} title={filters.period === '7d' ? 'Progresso (7 dias)' : 'Progresso (30 dias)'} />
       </div>
 
       {/* Detailed Stats */}
@@ -96,23 +135,23 @@ export default function Analytics() {
             </div>
             <div className="text-right">
               <p className="text-lg font-bold text-success">{weeklyStats.perfectDays}</p>
-              <p className="text-xs text-muted-foreground">últimos 7 dias</p>
+              <p className="text-xs text-muted-foreground">{filters.period === '7d' ? 'últimos 7 dias' : 'últimos 30 dias'}</p>
             </div>
           </div>
         </div>
 
-        {/* Average Calories */}
+        {/* Average Macro */}
         <div className="bg-card border border-border rounded-xl p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <BarChart3 className="w-5 h-5 text-accent" />
-              <span className="font-medium">Calorias Médias</span>
+              <span className="font-medium">Média diária ({filters.macro})</span>
             </div>
             <div className="text-right">
               <p className="text-lg font-bold text-accent">
                 {weeklyStats.averageCalories > 0 ? weeklyStats.averageCalories : '-'}
               </p>
-              <p className="text-xs text-muted-foreground">kcal por dia</p>
+              <p className="text-xs text-muted-foreground">{filters.macro === 'calories' ? 'kcal/dia' : 'g/dia'}</p>
             </div>
           </div>
         </div>
