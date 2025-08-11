@@ -62,6 +62,48 @@ export type Database = {
         }
         Relationships: []
       }
+      body_metrics: {
+        Row: {
+          body_fat_percent: number | null
+          chest_cm: number | null
+          created_at: string
+          date: string
+          hip_cm: number | null
+          id: string
+          notes: string | null
+          updated_at: string
+          user_id: string
+          waist_cm: number | null
+          weight_kg: number | null
+        }
+        Insert: {
+          body_fat_percent?: number | null
+          chest_cm?: number | null
+          created_at?: string
+          date?: string
+          hip_cm?: number | null
+          id?: string
+          notes?: string | null
+          updated_at?: string
+          user_id: string
+          waist_cm?: number | null
+          weight_kg?: number | null
+        }
+        Update: {
+          body_fat_percent?: number | null
+          chest_cm?: number | null
+          created_at?: string
+          date?: string
+          hip_cm?: number | null
+          id?: string
+          notes?: string | null
+          updated_at?: string
+          user_id?: string
+          waist_cm?: number | null
+          weight_kg?: number | null
+        }
+        Relationships: []
+      }
       daily_plans: {
         Row: {
           created_at: string
@@ -241,6 +283,66 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      profiles: {
+        Row: {
+          birthdate: string | null
+          created_at: string
+          display_name: string | null
+          gender: string | null
+          height_cm: number | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          birthdate?: string | null
+          created_at?: string
+          display_name?: string | null
+          gender?: string | null
+          height_cm?: number | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          birthdate?: string | null
+          created_at?: string
+          display_name?: string | null
+          gender?: string | null
+          height_cm?: number | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_preferences: {
+        Row: {
+          allergies: string[] | null
+          created_at: string
+          dietary_preferences: string[] | null
+          dislikes: string[] | null
+          preferred_calorie_target: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          allergies?: string[] | null
+          created_at?: string
+          dietary_preferences?: string[] | null
+          dislikes?: string[] | null
+          preferred_calorie_target?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          allergies?: string[] | null
+          created_at?: string
+          dietary_preferences?: string[] | null
+          dislikes?: string[] | null
+          preferred_calorie_target?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {
