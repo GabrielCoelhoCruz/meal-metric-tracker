@@ -394,7 +394,7 @@
   }
   
   /* Interactive elements */
-  .interactive {
+  .interactive, .hover-scale {
     @apply transition-all duration-200 hover:scale-[1.02] active:scale-[0.98];
   }
   

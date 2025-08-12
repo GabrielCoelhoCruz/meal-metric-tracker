@@ -1,10 +1,12 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Settings, RotateCcw, Check, UtensilsCrossed, Dumbbell, Coffee, Apple, RefreshCw, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useDiet } from '@/contexts/DietContext';
 import { StreakCard } from '@/components/StreakCard';
+import { Onboarding } from '@/components/Onboarding';
+import { FAQDrawer } from '@/components/FAQDrawer';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -21,6 +23,11 @@ const Index = () => {
   } = useDiet();
 
   const [showMacros, setShowMacros] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  useEffect(() => {
+    const done = localStorage.getItem('onboarding_done');
+    if (!done) setShowOnboarding(true);
+  }, []);
   const macros = useMemo(() => {
     if (!currentDayPlan) return { calories: 0, carbs: 0, protein: 0, fat: 0 };
     const totals = { calories: 0, carbs: 0, protein: 0, fat: 0 };
@@ -244,6 +251,14 @@ const Index = () => {
           })}
         </div>
       </div>
+      <FAQDrawer />
+      <Onboarding
+        open={showOnboarding}
+        onClose={() => {
+          localStorage.setItem('onboarding_done', '1');
+          setShowOnboarding(false);
+        }}
+      />
     </div>
   );
 };
