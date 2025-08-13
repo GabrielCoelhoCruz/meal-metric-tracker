@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { MotivationalToastProvider } from "@/components/MotivationalToastProvider";
 import { BottomNavigation } from "@/components/BottomNavigation";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { NotificationFeedback } from "@/components/NotificationFeedback";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import MealDetail from "./pages/MealDetail";
@@ -78,6 +79,7 @@ const App = () => (
         <AuthProvider>
           <Toaster />
           <Sonner />
+          <NotificationFeedback />
           <AppContent />
         </AuthProvider>
       </ThemeProvider>

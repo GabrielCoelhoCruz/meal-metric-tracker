@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { NotificationSettings } from '@/components/NotificationSettings';
+import { EnhancedNotificationSettings } from '@/components/EnhancedNotificationSettings';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
@@ -190,7 +190,7 @@ export default function Settings() {
                     </button>
                   </div>
                   <div className="p-4">
-                    <NotificationSettings />
+                    <EnhancedNotificationSettings />
                   </div>
                 </div>
               </div>
