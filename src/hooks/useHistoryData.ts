@@ -122,8 +122,6 @@ export function useHistoryData(filters: HistoryFilters) {
         `)
         .gte('daily_plans.date', fromISO)
         .lte('daily_plans.date', toISO)
-        .order('daily_plans.date', { ascending: false })
-        .order('scheduled_time', { ascending: false })
         .range(offset, offset + ITEMS_PER_PAGE - 1);
 
       // Apply filters
@@ -180,6 +178,15 @@ export function useHistoryData(filters: HistoryFilters) {
           isCompleted: meal.is_completed,
           completionRate: totalFoods > 0 ? Math.round((completedFoods / totalFoods) * 100) : 0
         };
+      });
+
+      // Sort the records by date (descending) and then by time (descending)
+      processedRecords.sort((a, b) => {
+        const dateCompare = new Date(b.date).getTime() - new Date(a.date).getTime();
+        if (dateCompare !== 0) return dateCompare;
+        
+        // If dates are equal, sort by scheduled time (descending)
+        return b.mealTime.localeCompare(a.mealTime);
       });
 
       // Cache the results
