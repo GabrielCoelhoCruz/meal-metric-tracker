@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Calendar, Target, TrendingUp } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { ProgressCircle } from '@/components/ui/progress-circle';

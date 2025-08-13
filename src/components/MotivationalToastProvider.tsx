@@ -1,9 +1,9 @@
-import React, { useEffect } from 'react';
+import { useEffect, ReactNode } from 'react';
 import { useDiet } from '@/contexts/DietContext';
 import { useStreaks } from '@/hooks/useStreaks';
 import { useMotivationalToast } from '@/hooks/useMotivationalToast';
 
-export function MotivationalToastProvider({ children }: { children: React.ReactNode }) {
+export function MotivationalToastProvider({ children }: { children: ReactNode }) {
   const { currentDayPlan, getDailyProgress, getCurrentDayCalories } = useDiet();
   const { current } = useStreaks();
   const { 

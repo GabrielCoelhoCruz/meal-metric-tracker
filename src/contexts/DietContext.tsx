@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { DailyPlan, Meal, MealFood, Food } from '@/types/diet';
 import { useDietPersistence } from '@/hooks/useDietPersistence';
 import { useMotivationalToast } from '@/hooks/useMotivationalToast';

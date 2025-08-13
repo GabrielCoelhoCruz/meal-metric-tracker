@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { NavLink, useLocation } from 'react-router-dom';
 import { Home, History, Settings } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
