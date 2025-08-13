@@ -28,7 +28,7 @@ export function BottomNavigation() {
     {
       path: '/settings',
       icon: Settings,
-      label: 'Config',
+      label: 'Configurações',
       badge: null
     }
   ];

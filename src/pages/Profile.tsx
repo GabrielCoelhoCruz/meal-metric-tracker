@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { ArrowLeft, Save, Plus, History, Settings2 } from "lucide-react";
+import { ArrowLeft, Save, Plus, History, Settings2, Loader2 } from "lucide-react";
 
 // Simple helpers
 const parseCsvList = (v: string) =>
@@ -232,13 +232,14 @@ export default function Profile() {
     <div className="bg-background min-h-screen">
       <div className="container mx-auto max-w-sm p-4">
         <header className="flex items-center justify-between mb-6">
-          <button
+          <Button
+            variant="ghost"
             onClick={() => navigate("/settings")}
-            className="flex items-center gap-2 text-muted-foreground font-medium py-2 px-4 rounded-full border border-border bg-card shadow-sm"
+            className="flex items-center gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
-            Voltar
-          </button>
+            Configurações
+          </Button>
         </header>
 
         <main>
@@ -292,8 +293,9 @@ export default function Profile() {
                 />
               </div>
               <div className="pt-2">
-                <Button onClick={handleSaveProfile} className="w-full">
-                  <Save className="w-4 h-4 mr-2" /> Salvar Perfil
+                <Button onClick={handleSaveProfile} className="w-full" disabled={loading}>
+                  {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+                  Salvar Perfil
                 </Button>
               </div>
             </Card>
@@ -365,8 +367,9 @@ export default function Profile() {
               </div>
 
               <div className="pt-2">
-                <Button onClick={handleSavePreferences} className="w-full" variant="secondary">
-                  <Save className="w-4 h-4 mr-2" /> Salvar Preferências
+                <Button onClick={handleSavePreferences} className="w-full" variant="secondary" disabled={loading}>
+                  {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+                  Salvar Preferências
                 </Button>
               </div>
             </Card>
@@ -410,8 +413,9 @@ export default function Profile() {
                 <Textarea value={metricNotes} onChange={(e) => setMetricNotes(e.target.value)} placeholder="Como foi a semana?" />
               </div>
               <div className="pt-1">
-                <Button onClick={handleAddMetric} className="w-full" variant="outline">
-                  <Plus className="w-4 h-4 mr-2" /> Registrar métricas
+                <Button onClick={handleAddMetric} className="w-full" variant="outline" disabled={loading}>
+                  {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
+                  Registrar métricas
                 </Button>
               </div>
 

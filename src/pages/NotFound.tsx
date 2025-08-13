@@ -1,7 +1,8 @@
 import { useLocation, Link } from "react-router-dom";
 import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { SearchX } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { SearchX, Home, History, Settings } from "lucide-react";
 
 const NotFound = () => {
   const location = useLocation();
@@ -41,36 +42,49 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-background">
-      <article className="text-center px-6 max-w-md">
+    <main className="min-h-screen flex items-center justify-center bg-background p-4">
+      <Card className="text-center p-8 max-w-md w-full">
         <div aria-hidden="true" className="mb-6 flex justify-center">
-          <SearchX className="h-16 w-16 text-muted-foreground" />
+          <div className="rounded-full bg-muted p-4">
+            <SearchX className="h-12 w-12 text-muted-foreground" />
+          </div>
         </div>
         <h1
           ref={headingRef}
           tabIndex={-1}
-          className="text-4xl font-bold mb-3 text-foreground"
+          className="text-3xl font-bold mb-3 text-foreground"
         >
           Página não encontrada
         </h1>
-        <p className="text-base text-muted-foreground mb-6">
-          Não encontramos a página “{location.pathname}”. Verifique o endereço
-          ou volte para o início.
+        <p className="text-muted-foreground mb-8">
+          Não encontramos a página <code className="px-1 py-0.5 bg-muted rounded text-sm font-mono">{location.pathname}</code>. 
+          Escolha uma das opções abaixo para continuar navegando.
         </p>
-        <div className="flex items-center justify-center gap-3">
-          <Button asChild aria-label="Voltar para a tela inicial" className="hover-scale">
-            <Link to="/">Voltar ao Início</Link>
+        
+        <div className="space-y-3">
+          <Button asChild size="lg" className="w-full">
+            <Link to="/">
+              <Home className="w-4 h-4 mr-2" />
+              Ir para Início
+            </Link>
           </Button>
-          <Button
-            variant="secondary"
-            asChild
-            aria-label="Ir para Histórico"
-            className="hover-scale"
-          >
-            <Link to="/history">Ver Histórico</Link>
-          </Button>
+          
+          <div className="grid grid-cols-2 gap-3">
+            <Button variant="outline" asChild>
+              <Link to="/history">
+                <History className="w-4 h-4 mr-2" />
+                Histórico
+              </Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link to="/settings">
+                <Settings className="w-4 h-4 mr-2" />
+                Configurações
+              </Link>
+            </Button>
+          </div>
         </div>
-      </article>
+      </Card>
     </main>
   );
 };
