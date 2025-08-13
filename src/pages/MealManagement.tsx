@@ -218,41 +218,48 @@ export default function MealManagement() {
                   </div>
                 </div>
 
-                {meal.foods.length > 0 ? (
-                  <div className="space-y-2">
-                    <h4 className="text-sm font-medium text-muted-foreground">Alimentos:</h4>
-                    <div className="grid gap-2">
-                      {meal.foods.map((mealFood) => {
-                        const food = foods.find(f => f.id === mealFood.foodId);
-                        if (!food) return null;
-                        
-                        return (
-                          <div key={mealFood.id} className="flex justify-between items-center p-2 bg-muted rounded-xl">
-                            <div>
-                              <span className="font-medium text-foreground">{food.name}</span>
-                              <span className="text-sm text-muted-foreground ml-2">
-                                {mealFood.quantity}{mealFood.unit}
-                              </span>
+                <div className="space-y-3">
+                  {meal.foods.length > 0 && (
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-medium text-muted-foreground">Alimentos:</h4>
+                      <div className="grid gap-2">
+                        {meal.foods.map((mealFood) => {
+                          const food = foods.find(f => f.id === mealFood.foodId);
+                          if (!food) return null;
+                          
+                          return (
+                            <div key={mealFood.id} className="flex justify-between items-center p-2 bg-muted rounded-xl">
+                              <div>
+                                <span className="font-medium text-foreground">{food.name}</span>
+                                <span className="text-sm text-muted-foreground ml-2">
+                                  {mealFood.quantity}{mealFood.unit}
+                                </span>
+                              </div>
+                              <div className="text-sm font-medium text-muted-foreground">
+                                {Math.round((food.nutritionalInfo.calories * mealFood.quantity) / food.defaultQuantity)} kcal
+                              </div>
                             </div>
-                            <div className="text-sm font-medium text-muted-foreground">
-                              {Math.round((food.nutritionalInfo.calories * mealFood.quantity) / food.defaultQuantity)} kcal
-                            </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-4 text-muted-foreground">
-                    <p className="text-sm">Nenhum alimento adicionado ainda</p>
+                  )}
+                  
+                  <div className="flex gap-2">
                     <button
                       onClick={() => navigate(`/meal-editor/${meal.id}`)}
-                      className="mt-2 px-4 py-2 bg-primary/10 text-primary rounded-lg text-sm hover:bg-primary/20 transition-colors"
+                      className="flex-1 px-4 py-2 bg-primary/10 text-primary rounded-lg text-sm hover:bg-primary/20 transition-colors"
                     >
-                      Adicionar alimentos
+                      {meal.foods.length > 0 ? 'Editar alimentos' : 'Adicionar alimentos'}
+                    </button>
+                    <button
+                      onClick={() => handleEditMeal(meal)}
+                      className="px-4 py-2 bg-secondary/50 text-secondary-foreground rounded-lg text-sm hover:bg-secondary/70 transition-colors"
+                    >
+                      Editar refeição
                     </button>
                   </div>
-                )}
+                </div>
               </div>
             ))}
 
