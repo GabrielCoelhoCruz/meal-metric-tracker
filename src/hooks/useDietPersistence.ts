@@ -376,6 +376,140 @@ export const useDietPersistence = () => {
     }
   };
 
+  const addMeal = async (meal: Meal, dailyPlanId: string): Promise<boolean> => {
+    try {
+      const { error } = await supabase
+        .from('meals')
+        .insert({
+          id: meal.id,
+          daily_plan_id: dailyPlanId,
+          name: meal.name,
+          scheduled_time: meal.scheduledTime,
+          is_completed: meal.isCompleted || false
+        });
+
+      if (error) {
+        console.error('Error adding meal:', error);
+        toast.error('Erro ao adicionar refeição');
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error adding meal:', error);
+      toast.error('Erro ao adicionar refeição');
+      return false;
+    }
+  };
+
+  const updateMeal = async (meal: Meal): Promise<boolean> => {
+    try {
+      const { error } = await supabase
+        .from('meals')
+        .update({
+          name: meal.name,
+          scheduled_time: meal.scheduledTime,
+          is_completed: meal.isCompleted || false,
+          completed_at: meal.completedAt ? meal.completedAt.toISOString() : null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', meal.id);
+
+      if (error) {
+        console.error('Error updating meal:', error);
+        toast.error('Erro ao atualizar refeição');
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error updating meal:', error);
+      toast.error('Erro ao atualizar refeição');
+      return false;
+    }
+  };
+
+  const deleteMeal = async (mealId: string): Promise<boolean> => {
+    try {
+      // First delete all meal_foods for this meal
+      const { error: mealFoodsError } = await supabase
+        .from('meal_foods')
+        .delete()
+        .eq('meal_id', mealId);
+
+      if (mealFoodsError) {
+        console.error('Error deleting meal foods:', mealFoodsError);
+        toast.error('Erro ao excluir alimentos da refeição');
+        return false;
+      }
+
+      // Then delete the meal
+      const { error: mealError } = await supabase
+        .from('meals')
+        .delete()
+        .eq('id', mealId);
+
+      if (mealError) {
+        console.error('Error deleting meal:', mealError);
+        toast.error('Erro ao excluir refeição');
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error deleting meal:', error);
+      toast.error('Erro ao excluir refeição');
+      return false;
+    }
+  };
+
+  const addMealFood = async (mealId: string, foodId: string, quantity: number, unit: string): Promise<boolean> => {
+    try {
+      const { error } = await supabase
+        .from('meal_foods')
+        .insert({
+          meal_id: mealId,
+          food_id: foodId,
+          quantity,
+          unit,
+          is_completed: false
+        });
+
+      if (error) {
+        console.error('Error adding meal food:', error);
+        toast.error('Erro ao adicionar alimento à refeição');
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error adding meal food:', error);
+      toast.error('Erro ao adicionar alimento à refeição');
+      return false;
+    }
+  };
+
+  const deleteMealFood = async (mealFoodId: string): Promise<boolean> => {
+    try {
+      const { error } = await supabase
+        .from('meal_foods')
+        .delete()
+        .eq('id', mealFoodId);
+
+      if (error) {
+        console.error('Error deleting meal food:', error);
+        toast.error('Erro ao remover alimento da refeição');
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error deleting meal food:', error);
+      toast.error('Erro ao remover alimento da refeição');
+      return false;
+    }
+  };
+
   return {
     isLoading,
     loadFoods,
@@ -384,5 +518,10 @@ export const useDietPersistence = () => {
     updateMealFoodCompletion,
     updateMealFoodQuantity,
     substituteFoodInMeal,
+    addMeal,
+    updateMeal,
+    deleteMeal,
+    addMealFood,
+    deleteMealFood,
   };
 };

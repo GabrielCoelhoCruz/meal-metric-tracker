@@ -20,9 +20,11 @@ interface DietContextType extends DietState {
   getMealProgress: (mealId: string) => number;
   getDailyProgress: () => number;
   getCurrentDayCalories: () => number;
-  addMeal: (meal: Meal) => void;
-  updateMeal: (meal: Meal) => void;
-  deleteMeal: (mealId: string) => void;
+  addMeal: (meal: Meal) => Promise<void>;
+  updateMeal: (meal: Meal) => Promise<void>;
+  deleteMeal: (mealId: string) => Promise<void>;
+  addMealFood: (mealId: string, foodId: string, quantity: number, unit: string) => Promise<void>;
+  deleteMealFood: (mealFoodId: string) => Promise<void>;
 }
 
 type DietAction = 
@@ -220,6 +222,11 @@ export function DietProvider({ children }: { children: ReactNode }) {
     updateMealFoodCompletion, 
     updateMealFoodQuantity: updateQuantityInDB, 
     substituteFoodInMeal: substituteFoodInDB,
+    addMeal: addMealToDB,
+    updateMeal: updateMealInDB,
+    deleteMeal: deleteMealFromDB,
+    addMealFood: addMealFoodToDB,
+    deleteMealFood: deleteMealFoodFromDB,
     isLoading: persistenceLoading 
   } = useDietPersistence();
 
@@ -335,16 +342,45 @@ export function DietProvider({ children }: { children: ReactNode }) {
       }, 0);
   };
 
-  const addMeal = (meal: Meal) => {
-    dispatch({ type: 'ADD_MEAL', payload: meal });
+  const addMeal = async (meal: Meal) => {
+    if (!state.currentDayPlan) return;
+    
+    const success = await addMealToDB(meal, state.currentDayPlan.id);
+    if (success) {
+      dispatch({ type: 'ADD_MEAL', payload: meal });
+    }
   };
 
-  const updateMeal = (meal: Meal) => {
-    dispatch({ type: 'UPDATE_MEAL', payload: meal });
+  const updateMeal = async (meal: Meal) => {
+    const success = await updateMealInDB(meal);
+    if (success) {
+      dispatch({ type: 'UPDATE_MEAL', payload: meal });
+    }
   };
 
-  const deleteMeal = (mealId: string) => {
-    dispatch({ type: 'DELETE_MEAL', payload: mealId });
+  const deleteMeal = async (mealId: string) => {
+    const success = await deleteMealFromDB(mealId);
+    if (success) {
+      dispatch({ type: 'DELETE_MEAL', payload: mealId });
+    }
+  };
+
+  const addMealFood = async (mealId: string, foodId: string, quantity: number, unit: string) => {
+    const success = await addMealFoodToDB(mealId, foodId, quantity, unit);
+    if (success) {
+      // Recarregar o plano do dia para pegar os novos dados
+      const today = new Date().toISOString().split('T')[0];
+      await loadDayPlan(today);
+    }
+  };
+
+  const deleteMealFood = async (mealFoodId: string) => {
+    const success = await deleteMealFoodFromDB(mealFoodId);
+    if (success) {
+      // Recarregar o plano do dia para refletir as mudanças
+      const today = new Date().toISOString().split('T')[0];
+      await loadDayPlan(today);
+    }
   };
 
   useEffect(() => {
@@ -393,7 +429,9 @@ export function DietProvider({ children }: { children: ReactNode }) {
     getCurrentDayCalories,
     addMeal,
     updateMeal,
-    deleteMeal
+    deleteMeal,
+    addMealFood,
+    deleteMealFood
   };
 
   return (

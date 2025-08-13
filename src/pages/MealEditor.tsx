@@ -14,7 +14,7 @@ import { EditQuantityDialog } from '@/components/EditQuantityDialog';
 export default function MealEditor() {
   const navigate = useNavigate();
   const { mealId } = useParams();
-  const { currentDayPlan, foods, updateMeal, addMeal } = useDiet();
+  const { currentDayPlan, foods, updateMeal, addMeal, addMealFood, deleteMealFood } = useDiet();
   
   const [meal, setMeal] = useState<Meal | null>(null);
   const [isNewMeal, setIsNewMeal] = useState(false);
@@ -95,7 +95,7 @@ export default function MealEditor() {
     });
   };
 
-  const saveMeal = () => {
+  const saveMeal = async () => {
     if (!meal || !mealForm.name.trim() || !mealForm.scheduledTime) return;
 
     const updatedMeal = {
@@ -105,9 +105,9 @@ export default function MealEditor() {
     };
 
     if (isNewMeal) {
-      addMeal?.(updatedMeal);
+      await addMeal?.(updatedMeal);
     } else {
-      updateMeal?.(updatedMeal);
+      await updateMeal?.(updatedMeal);
     }
 
     navigate('/meal-management');
