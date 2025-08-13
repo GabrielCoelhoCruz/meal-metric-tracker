@@ -147,7 +147,7 @@ export function useHistoryData(filters: HistoryFilters) {
         const totalFoods = meal.meal_foods?.length || 0;
         const completedFoods = meal.meal_foods?.filter((mf: any) => mf.is_completed)?.length || 0;
         
-        // Calculate nutritional values for completed foods
+        // Calculate nutritional values for completed foods only
         let consumedCalories = 0;
         let consumedCarbs = 0;
         let consumedProtein = 0;
