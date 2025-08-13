@@ -10,6 +10,12 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
+  // Add safety check for React
+  if (!React || typeof React.useState !== 'function') {
+    console.error('React is not properly loaded');
+    return <div>Loading...</div>;
+  }
+  
   const [theme, setTheme] = useState<Theme>('light');
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as Theme;
