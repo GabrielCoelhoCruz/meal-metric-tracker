@@ -151,7 +151,7 @@ export default function Settings() {
             </div>
 
             {/* User Info & Logout */}
-            <div className="space-y-3 mb-24">
+            <div className="space-y-3 pb-32">
               <h3 className="text-lg font-semibold text-foreground">Conta</h3>
               <div className="bg-card p-4 rounded-2xl shadow-sm">
                 <div className="flex items-center justify-between">
@@ -167,13 +167,14 @@ export default function Settings() {
                 </div>
               </div>
               
-              <button
+              <Button
                 onClick={signOut}
-                className="w-full bg-card p-4 rounded-2xl shadow-sm h-12 flex items-center justify-center gap-2 text-destructive border border-destructive/20 hover:bg-destructive/10 transition-colors"
+                variant="destructive"
+                className="w-full flex items-center justify-center gap-2"
               >
                 <LogOut className="w-4 h-4" />
                 Sair da Conta
-              </button>
+              </Button>
             </div>
 
             {/* Notification Settings Modal */}
