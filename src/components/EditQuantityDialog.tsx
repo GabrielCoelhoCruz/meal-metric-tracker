@@ -12,12 +12,18 @@ interface EditQuantityDialogProps {
   mealFood: MealFood;
   food: Food;
   onUpdateQuantity: (newQuantity: number) => void;
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function EditQuantityDialog({ mealFood, food, onUpdateQuantity, children }: EditQuantityDialogProps) {
+export function EditQuantityDialog({ mealFood, food, onUpdateQuantity, children, open, onOpenChange }: EditQuantityDialogProps) {
   const [quantity, setQuantity] = useState(mealFood.quantity);
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+
+  // Use controlled or uncontrolled state
+  const isOpen = open !== undefined ? open : internalIsOpen;
+  const setIsOpen = onOpenChange || setInternalIsOpen;
 
   const displayFood = mealFood.substitutedFood || food;
   const nutrition = calculateTotalNutrition(displayFood, quantity);
@@ -60,9 +66,11 @@ export function EditQuantityDialog({ mealFood, food, onUpdateQuantity, children 
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
+      {children && (
+        <DialogTrigger asChild>
+          {children}
+        </DialogTrigger>
+      )}
       <DialogContent className="w-[95vw] max-w-md mx-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">

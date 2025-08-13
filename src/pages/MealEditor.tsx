@@ -352,13 +352,15 @@ export default function MealEditor() {
           <EditQuantityDialog
             mealFood={mealFood}
             food={food}
+            open={!!editingFoodId}
+            onOpenChange={(open) => {
+              if (!open) setEditingFoodId(null);
+            }}
             onUpdateQuantity={(newQuantity) => {
               updateFoodQuantity(mealFood.id, newQuantity);
               setEditingFoodId(null);
             }}
-          >
-            <div /> {/* Placeholder - Dialog is controlled via editingFoodId state */}
-          </EditQuantityDialog>
+          />
         );
       })()}
     </div>
