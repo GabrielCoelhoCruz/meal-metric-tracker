@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Settings, RotateCcw, Check, UtensilsCrossed, Dumbbell, Coffee, Apple, RefreshCw, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
