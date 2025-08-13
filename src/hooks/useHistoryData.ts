@@ -104,14 +104,16 @@ export function useHistoryData(filters: HistoryFilters) {
             id,
             quantity,
             is_completed,
-            foods:foods(
+            food_id,
+            substituted_food_id,
+            foods!meal_foods_food_id_fkey(
               calories_per_unit,
               carbohydrates_per_unit,
               protein_per_unit,
               fat_per_unit,
               default_quantity
             ),
-            foods:substituted_food_id(
+            substituted_foods:foods!meal_foods_substituted_food_id_fkey(
               calories_per_unit,
               carbohydrates_per_unit,
               protein_per_unit,
@@ -153,7 +155,8 @@ export function useHistoryData(filters: HistoryFilters) {
 
         meal.meal_foods?.forEach((mf: any) => {
           if (mf.is_completed) {
-            const food = mf.foods || mf.substituted_food_id;
+            // Use substituted food if available, otherwise use original food
+            const food = mf.substituted_foods || mf.foods;
             if (food) {
               const factor = Number(mf.quantity) / Number(food.default_quantity || 1);
               consumedCalories += factor * Number(food.calories_per_unit || 0);
