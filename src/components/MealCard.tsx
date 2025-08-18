@@ -1,4 +1,5 @@
-import React from 'react';
+
+import { useState, useEffect } from 'react';
 import { Clock, ChefHat, Check, ArrowRight, Edit } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -31,11 +32,11 @@ export function MealCard({
   onViewDetails,
   className 
 }: MealCardProps) {
-  const [showConfetti, setShowConfetti] = React.useState(false);
-  const [prevProgress, setPrevProgress] = React.useState(progress);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [prevProgress, setPrevProgress] = useState(progress);
   
   // Trigger confetti when meal reaches 100%
-  React.useEffect(() => {
+  useEffect(() => {
     if (progress === 100 && prevProgress < 100 && !meal.isCompleted) {
       setShowConfetti(true);
     }

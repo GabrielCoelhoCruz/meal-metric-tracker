@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { useAnalytics } from '@/hooks/useAnalytics';
 
 type TrendPoint = { date: number | string; completion: number };

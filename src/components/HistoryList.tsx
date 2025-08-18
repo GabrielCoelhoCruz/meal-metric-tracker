@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Clock, Utensils, Zap, ChevronRight } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';

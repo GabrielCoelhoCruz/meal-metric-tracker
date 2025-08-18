@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { TrendingUp, Target, Calendar, Award } from 'lucide-react';
 import { useAnalytics, type WeeklyStats } from '@/hooks/useAnalytics';
 

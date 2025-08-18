@@ -1,11 +1,12 @@
-import React from 'react';
+
+import { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
 interface ProgressCircleProps {
   progress: number;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
 export function ProgressCircle({ progress, size = 'md', className, children }: ProgressCircleProps) {

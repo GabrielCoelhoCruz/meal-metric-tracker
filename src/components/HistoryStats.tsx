@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { TrendingUp, Target, Award, Flame } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { HistoryStats as HistoryStatsType } from '@/hooks/useHistoryData';

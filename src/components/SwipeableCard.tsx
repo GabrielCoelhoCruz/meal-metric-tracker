@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { motion, useMotionValue, useTransform, PanInfo } from 'framer-motion';
 import { SwipeActions } from './SwipeActions';
 
