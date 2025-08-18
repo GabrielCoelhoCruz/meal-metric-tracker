@@ -353,6 +353,10 @@ export type Database = {
         Args: { plan_date: string; user_uuid: string }
         Returns: undefined
       }
+      create_new_meal_plan: {
+        Args: { plan_date: string; user_uuid: string }
+        Returns: undefined
+      }
       refresh_analytics_for_day: {
         Args: { _date: string; _user_id: string }
         Returns: undefined
