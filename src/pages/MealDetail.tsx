@@ -154,13 +154,13 @@ export default function MealDetail() {
                 return (
                   <div key={mealFood.id} className="bg-card p-4 rounded-2xl shadow-sm">
                     <div className="flex items-start justify-between">
-                      <div className="flex items-start gap-4">
-                        <div className="w-16 h-16 bg-muted rounded-xl flex items-center justify-center">
+                      <div className="flex items-start gap-4 flex-1 min-w-0">
+                        <div className="w-16 h-16 bg-muted rounded-xl flex items-center justify-center flex-shrink-0">
                           <ChefHat className="w-8 h-8 text-muted-foreground" />
                         </div>
-                        <div>
-                          <h3 className="text-lg font-semibold text-foreground">
-                            {food.name.length > 15 ? `${food.name.substring(0, 15)}...` : food.name}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-lg font-semibold text-foreground truncate">
+                            {food.name}
                           </h3>
                           <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
                             <span>{mealFood.quantity}{mealFood.unit}</span>
@@ -171,7 +171,7 @@ export default function MealDetail() {
                       </div>
                       <button 
                         onClick={() => setSelectedMealFood({ mealFood, food })}
-                        className="text-muted-foreground hover:text-primary"
+                        className="text-muted-foreground hover:text-primary flex-shrink-0 ml-2"
                       >
                         {mealFood.isCompleted ? (
                           <Check className="w-5 h-5 text-success" />
