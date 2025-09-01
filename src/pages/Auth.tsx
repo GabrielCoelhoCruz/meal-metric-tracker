@@ -13,6 +13,8 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isSignUp, setIsSignUp] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'testing' | 'connected' | 'error' | null>(null);
   const { toast } = useToast();
 
@@ -39,43 +41,110 @@ const Auth = () => {
     }
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (isSignUp && password !== confirmPassword) {
+      toast({
+        title: "Erro",
+        description: "As senhas não coincidem",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      console.log('Attempting login with:', { email });
-      
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
-
-      console.log('SignIn response:', { data, error });
-
-      if (error) {
-        console.error('SignIn error:', error);
-        toast({
-          title: "Erro no login",
-          description: error.message,
-          variant: "destructive"
-        });
+      if (isSignUp) {
+        await handleSignUp();
       } else {
-        toast({
-          title: "Bem-vindo!",
-          description: "Login realizado com sucesso",
-          variant: "default"
-        });
+        await handleLogin();
       }
-    } catch (error) {
-      console.error('Auth catch error:', error);
-      toast({
-        title: "Erro",
-        description: `Erro inesperado: ${error instanceof Error ? error.message : 'Tente novamente.'}`,
-        variant: "destructive"
-      });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleLogin = async () => {
+    console.log('Attempting login with:', { email });
+    
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+
+    console.log('SignIn response:', { data, error });
+
+    if (error) {
+      console.error('SignIn error:', error);
+      
+      // Handle specific error cases
+      let errorMessage = error.message;
+      if (error.message.includes('Invalid login credentials')) {
+        errorMessage = 'Email ou senha incorretos';
+      } else if (error.message.includes('Email not confirmed')) {
+        errorMessage = 'Por favor, confirme seu email antes de fazer login';
+      }
+      
+      toast({
+        title: "Erro no login",
+        description: errorMessage,
+        variant: "destructive"
+      });
+    } else {
+      toast({
+        title: "Bem-vindo!",
+        description: "Login realizado com sucesso",
+        variant: "default"
+      });
+    }
+  };
+
+  const handleSignUp = async () => {
+    console.log('Attempting signup with:', { email });
+    
+    const redirectUrl = `${window.location.origin}/`;
+    
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: redirectUrl
+      }
+    });
+
+    console.log('SignUp response:', { data, error });
+
+    if (error) {
+      console.error('SignUp error:', error);
+      
+      // Handle specific error cases
+      let errorMessage = error.message;
+      if (error.message.includes('User already registered')) {
+        errorMessage = 'Este email já está cadastrado. Tente fazer login.';
+      } else if (error.message.includes('Password should be at least')) {
+        errorMessage = 'A senha deve ter pelo menos 6 caracteres';
+      } else if (error.message.includes('Unable to validate email address')) {
+        errorMessage = 'Email inválido';
+      }
+      
+      toast({
+        title: "Erro no cadastro",
+        description: errorMessage,
+        variant: "destructive"
+      });
+    } else {
+      toast({
+        title: "Cadastro realizado!",
+        description: "Verifique seu email para confirmar a conta",
+        variant: "default"
+      });
+      
+      // Clear form and switch to login
+      setPassword('');
+      setConfirmPassword('');
+      setIsSignUp(false);
     }
   };
 
@@ -84,9 +153,14 @@ const Auth = () => {
       <div className="w-full max-w-md space-y-4">
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl">Login</CardTitle>
+            <CardTitle className="text-2xl">
+              {isSignUp ? 'Criar Conta' : 'Login'}
+            </CardTitle>
             <p className="text-muted-foreground">
-              Entre na sua conta para acessar seus planos
+              {isSignUp 
+                ? 'Crie sua conta para começar a rastrear suas refeições'
+                : 'Entre na sua conta para acessar seus planos'
+              }
             </p>
           </CardHeader>
           <CardContent>
@@ -125,7 +199,7 @@ const Auth = () => {
               </div>
             )}
 
-            <form onSubmit={handleLogin} className="space-y-4">
+            <form onSubmit={handleAuth} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <div className="relative">
@@ -159,51 +233,97 @@ const Auth = () => {
                 </div>
               </div>
 
+              {isSignUp && (
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirmar Senha</Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      placeholder="••••••••"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="pl-10"
+                      required
+                      minLength={6}
+                    />
+                  </div>
+                  {password && confirmPassword && password !== confirmPassword && (
+                    <p className="text-sm text-destructive">As senhas não coincidem</p>
+                  )}
+                </div>
+              )}
+
               <LoadingButton 
                 type="submit" 
                 className="w-full" 
                 loading={isLoading}
-                loadingText="Entrando..."
+                loadingText={isSignUp ? "Criando conta..." : "Entrando..."}
               >
-                Entrar
+                {isSignUp ? 'Criar Conta' : 'Entrar'}
               </LoadingButton>
             </form>
+
+            {/* Toggle between login and signup */}
+            <div className="mt-4 text-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSignUp(!isSignUp);
+                  setPassword('');
+                  setConfirmPassword('');
+                }}
+                className="text-sm text-primary hover:underline"
+              >
+                {isSignUp 
+                  ? 'Já tem uma conta? Fazer login'
+                  : 'Não tem conta? Criar nova conta'
+                }
+              </button>
+            </div>
           </CardContent>
         </Card>
 
-        {/* Instructions for manual user creation */}
+        {/* Email Configuration Help */}
         <Card className="border-dashed">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
-              <UserPlus className="w-5 h-5" />
-              Precisa de uma conta?
+              <AlertCircle className="w-5 h-5" />
+              Configuração de Email
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3 text-sm text-muted-foreground">
               <p>
-                Os usuários são criados manualmente pelo administrador do sistema.
+                Para que o cadastro por email funcione, é necessário configurar a URL de redirecionamento no Supabase.
               </p>
               
               <div className="space-y-2">
-                <p className="font-medium text-foreground">Para criar um usuário:</p>
+                <p className="font-medium text-foreground">Passos para configurar:</p>
                 <ol className="list-decimal list-inside space-y-1 ml-2">
                   <li>Acesse o painel do Supabase</li>
-                  <li>Vá em Authentication → Users</li>
-                  <li>Clique em "Add user"</li>
-                  <li>Preencha email e senha</li>
-                  <li>Marque "Auto Confirm User"</li>
+                  <li>Vá em Authentication → URL Configuration</li>
+                  <li>Configure Site URL: <code className="bg-muted px-1 rounded text-xs">{window.location.origin}</code></li>
+                  <li>Adicione Redirect URL: <code className="bg-muted px-1 rounded text-xs">{window.location.origin}/**</code></li>
+                  <li>Salve as configurações</li>
                 </ol>
+              </div>
+
+              <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
+                <p className="text-amber-800 dark:text-amber-200 text-xs">
+                  <strong>Dica:</strong> Para testes, você pode desabilitar "Confirm email" em Authentication → Settings para acelerar o processo de login.
+                </p>
               </div>
 
               <Button 
                 variant="outline" 
                 size="sm" 
                 className="w-full mt-3"
-                onClick={() => window.open('https://supabase.com/dashboard/project/hdbyrjeyralxfxqrsrws/auth/users', '_blank')}
+                onClick={() => window.open('https://supabase.com/dashboard/project/hdbyrjeyralxfxqrsrws/auth/providers', '_blank')}
               >
                 <ExternalLink className="w-4 h-4 mr-2" />
-                Abrir Painel do Supabase
+                Configurar no Supabase
               </Button>
             </div>
           </CardContent>
