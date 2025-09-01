@@ -128,6 +128,7 @@ export const useDietPersistence = () => {
         // Load from cache when offline
         const cachedFoods = await getCachedData('foods');
         if (cachedFoods.length > 0) {
+          toast.info('Modo offline: carregando alimentos do cache');
           return cachedFoods.map(convertDatabaseFoodToFood);
         } else {
           toast.warning('Nenhum alimento disponível offline');
@@ -137,9 +138,14 @@ export const useDietPersistence = () => {
     } catch (error) {
       console.error('Error loading foods:', error);
       // Try cached data as fallback
-      const cachedFoods = await getCachedData('foods');
-      if (cachedFoods.length > 0) {
-        return cachedFoods.map(convertDatabaseFoodToFood);
+      try {
+        const cachedFoods = await getCachedData('foods');
+        if (cachedFoods.length > 0) {
+          toast.info('Erro na conexão: usando dados em cache');
+          return cachedFoods.map(convertDatabaseFoodToFood);
+        }
+      } catch (cacheError) {
+        console.error('Error loading cached foods:', cacheError);
       }
       toast.error('Erro ao carregar alimentos');
       return [];
@@ -159,23 +165,71 @@ export const useDietPersistence = () => {
         return null;
       }
 
-      // Load daily plan
-      const { data: dailyPlanData, error: planError } = await supabase
-        .from('daily_plans')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('date', date)
-        .single();
+      if (syncStatus.isOnline) {
+        // Try online loading first
+        const { data: dailyPlanData, error: planError } = await supabase
+          .from('daily_plans')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('date', date)
+          .single();
 
-      if (planError) {
-        if (planError.code === 'PGRST116') {
-          // No plan found for this date, create a default one
-          return await createDefaultDayPlan(date, user.id);
+        if (planError) {
+          if (planError.code === 'PGRST116') {
+            // No plan found for this date, create a default one
+            return await createDefaultDayPlan(date, user.id);
+          }
+          console.error('Error loading daily plan:', planError);
+          
+          // Try cached data as fallback
+          const cachedPlan = await getCachedData(`daily_plan_${date}`);
+          if (cachedPlan.length > 0) {
+            toast.info('Carregando plano do cache offline');
+            return cachedPlan[0];
+          }
+          return null;
         }
-        console.error('Error loading daily plan:', planError);
-        return null;
-      }
 
+        // Load and cache the complete plan
+        const fullPlan = await loadFullPlanData(dailyPlanData, user.id);
+        if (fullPlan) {
+          await cacheData(`daily_plan_${date}`, [fullPlan]);
+        }
+        return fullPlan;
+      } else {
+        // Load from cache when offline
+        const cachedPlan = await getCachedData(`daily_plan_${date}`);
+        if (cachedPlan.length > 0) {
+          toast.info('Modo offline: carregando plano do cache');
+          return cachedPlan[0];
+        } else {
+          toast.warning('Nenhum plano disponível offline para esta data');
+          return null;
+        }
+      }
+    } catch (error) {
+      console.error('Error loading day plan:', error);
+      
+      // Try cached data as fallback
+      try {
+        const cachedPlan = await getCachedData(`daily_plan_${date}`);
+        if (cachedPlan.length > 0) {
+          toast.info('Erro na conexão: usando plano em cache');
+          return cachedPlan[0];
+        }
+      } catch (cacheError) {
+        console.error('Error loading cached plan:', cacheError);
+      }
+      
+      toast.error('Erro ao carregar plano do dia');
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loadFullPlanData = async (dailyPlanData: DatabaseDailyPlan, userId: string): Promise<DailyPlan | null> => {
+    try {
       // Load meals for this plan
       const { data: mealsData, error: mealsError } = await supabase
         .from('meals')
@@ -226,11 +280,8 @@ export const useDietPersistence = () => {
 
       return convertDatabaseDailyPlanToDailyPlan(dailyPlanData, meals);
     } catch (error) {
-      console.error('Error loading day plan:', error);
-      toast.error('Erro ao carregar plano do dia');
+      console.error('Error loading full plan data:', error);
       return null;
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -368,25 +419,36 @@ export const useDietPersistence = () => {
 
   const updateMealFoodQuantity = async (mealFoodId: string, quantity: number): Promise<boolean> => {
     try {
-      const { error } = await supabase
-        .from('meal_foods')
-        .update({
-          quantity,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', mealFoodId);
+      const updateData = {
+        id: mealFoodId,
+        quantity,
+        updated_at: new Date().toISOString()
+      };
 
-      if (error) {
-        console.error('Error updating meal food quantity:', error);
-        toast.error('Erro ao atualizar quantidade');
-        return false;
+      if (syncStatus.isOnline) {
+        const { error } = await supabase
+          .from('meal_foods')
+          .update(updateData)
+          .eq('id', mealFoodId);
+
+        if (error) {
+          console.error('Error updating meal food quantity:', error);
+          await queueOperation('update', 'meal_foods', updateData);
+          return true; // Optimistic update
+        }
+      } else {
+        await queueOperation('update', 'meal_foods', updateData);
       }
 
       return true;
     } catch (error) {
       console.error('Error updating meal food quantity:', error);
-      toast.error('Erro ao atualizar quantidade');
-      return false;
+      await queueOperation('update', 'meal_foods', {
+        id: mealFoodId,
+        quantity,
+        updated_at: new Date().toISOString()
+      });
+      return true;
     }
   };
 

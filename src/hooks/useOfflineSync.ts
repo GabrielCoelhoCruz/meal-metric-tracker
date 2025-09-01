@@ -53,6 +53,8 @@ export function useOfflineSync() {
       setSyncStatus(prev => ({ ...prev, pendingOperations: pending.length }));
     } catch (error) {
       console.error('Error checking pending operations:', error);
+      // Set to 0 on error to prevent infinite error loops
+      setSyncStatus(prev => ({ ...prev, pendingOperations: 0 }));
     }
   }, []);
 

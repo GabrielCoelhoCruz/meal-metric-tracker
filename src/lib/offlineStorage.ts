@@ -107,8 +107,13 @@ class OfflineStorage {
     const index = store.index('synced');
 
     return new Promise((resolve, reject) => {
-      const request = index.getAll(IDBKeyRange.only(false));
-      request.onsuccess = () => resolve(request.result);
+      const request = index.getAll();
+      request.onsuccess = () => {
+        // Filter for unsynced operations in memory instead of using IDBKeyRange
+        const allRecords = request.result;
+        const unsyncedRecords = allRecords.filter(record => record.synced === false);
+        resolve(unsyncedRecords);
+      };
       request.onerror = () => reject(request.error);
     });
   }
@@ -136,9 +141,10 @@ class OfflineStorage {
     const store = transaction.objectStore('syncQueue');
     const index = store.index('synced');
 
-    const request = index.getAll(IDBKeyRange.only(true));
+    const request = index.getAll();
     request.onsuccess = () => {
-      const syncedRecords = request.result;
+      const allRecords = request.result;
+      const syncedRecords = allRecords.filter(record => record.synced === true);
       syncedRecords.forEach(record => {
         store.delete(record.id);
       });
