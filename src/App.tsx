@@ -10,6 +10,7 @@ import { MotivationalToastProvider } from "@/components/MotivationalToastProvide
 import { BottomNavigation } from "@/components/BottomNavigation";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { NotificationFeedback } from "@/components/NotificationFeedback";
+import { OfflineIndicator } from "@/components/OfflineIndicator";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import MealDetail from "./pages/MealDetail";
@@ -51,6 +52,7 @@ const AppContent = () => {
       <MotivationalToastProvider>
         <BrowserRouter>
           <div className="relative min-h-screen">
+            <OfflineIndicator />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/meal/:mealId" element={<MealDetail />} />

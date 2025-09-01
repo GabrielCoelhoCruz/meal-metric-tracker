@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { DailyPlan, Meal, MealFood, Food } from '@/types/diet';
 import { toast } from 'sonner';
+import { useOfflineSync } from '@/hooks/useOfflineSync';
 
 interface DatabaseDailyPlan {
   id: string;
@@ -53,6 +54,7 @@ interface DatabaseFood {
 
 export const useDietPersistence = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const { syncStatus, cacheData, getCachedData, queueOperation } = useOfflineSync();
 
   const convertDatabaseFoodToFood = (dbFood: DatabaseFood): Food => ({
     id: dbFood.id,
@@ -99,20 +101,46 @@ export const useDietPersistence = () => {
   const loadFoods = async (): Promise<Food[]> => {
     try {
       setIsLoading(true);
-      const { data, error } = await supabase
-        .from('foods')
-        .select('*')
-        .order('name');
+      
+      // Try to load from online first
+      if (syncStatus.isOnline) {
+        const { data, error } = await supabase
+          .from('foods')
+          .select('*')
+          .order('name');
 
-      if (error) {
-        console.error('Error loading foods:', error);
-        toast.error('Erro ao carregar alimentos');
-        return [];
+        if (error) {
+          console.error('Error loading foods online:', error);
+          // Fall back to cached data
+          const cachedFoods = await getCachedData('foods');
+          if (cachedFoods.length > 0) {
+            toast.info('Carregando alimentos do cache offline');
+            return cachedFoods.map(convertDatabaseFoodToFood);
+          }
+          toast.error('Erro ao carregar alimentos');
+          return [];
+        }
+
+        // Cache the data for offline use
+        await cacheData('foods', data);
+        return data.map(convertDatabaseFoodToFood);
+      } else {
+        // Load from cache when offline
+        const cachedFoods = await getCachedData('foods');
+        if (cachedFoods.length > 0) {
+          return cachedFoods.map(convertDatabaseFoodToFood);
+        } else {
+          toast.warning('Nenhum alimento disponível offline');
+          return [];
+        }
       }
-
-      return data.map(convertDatabaseFoodToFood);
     } catch (error) {
       console.error('Error loading foods:', error);
+      // Try cached data as fallback
+      const cachedFoods = await getCachedData('foods');
+      if (cachedFoods.length > 0) {
+        return cachedFoods.map(convertDatabaseFoodToFood);
+      }
       toast.error('Erro ao carregar alimentos');
       return [];
     } finally {
@@ -261,6 +289,7 @@ export const useDietPersistence = () => {
   const updateMealCompletion = async (mealId: string, isCompleted: boolean): Promise<boolean> => {
     try {
       const updateData: any = {
+        id: mealId,
         is_completed: isCompleted,
         updated_at: new Date().toISOString()
       };
@@ -271,46 +300,69 @@ export const useDietPersistence = () => {
         updateData.completed_at = null;
       }
 
-      const { error } = await supabase
-        .from('meals')
-        .update(updateData)
-        .eq('id', mealId);
+      if (syncStatus.isOnline) {
+        const { error } = await supabase
+          .from('meals')
+          .update(updateData)
+          .eq('id', mealId);
 
-      if (error) {
-        console.error('Error updating meal completion:', error);
-        toast.error('Erro ao atualizar refeição');
-        return false;
+        if (error) {
+          console.error('Error updating meal completion:', error);
+          // Queue for offline sync
+          await queueOperation('update', 'meals', updateData);
+          return true; // Return true for optimistic update
+        }
+      } else {
+        // Queue for offline sync
+        await queueOperation('update', 'meals', updateData);
       }
 
       return true;
     } catch (error) {
       console.error('Error updating meal completion:', error);
-      toast.error('Erro ao atualizar refeição');
-      return false;
+      // Still queue for sync as fallback
+      await queueOperation('update', 'meals', {
+        id: mealId,
+        is_completed: isCompleted,
+        updated_at: new Date().toISOString(),
+        ...(isCompleted ? { completed_at: new Date().toISOString() } : { completed_at: null })
+      });
+      return true;
     }
   };
 
   const updateMealFoodCompletion = async (mealFoodId: string, isCompleted: boolean): Promise<boolean> => {
     try {
-      const { error } = await supabase
-        .from('meal_foods')
-        .update({
-          is_completed: isCompleted,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', mealFoodId);
+      const updateData = {
+        id: mealFoodId,
+        is_completed: isCompleted,
+        updated_at: new Date().toISOString()
+      };
 
-      if (error) {
-        console.error('Error updating meal food completion:', error);
-        toast.error('Erro ao atualizar alimento');
-        return false;
+      if (syncStatus.isOnline) {
+        const { error } = await supabase
+          .from('meal_foods')
+          .update(updateData)
+          .eq('id', mealFoodId);
+
+        if (error) {
+          console.error('Error updating meal food completion:', error);
+          await queueOperation('update', 'meal_foods', updateData);
+          return true;
+        }
+      } else {
+        await queueOperation('update', 'meal_foods', updateData);
       }
 
       return true;
     } catch (error) {
       console.error('Error updating meal food completion:', error);
-      toast.error('Erro ao atualizar alimento');
-      return false;
+      await queueOperation('update', 'meal_foods', {
+        id: mealFoodId,
+        is_completed: isCompleted,
+        updated_at: new Date().toISOString()
+      });
+      return true;
     }
   };
 

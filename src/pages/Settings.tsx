@@ -10,6 +10,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { LoadingButton } from '@/components/LoadingButton';
+import { SyncStatusCard } from '@/components/SyncStatusCard';
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -51,13 +52,19 @@ export default function Settings() {
           description: 'Editar plano alimentar',
           component: <ChevronRight className="w-4 h-4 text-muted-foreground" />,
           onClick: () => navigate('/meal-management')
-        },
+        }
+      ]
+    },
+    {
+      title: 'Sincronização',
+      items: [
         {
-          icon: User,
-          label: 'Perfil',
-          description: 'Metas e preferências',
-          component: <ChevronRight className="w-4 h-4 text-muted-foreground" />,
-          onClick: () => navigate('/profile')
+          icon: Database,
+          label: 'Status de Sincronização',
+          description: 'Gerenciar dados offline e sincronização',
+          component: null,
+          onClick: null,
+          fullWidth: true
         }
       ]
     },
@@ -100,34 +107,39 @@ export default function Settings() {
             {settingsGroups.map((group, groupIndex) => (
               <div key={groupIndex} className="space-y-3">
                 <h3 className="text-lg font-semibold text-foreground">{group.title}</h3>
-                <div className="space-y-2">
-                  {group.items.map((item, itemIndex) => {
-                    const Icon = item.icon;
-                    return (
-                      <div 
-                        key={itemIndex} 
-                        className={cn(
-                          "bg-card p-4 rounded-2xl shadow-sm transition-all duration-200",
-                          item.onClick && "cursor-pointer hover:shadow-md active:scale-[0.99]"
-                        )}
-                        onClick={item.onClick || undefined}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                              <Icon className="w-5 h-5 text-primary" />
+                
+                {group.title === 'Sincronização' ? (
+                  <SyncStatusCard />
+                ) : (
+                  <div className="space-y-2">
+                    {group.items.map((item, itemIndex) => {
+                      const Icon = item.icon;
+                      return (
+                        <div 
+                          key={itemIndex} 
+                          className={cn(
+                            "bg-card p-4 rounded-2xl shadow-sm transition-all duration-200",
+                            item.onClick && "cursor-pointer hover:shadow-md active:scale-[0.99]"
+                          )}
+                          onClick={item.onClick || undefined}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                                <Icon className="w-5 h-5 text-primary" />
+                              </div>
+                              <div>
+                                <div className="font-medium text-foreground">{item.label}</div>
+                                <div className="text-sm text-muted-foreground">{item.description}</div>
+                              </div>
                             </div>
-                            <div>
-                              <div className="font-medium text-foreground">{item.label}</div>
-                              <div className="text-sm text-muted-foreground">{item.description}</div>
-                            </div>
+                            {item.component}
                           </div>
-                          {item.component}
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             ))}
 
