@@ -6,14 +6,17 @@ import { Card } from '@/components/ui/card';
 import { useDiet } from '@/contexts/DietContext';
 import { BottomNavigation } from '@/components/BottomNavigation';
 import { FoodActionModal } from '@/components/FoodActionModal';
+import { PageLoading, InlineLoading } from '@/components/LoadingStates';
 
 export default function MealDetail() {
   const { mealId } = useParams<{ mealId: string }>();
   const navigate = useNavigate();
   const [selectedMealFood, setSelectedMealFood] = useState<{ mealFood: any; food: any } | null>(null);
+  const [loadingActions, setLoadingActions] = useState<Set<string>>(new Set());
   const { 
     currentDayPlan, 
     foods, 
+    isLoading,
     markMealAsCompleted,
     unmarkMealAsCompleted,
     markEntireMealAsCompleted,
@@ -21,6 +24,10 @@ export default function MealDetail() {
     updateMealFoodQuantity,
     getMealProgress 
   } = useDiet();
+
+  if (isLoading) {
+    return <PageLoading text="Carregando detalhes da refeição" />;
+  }
 
   if (!mealId || !currentDayPlan) {
     return (

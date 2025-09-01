@@ -1,4 +1,5 @@
 
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, TrendingUp, Calendar, Target, Award, Flame, BarChart3, Filter, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,28 +9,40 @@ import { WeeklyChart } from '@/components/WeeklyChart';
 import { StatsCards } from '@/components/StatsCards';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { exportToCsv } from '@/utils/csv';
+import { LoadingButton } from '@/components/LoadingButton';
+import { StatsCardSkeleton, ListLoading } from '@/components/LoadingStates';
 
 export default function Analytics() {
   const navigate = useNavigate();
+  const [isExporting, setIsExporting] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(false);
   const { dailyRecords, getWeeklyStats, filters, setFilters, mealTypes, getProgressTrend } = useAnalytics();
   const { current, longest } = useStreaks();
   const weeklyStats = getWeeklyStats();
   const trendData = getProgressTrend();
-  const handleExportCsv = () => {
-    const headers = ['Data','Refeições Totais','Refeições Concluídas','Taxa de Conclusão (%)','Calorias Consumidas','Carboidratos (g)','Proteínas (g)','Gorduras (g)','Calorias Alvo'];
-    const rows = dailyRecords.map(d => [
-      String(d.date),
-      d.totalMeals,
-      d.completedMeals,
-      d.completionRate,
-      Math.round(d.consumedCalories),
-      Math.round(d.consumedCarbohydrates),
-      Math.round(d.consumedProtein),
-      Math.round(d.consumedFat),
-      Math.round(d.targetCalories),
-    ]);
-    const file = `analytics-${filters.period}-${String(filters.mealType).replace(/\s+/g,'-')}-${filters.macro}-${new Date().toISOString().slice(0,10)}`;
-    exportToCsv(file, headers, rows);
+  const handleExportCsv = async () => {
+    setIsExporting(true);
+    try {
+      // Simulate processing time for better UX
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const headers = ['Data','Refeições Totais','Refeições Concluídas','Taxa de Conclusão (%)','Calorias Consumidas','Carboidratos (g)','Proteínas (g)','Gorduras (g)','Calorias Alvo'];
+      const rows = dailyRecords.map(d => [
+        String(d.date),
+        d.totalMeals,
+        d.completedMeals,
+        d.completionRate,
+        Math.round(d.consumedCalories),
+        Math.round(d.consumedCarbohydrates),
+        Math.round(d.consumedProtein),
+        Math.round(d.consumedFat),
+        Math.round(d.targetCalories),
+      ]);
+      const file = `analytics-${filters.period}-${String(filters.mealType).replace(/\s+/g,'-')}-${filters.macro}-${new Date().toISOString().slice(0,10)}`;
+      exportToCsv(file, headers, rows);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
@@ -51,10 +64,16 @@ export default function Analytics() {
           </p>
         </div>
         <div className="ml-auto">
-          <Button variant="outline" size="sm" onClick={handleExportCsv}>
+          <LoadingButton 
+            variant="outline" 
+            size="sm" 
+            onClick={handleExportCsv}
+            loading={isExporting}
+            loadingText="Exportando..."
+          >
             <Download className="w-4 h-4" />
             Exportar CSV
-          </Button>
+          </LoadingButton>
         </div>
       </header>
 

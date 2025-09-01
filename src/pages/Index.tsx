@@ -1,12 +1,13 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Settings, RotateCcw, Check, UtensilsCrossed, Dumbbell, Coffee, Apple, RefreshCw, BarChart3 } from 'lucide-react';
+import { Settings, RotateCcw, Check, UtensilsCrossed, Dumbbell, Coffee, Apple, RefreshCw, BarChart3, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useDiet } from '@/contexts/DietContext';
 import { StreakCard } from '@/components/StreakCard';
 import { Onboarding } from '@/components/Onboarding';
 import { FAQDrawer } from '@/components/FAQDrawer';
+import { PageLoading, MealCardSkeleton, StatsCardSkeleton } from '@/components/LoadingStates';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const Index = () => {
 
   const [showMacros, setShowMacros] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [loadingMealId, setLoadingMealId] = useState<string | null>(null);
   useEffect(() => {
     const done = localStorage.getItem('onboarding_done');
     if (!done) setShowOnboarding(true);
@@ -65,15 +67,12 @@ const Index = () => {
     }, 0);
   };
 
-  if (isLoading || !currentDayPlan) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Carregando seu plano...</p>
-        </div>
-      </div>
-    );
+  if (isLoading) {
+    return <PageLoading text="Carregando seu plano diário" />;
+  }
+
+  if (!currentDayPlan) {
+    return <PageLoading text="Preparando suas refeições" />;
   }
 
   const progress = getDailyProgress();
@@ -231,16 +230,38 @@ const Index = () => {
                         variant="ghost"
                         size="sm"
                         className="text-xs font-medium text-destructive hover:text-destructive"
-                        onClick={() => unmarkMealAsCompleted(meal.id)}
+                        disabled={loadingMealId === meal.id}
+                        onClick={async () => {
+                          setLoadingMealId(meal.id);
+                          try {
+                            await unmarkMealAsCompleted(meal.id);
+                          } finally {
+                            setLoadingMealId(null);
+                          }
+                        }}
                       >
+                        {loadingMealId === meal.id ? (
+                          <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                        ) : null}
                         Desfazer
                       </Button>
                     ) : (
                       <Button
                         size="sm"
                         className="text-sm font-semibold"
-                        onClick={() => markEntireMealAsCompleted(meal.id)}
+                        disabled={loadingMealId === meal.id}
+                        onClick={async () => {
+                          setLoadingMealId(meal.id);
+                          try {
+                            await markEntireMealAsCompleted(meal.id);
+                          } finally {
+                            setLoadingMealId(null);
+                          }
+                        }}
                       >
+                        {loadingMealId === meal.id ? (
+                          <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                        ) : null}
                         Concluir
                       </Button>
                     )}

@@ -6,6 +6,7 @@ import { Check, RotateCw, Scale } from 'lucide-react';
 import { Food, MealFood, calculateTotalNutrition } from '@/types/diet';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { LoadingButton } from '@/components/LoadingButton';
 
 interface FoodActionModalProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ interface FoodActionModalProps {
   onToggleCompleted: () => void;
   onUpdateQuantity: (quantity: number) => void;
   onSubstitute: () => void;
+  loading?: boolean;
 }
 
 export function FoodActionModal({
@@ -24,9 +26,11 @@ export function FoodActionModal({
   food,
   onToggleCompleted,
   onUpdateQuantity,
-  onSubstitute
+  onSubstitute,
+  loading = false
 }: FoodActionModalProps) {
   const [customQuantity, setCustomQuantity] = useState(mealFood.quantity.toString());
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
   
   const displayFood = mealFood.substitutedFood || food;
   const currentMultiplier = mealFood.quantity / displayFood.defaultQuantity;
@@ -131,26 +135,42 @@ export function FoodActionModal({
 
           {/* Actions */}
           <div className="space-y-2">
-            <Button
-              onClick={handleToggleCompleted}
+            <LoadingButton
+              onClick={async () => {
+                setActionLoading('toggle');
+                try {
+                  await handleToggleCompleted();
+                } finally {
+                  setActionLoading(null);
+                }
+              }}
               className="w-full"
               variant={mealFood.isCompleted ? "outline" : "default"}
+              loading={actionLoading === 'toggle'}
+              loadingText={mealFood.isCompleted ? "Marcando..." : "Concluindo..."}
             >
               <Check className="w-4 h-4 mr-2" />
               {mealFood.isCompleted ? "Marcar como Pendente" : "Marcar como Concluído"}
-            </Button>
+            </LoadingButton>
             
-            <Button
-              onClick={() => {
-                onSubstitute();
-                onClose();
+            <LoadingButton
+              onClick={async () => {
+                setActionLoading('substitute');
+                try {
+                  onSubstitute();
+                  onClose();
+                } finally {
+                  setActionLoading(null);
+                }
               }}
               variant="outline"
               className="w-full"
+              loading={actionLoading === 'substitute'}
+              loadingText="Abrindo substituições..."
             >
               <RotateCw className="w-4 h-4 mr-2" />
               Substituir Alimento
-            </Button>
+            </LoadingButton>
           </div>
         </div>
       </DialogContent>

@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { LoadingButton } from '@/components/LoadingButton';
 import { Loader2, Mail, Lock, AlertCircle, CheckCircle, UserPlus, ExternalLink } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
@@ -158,14 +159,14 @@ const Auth = () => {
                 </div>
               </div>
 
-              <Button 
+              <LoadingButton 
                 type="submit" 
                 className="w-full" 
-                disabled={isLoading}
+                loading={isLoading}
+                loadingText="Entrando..."
               >
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Entrar
-              </Button>
+              </LoadingButton>
             </form>
           </CardContent>
         </Card>

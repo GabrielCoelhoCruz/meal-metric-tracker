@@ -9,11 +9,13 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import { BottomNavigation } from '@/components/BottomNavigation';
+import { LoadingButton } from '@/components/LoadingButton';
 
 export default function Settings() {
   const navigate = useNavigate();
   const { signOut, user } = useAuth();
   const [showNotificationSettings, setShowNotificationSettings] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   const settingsGroups = [
     {
@@ -167,14 +169,23 @@ export default function Settings() {
                 </div>
               </div>
               
-              <Button
-                onClick={signOut}
+              <LoadingButton
+                onClick={async () => {
+                  setIsSigningOut(true);
+                  try {
+                    await signOut();
+                  } finally {
+                    setIsSigningOut(false);
+                  }
+                }}
                 variant="destructive"
                 className="w-full flex items-center justify-center gap-2"
+                loading={isSigningOut}
+                loadingText="Saindo..."
               >
                 <LogOut className="w-4 h-4" />
                 Sair da Conta
-              </Button>
+              </LoadingButton>
             </div>
 
             {/* Notification Settings Modal */}
